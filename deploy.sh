@@ -3,9 +3,20 @@
 # ============================================
 # AI Agents Stock 部署脚本
 # 功能：Docker 构建及启动
+# 支持：Linux (Ubuntu, CentOS, Debian 等) 和 macOS
 # ============================================
 
 set -e
+
+# 检测操作系统
+detect_os() {
+    case "$(uname -s)" in
+        Linux*)     OS="Linux";;
+        Darwin*)    OS="macOS";;
+        *)          OS="Unknown";;
+    esac
+    echo "$OS"
+}
 
 # 颜色定义
 RED='\033[0;31m'
@@ -17,6 +28,9 @@ NC='\033[0m' # No Color
 # 脚本目录
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
+
+# 当前操作系统
+CURRENT_OS=$(detect_os)
 
 # ============================================
 # 函数：打印信息
@@ -42,20 +56,52 @@ print_error() {
 # ============================================
 check_docker() {
     print_info "检查 Docker 安装状态..."
+    print_info "当前操作系统: $CURRENT_OS"
     
+    # 检查 Docker
     if ! command -v docker &> /dev/null; then
         print_error "Docker 未安装！请先安装 Docker。"
-        print_info "Docker 安装指南：https://docs.docker.com/get-docker/"
+        if [ "$CURRENT_OS" = "Linux" ]; then
+            print_info "Linux 系统 Docker 安装指南："
+            print_info "  Ubuntu/Debian: https://docs.docker.com/engine/install/ubuntu/"
+            print_info "  CentOS/RHEL: https://docs.docker.com/engine/install/centos/"
+        else
+            print_info "Docker 安装指南：https://docs.docker.com/get-docker/"
+        fi
         exit 1
     fi
     
-    if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
+    # 检查 Docker Compose
+    DOCKER_COMPOSE_CMD=""
+    if command -v docker-compose &> /dev/null; then
+        DOCKER_COMPOSE_CMD="docker-compose"
+    elif docker compose version &> /dev/null; then
+        DOCKER_COMPOSE_CMD="docker compose"
+    else
         print_error "Docker Compose 未安装！请先安装 Docker Compose。"
         print_info "Docker Compose 安装指南：https://docs.docker.com/compose/install/"
         exit 1
     fi
     
+    # 检查 Docker 服务是否运行
+    if ! docker info &> /dev/null; then
+        print_warning "Docker 服务未运行，正在尝试启动..."
+        if [ "$CURRENT_OS" = "Linux" ]; then
+            if command -v systemctl &> /dev/null; then
+                sudo systemctl start docker || true
+            elif command -v service &> /dev/null; then
+                sudo service docker start || true
+            fi
+        fi
+        # 再次检查
+        if ! docker info &> /dev/null; then
+            print_error "Docker 服务无法启动，请手动启动 Docker！"
+            exit 1
+        fi
+    fi
+    
     print_success "Docker 环境检查通过"
+    print_info "Docker Compose 命令: $DOCKER_COMPOSE_CMD"
 }
 
 # ============================================
@@ -105,10 +151,8 @@ create_directories() {
 stop_old_containers() {
     print_info "停止旧容器..."
     
-    if docker-compose ps &> /dev/null; then
-        docker-compose down || true
-    elif docker compose ps &> /dev/null; then
-        docker compose down || true
+    if [ -n "$DOCKER_COMPOSE_CMD" ]; then
+        $DOCKER_COMPOSE_CMD down || true
     fi
     
     print_success "旧容器已停止"
@@ -120,11 +164,12 @@ stop_old_containers() {
 build_and_start() {
     print_info "开始构建并启动服务..."
     
-    if docker-compose --version &> /dev/null; then
-        docker-compose up -d --build
-    else
-        docker compose up -d --build
+    if [ -z "$DOCKER_COMPOSE_CMD" ]; then
+        print_error "Docker Compose 命令未设置！"
+        exit 1
     fi
+    
+    $DOCKER_COMPOSE_CMD up -d --build
     
     print_success "构建完成"
 }
@@ -172,15 +217,43 @@ show_service_info() {
     echo ""
     echo "📋 常用命令："
     echo "  查看日志：    docker logs -f agentsstock1"
-    echo "  停止服务：    docker-compose down"
-    echo "  重启服务：    docker-compose restart"
+    echo "  停止服务：    $DOCKER_COMPOSE_CMD down"
+    echo "  重启服务：    $DOCKER_COMPOSE_CMD restart"
     echo "  查看状态：    docker ps"
+    if [ "$CURRENT_OS" = "Linux" ]; then
+        echo "  Docker状态：  sudo systemctl status docker"
+    fi
     echo ""
     echo "📝 日志文件位置："
     echo "  宿主机：      ./log/app.log"
     echo "  容器内：      /app/log/app.log"
     echo ""
+    if [ "$CURRENT_OS" = "Linux" ]; then
+        echo "💡 Linux 系统提示："
+        echo "  如果需要非 root 用户运行 Docker，请执行："
+        echo "    sudo usermod -aG docker \$USER"
+        echo "  然后重新登录使权限生效"
+        echo ""
+    fi
     echo "============================================"
+}
+
+# ============================================
+# 函数：设置文件权限（Linux 专用）
+# ============================================
+set_permissions() {
+    if [ "$CURRENT_OS" = "Linux" ]; then
+        print_info "设置文件权限..."
+        
+        # 确保脚本有执行权限
+        chmod +x "$0" 2>/dev/null || true
+        
+        # 确保 log 和 data 目录可写
+        chmod 755 log 2>/dev/null || true
+        chmod 755 data 2>/dev/null || true
+        
+        print_success "权限设置完成"
+    fi
 }
 
 # ============================================
@@ -190,6 +263,7 @@ main() {
     echo ""
     echo "============================================"
     echo "  AI Agents Stock 部署脚本"
+    echo "  支持: Linux / macOS"
     echo "============================================"
     echo ""
     
@@ -197,6 +271,9 @@ main() {
     check_docker
     check_env_file
     create_directories
+    
+    # 设置权限（Linux 专用）
+    set_permissions
     
     # 停止旧容器
     stop_old_containers
