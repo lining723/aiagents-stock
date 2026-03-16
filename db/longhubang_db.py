@@ -8,7 +8,7 @@ from datetime import datetime
 import json
 import pandas as pd
 from utils.logger import get_logger
-logger = get_logger(__name__)
+
 class LonghubangDatabase:
     """龙虎榜数据库管理类"""
     
@@ -20,10 +20,8 @@ class LonghubangDatabase:
             db_path: 数据库文件路径
         """
         self.db_path = db_path
-        # 初始化日志
-        self.logger = logging.getLogger(__name__)
-        if not self.logger.handlers:
-            logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s %(name)s: %(message)s')
+        # 使用统一日志系统
+        self.logger = get_logger(__name__)
         self.init_database()
     
     def get_connection(self):

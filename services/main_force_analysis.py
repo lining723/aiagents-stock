@@ -7,6 +7,7 @@
 
 from typing import Dict, List, Tuple
 import pandas as pd
+from utils.logger import get_logger
 from strategies.main_force_selector import main_force_selector
 from data.stock_data import StockDataFetcher
 from agents.ai_agents import StockAnalysisAgents
@@ -14,6 +15,8 @@ from agents.deepseek_client import DeepSeekClient
 import time
 import json
 import config.config as config
+
+logger = get_logger(__name__)
 class MainForceAnalyzer:
     """主力选股分析器 - 批量整体分析"""
     
@@ -71,6 +74,7 @@ class MainForceAnalyzer:
                 min_market_cap=min_market_cap,
                 max_market_cap=max_market_cap
             )
+            logger.info(f"✅ 成功获取主力资金净流入前100名股票:{raw_data}, 共{len(raw_data)}只股票,返回{message}")
             
             if not success:
                 result['error'] = message
@@ -85,6 +89,7 @@ class MainForceAnalyzer:
                 min_market_cap=min_market_cap,
                 max_market_cap=max_market_cap
             )
+            logger.info(f"✅ 成功筛选主力资金净流入前100名股票:{filtered_data}, 共{len(filtered_data)}只股票")
             
             result['filtered_stocks'] = len(filtered_data)
             
@@ -96,27 +101,31 @@ class MainForceAnalyzer:
             self.raw_stocks = filtered_data
             
             # 步骤3: 整体数据分析（不是逐个分析）
-            print(f"\n{'='*80}")
-            print(f"🤖 AI分析师团队开始整体分析...")
-            print(f"{'='*80}\n")
+            logger.info(f"\n{'='*80}")
+            logger.info(f"🤖 AI分析师团队开始整体分析...")
+            logger.info(f"{'='*80}\n")
             
             # 准备整体数据摘要
             overall_summary = self._prepare_overall_summary(filtered_data)
+            logger.info(f"✅ 成功准备整体数据摘要:{overall_summary}")
             
             # 三大分析师整体分析
             fund_flow_analysis = self._fund_flow_overall_analysis(filtered_data, overall_summary)
             industry_analysis = self._industry_overall_analysis(filtered_data, overall_summary)
             fundamental_analysis = self._fundamental_overall_analysis(filtered_data, overall_summary)
             
+            logger.info(f"✅ 成功行业板块分析师整体分析:{industry_analysis}")
+            logger.info(f"✅ 成功基本面分析师整体分析:{fundamental_analysis}")
+
             # 保存分析报告到对象属性，供UI展示
             self.fund_flow_analysis = fund_flow_analysis
             self.industry_analysis = industry_analysis
             self.fundamental_analysis = fundamental_analysis
             
             # 步骤4: 综合决策，精选优质标的
-            print(f"\n{'='*80}")
-            print(f"👔 资深研究员综合评估并精选标的...")
-            print(f"{'='*80}\n")
+            logger.info(f"\n{'='*80}")
+            logger.info(f"👔 资深研究员综合评估并精选标的...")
+            logger.info(f"{'='*80}\n")
             
             final_recommendations = self._select_best_stocks(
                 filtered_data,
@@ -125,6 +134,7 @@ class MainForceAnalyzer:
                 fundamental_analysis,
                 final_n=final_n
             )
+            logger.info(f"✅ 成功精选优质标的:{final_recommendations}, 共{len(final_recommendations)}只股票")
             
             result['final_recommendations'] = final_recommendations
             result['success'] = True
@@ -181,44 +191,44 @@ class MainForceAnalyzer:
     def _fund_flow_overall_analysis(self, df: pd.DataFrame, summary: str) -> str:
         """资金流向整体分析"""
         
-        print("💰 资金流向分析师整体分析中...")
+        logger.info("💰 资金流向分析师整体分析中...")
         
         # 准备数据表格
         data_table = self._prepare_data_table(df, focus='fund_flow')
         
         prompt = f"""
-你是一名资深的资金面分析师，现在需要你从整体角度分析这批主力资金净流入的股票。
+                你是一名资深的资金面分析师，现在需要你从整体角度分析这批主力资金净流入的股票。
 
-【整体数据摘要】
-{summary}
+                【整体数据摘要】
+                {summary}
 
-【候选股票详细数据】（共{len(df)}只）
-{data_table}
+                【候选股票详细数据】（共{len(df)}只）
+                {data_table}
 
-【分析任务】
-请从资金流向的整体角度进行分析，重点关注：
+                【分析任务】
+                请从资金流向的整体角度进行分析，重点关注：
 
-1. **资金流向特征**
-   - 哪些板块/行业资金流入最集中？
-   - 主力资金的整体行为特征（大规模建仓/试探性进场/板块轮动）
-   - 资金流向与涨跌幅的配合情况
+                1. **资金流向特征**
+                - 哪些板块/行业资金流入最集中？
+                - 主力资金的整体行为特征（大规模建仓/试探性进场/板块轮动）
+                - 资金流向与涨跌幅的配合情况
 
-2. **优质标的识别**
-   - 从资金面角度，哪些股票最值得关注？
-   - 主力资金流入大但涨幅不高的潜力股
-   - 资金持续流入且趋势明确的股票
+                2. **优质标的识别**
+                - 从资金面角度，哪些股票最值得关注？
+                - 主力资金流入大但涨幅不高的潜力股
+                - 资金持续流入且趋势明确的股票
 
-3. **板块热点判断**
-   - 当前资金最看好哪些板块？
-   - 是否有板块轮动迹象？
-   - 新兴热点 vs 传统强势板块
+                3. **板块热点判断**
+                - 当前资金最看好哪些板块？
+                - 是否有板块轮动迹象？
+                - 新兴热点 vs 传统强势板块
 
-4. **投资建议**
-   - 从资金面角度，建议重点关注哪3-5只股票？
-   - 理由和风险提示
+                4. **投资建议**
+                - 从资金面角度，建议重点关注哪3-5只股票？
+                - 理由和风险提示
 
-请给出专业、系统的资金面整体分析报告。
-"""
+                请给出专业、系统的资金面整体分析报告。
+                """
         
         messages = [
             {"role": "system", "content": "你是资金面分析专家，擅长从整体资金流向中发现投资机会。"},
@@ -230,6 +240,9 @@ class MainForceAnalyzer:
         print("  ✅ 资金流向整体分析完成")
         time.sleep(1)
         
+        logger.info(f"✅ 成功资金流向分析师整体分析:{analysis}")
+
+        
         return analysis
     
     def _industry_overall_analysis(self, df: pd.DataFrame, summary: str) -> str:
@@ -239,40 +252,41 @@ class MainForceAnalyzer:
         
         # 准备数据表格
         data_table = self._prepare_data_table(df, focus='industry')
+        logger.info(f"✅ 成功准备行业板块数据表格:{data_table}")
         
         prompt = f"""
-你是一名资深的行业板块分析师，现在需要你从行业热点和板块轮动角度分析这批股票。
+                你是一名资深的行业板块分析师，现在需要你从行业热点和板块轮动角度分析这批股票。
 
-【整体数据摘要】
-{summary}
+                【整体数据摘要】
+                {summary}
 
-【候选股票详细数据】（共{len(df)}只）
-{data_table}
+                【候选股票详细数据】（共{len(df)}只）
+                {data_table}
 
-【分析任务】
-请从行业板块的整体角度进行分析，重点关注：
+                【分析任务】
+                请从行业板块的整体角度进行分析，重点关注：
 
-1. **热点板块识别**
-   - 哪些行业/板块最受资金青睐？
-   - 热点板块的持续性如何？
-   - 是否有新兴热点正在形成？
+                1. **热点板块识别**
+                - 哪些行业/板块最受资金青睐？
+                - 热点板块的持续性如何？
+                - 是否有新兴热点正在形成？
 
-2. **板块特征分析**
-   - 各板块的涨幅与资金流入匹配度
-   - 哪些板块处于启动阶段（资金流入但涨幅不大）
-   - 哪些板块可能过热（涨幅高但资金流入减弱）
+                2. **板块特征分析**
+                - 各板块的涨幅与资金流入匹配度
+                - 哪些板块处于启动阶段（资金流入但涨幅不大）
+                - 哪些板块可能过热（涨幅高但资金流入减弱）
 
-3. **行业前景评估**
-   - 主力资金集中的行业，基本面支撑如何？
-   - 政策面、产业面是否有催化因素？
-   - 行业竞争格局和龙头地位
+                3. **行业前景评估**
+                - 主力资金集中的行业，基本面支撑如何？
+                - 政策面、产业面是否有催化因素？
+                - 行业竞争格局和龙头地位
 
-4. **优质标的推荐**
-   - 从行业板块角度，推荐3-5只最具潜力的股票
-   - 推荐理由（行业地位、成长空间、催化因素）
+                4. **优质标的推荐**
+                - 从行业板块角度，推荐3-5只最具潜力的股票
+                - 推荐理由（行业地位、成长空间、催化因素）
 
-请给出专业、深入的行业板块分析报告。
-"""
+                请给出专业、深入的行业板块分析报告。
+                """
         
         messages = [
             {"role": "system", "content": "你是行业板块分析专家，擅长发现市场热点和板块机会。"},

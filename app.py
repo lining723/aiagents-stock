@@ -34,6 +34,7 @@ from config.config import (
     MINIQMT_HOST,
     MINIQMT_PORT,
 )
+from config import config_manager
 
 from data import StockDataFetcher
 from agents import StockAnalysisAgents
@@ -540,25 +541,25 @@ def main():
     
     # 检查是否显示低价擒牛
     if 'show_low_price_bull' in st.session_state and st.session_state.show_low_price_bull:
-        from low_price_bull_ui import display_low_price_bull
+        from ui.low_price_bull_ui import display_low_price_bull
         display_low_price_bull()
         return
     
     # 检查是否显示小市值策略
     if 'show_small_cap' in st.session_state and st.session_state.show_small_cap:
-        from small_cap_ui import display_small_cap
+        from ui.small_cap_ui import display_small_cap
         display_small_cap()
         return
     
     # 检查是否显示净利增长策略
     if 'show_profit_growth' in st.session_state and st.session_state.show_profit_growth:
-        from profit_growth_ui import display_profit_growth
+        from ui.profit_growth_ui import display_profit_growth
         display_profit_growth()
         return
 
     # 检查是否显示低估值策略
     if 'show_value_stock' in st.session_state and st.session_state.show_value_stock:
-        from value_stock_ui import display_value_stock
+        from ui.value_stock_ui import display_value_stock
         display_value_stock()
         return
 
@@ -579,7 +580,7 @@ def main():
 
     # 检查是否显示持仓分析
     if 'show_portfolio' in st.session_state and st.session_state.show_portfolio:
-        from portfolio_ui import display_portfolio_manager
+        from ui.portfolio_ui import display_portfolio_manager
         display_portfolio_manager()
         return
 
@@ -590,7 +591,7 @@ def main():
 
     # 检查是否显示宏观周期分析
     if 'show_macro_cycle' in st.session_state and st.session_state.show_macro_cycle:
-        from macro_cycle_ui import display_macro_cycle
+        from ui.macro_cycle_ui import display_macro_cycle
         display_macro_cycle()
         return
     

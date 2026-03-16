@@ -732,7 +732,7 @@ def display_pdf_export_section(result):
         if st.button("📥 生成PDF", type="primary", width='stretch'):
             with st.spinner("正在生成PDF报告..."):
                 try:
-                    generator = LonghubangPDFGenerator()
+                    generator = LonghubangPDF()
                     pdf_path = generator.generate_pdf(result)
                     
                     # 读取PDF文件
