@@ -12,7 +12,7 @@ logger = get_logger(__name__)
 class LonghubangDatabase:
     """龙虎榜数据库管理类"""
     
-    def __init__(self, db_path='longhubang.db'):
+    def __init__(self, db_path='db/longhubang.db'):
         """
         初始化数据库
         

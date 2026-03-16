@@ -1,5 +1,94 @@
 # 🤖 复合多AI智能体股票团队分析系统
 
+## ⭐ 2026.3.16更新 - 代码架构重构 + 统一日志系统 📊
+
+### 🏗️ 代码架构重构
+将项目所有文件重新组织为清晰的8层目录结构，大幅提升代码可维护性和可读性！
+
+**新目录结构：**
+```
+aiagents-stock/
+├── app.py                          # 主入口文件
+├── config/                         # 配置模块
+│   ├── config.py                   # 主配置文件
+│   ├── config_manager.py           # 配置管理器
+│   ├── model_config.py             # 模型配置
+│   └── ...
+├── ui/                             # UI组件
+│   ├── *_ui.py                     # 所有界面模块
+│   └── ...
+├── data/                           # 数据获取模块
+│   ├── stock_data.py               # 股票数据
+│   ├── *_data.py                   # 其他数据模块
+│   └── ...
+├── agents/                         # AI智能体
+│   ├── ai_agents.py                # 主AI智能体
+│   ├── deepseek_client.py          # DeepSeek客户端
+│   ├── *_agents.py                 # 其他AI智能体
+│   └── ...
+├── db/                             # 数据库模块
+│   ├── database.py                 # 基础数据库
+│   ├── *_db.py                     # 各类数据库
+│   └── ...
+├── services/                       # 服务层
+│   ├── monitor_service.py          # 监测服务
+│   ├── notification_service.py     # 通知服务
+│   ├── *_engine.py                 # 各类引擎
+│   ├── *_scheduler.py              # 各类调度器
+│   └── ...
+├── strategies/                     # 策略模块
+│   ├── *_selector.py               # 选股策略
+│   ├── *_strategy.py               # 交易策略
+│   ├── *_monitor.py                # 策略监控
+│   └── ...
+├── utils/                          # 工具类
+│   ├── logger.py                   # 统一日志系统（新增）
+│   ├── pdf_generator.py            # PDF生成
+│   ├── *_pdf.py                    # 各类PDF生成器
+│   └── ...
+├── log/                            # 日志目录（自动创建）
+│   └── app.log                     # 应用日志文件
+├── requirements.txt
+├── Dockerfile
+└── ...
+```
+
+**重构优势：**
+- ✅ **清晰分层**：8层功能模块，职责分明
+- ✅ **易于维护**：相关文件集中管理，便于修改
+- ✅ **向后兼容**：保持原有API不变，平滑迁移
+- ✅ **模块化设计**：便于后续功能扩展
+
+---
+
+### 📝 统一日志系统
+新增统一的日志系统，所有日志输出到项目根目录 `log/app.log` 文件！
+
+**核心功能：**
+- ✅ **统一格式**：`时间戳 | 日志级别 | 模块名 | 消息`
+- ✅ **双重输出**：同时输出到控制台和日志文件
+- ✅ **自动管理**：自动创建log目录
+- ✅ **日志轮转**：10MB * 5个备份，防止日志文件过大
+- ✅ **UTF-8编码**：完美支持中文日志
+- ✅ **Docker挂载**：log目录已挂载，日志持久化
+
+**使用方法：**
+```python
+# 在任何模块中只需替换导入语句即可
+from utils.logger import get_logger
+logger = get_logger(__name__)
+
+logger.info("这是一条INFO日志")
+logger.warning("这是一条WARNING日志")
+logger.error("这是一条ERROR日志")
+```
+
+**日志位置：**
+- 宿主机：`/Users/bytedance/aiagents-stock/log/app.log`
+- Docker容器：`/app/log/app.log`
+
+---
+
 - 初心：在股市摸爬滚打多年，自学自编各种指标，花冤柉钱学习了各种战法各种策略，也曾入各种小班，总是赚少赔多，逐渐失去在股市玩的信心。自从去年deepseek上市，一直探索用ai辅助分析，且近日受tradingagents项目启发（感谢原作），多agent结合跟踪主力资金战法（某指每年收费6000rmb），用各种ai辅助编程，拼凑了这么个小程序，根据软件提供的辅助信息，实盘测试盈率还是挺高的，并且逐步形成了自己的交易系统，近一个月来，账户也慢慢在扰亏为盈。开源此软件的目的，就是为了使像我一样的小散，不再迷范。也许这个软件不能让你发大财，但是他能给你足够的信心。最后提醒：股市有风险，入市需谨慎！
 ## QQ交流群：1059277514
 ## B站本地部署教程1：https://www.bilibili.com/video/BV1qHFPz9EXY/
@@ -1141,40 +1230,116 @@ WEBHOOK_KEYWORD=股票
 ```
 AI股票分析系统
 ├── app.py                          # Streamlit主界面
-├── stock_data.py                   # 股票数据获取模块
-├── deepseek_client.py              # DeepSeek API客户端
-├── ai_agents.py                    # AI智能体分析模块
-├── monitor_manager.py              # 监测管理界面
-├── monitor_service.py              # 监测服务后台
-├── monitor_db.py                   # 监测数据库管理
-├── notification_service.py         # 通知服务（邮件/Webhook/界面）⭐️
-├── config_manager.py               # 配置管理模块 ⭐️
-├── miniqmt_interface.py            # MiniQMT量化交易接口 ⭐️
-├── longhubang_data.py              # 智瞰龙虎数据获取模块 ⭐️ 1017新增
-├── longhubang_db.py                # 智瞰龙虎数据库管理 ⭐️ 1017新增
-├── longhubang_agents.py            # 智瞰龙虎AI分析师团队 ⭐️ 1017新增
-├── longhubang_engine.py            # 智瞰龙虎分析引擎 ⭐️ 1017新增
-├── longhubang_pdf.py               # 智瞰龙虎PDF报告生成 ⭐️ 1017新增
-├── longhubang_ui.py                # 智瞰龙虎界面模块 ⭐️ 1017新增
-├── sector_strategy_data.py         # 智策数据采集模块 ⭐️
-├── sector_strategy_agents.py       # 智策AI智能体团队 ⭐️
-├── sector_strategy_engine.py       # 智策分析引擎 ⭐️
-├── sector_strategy_scheduler.py    # 智策定时任务调度器 ⭐️
-├── sector_strategy_ui.py           # 智策界面模块 ⭐️
-├── sector_strategy_pdf.py          # 智策PDF报告生成 ⭐️
-├── main_force_selector.py          # 主力选股数据获取
-├── main_force_analysis.py          # 主力选股AI分析
-├── main_force_ui.py                # 主力选股界面
-├── main_force_pdf_generator.py     # 主力选股报告生成
-├── pdf_generator.py                # PDF报告生成
-├── database.py                     # 分析记录数据库
-├── config.py                       # 配置文件
+├── config/                         # 配置模块
+│   ├── config.py                   # 主配置文件
+│   ├── config_manager.py           # 配置管理器
+│   ├── model_config.py             # 模型配置
+│   ├── data_source_manager.py      # 数据源管理
+│   └── ...
+├── ui/                             # UI组件
+│   ├── longhubang_ui.py            # 智瞰龙虎界面
+│   ├── low_price_bull_ui.py        # 低价擒牛界面
+│   ├── macro_cycle_ui.py           # 宏观周期界面
+│   ├── main_force_ui.py            # 主力选股界面
+│   ├── monitor_ui.py               # 监测界面
+│   ├── news_flow_ui.py             # 新闻流量界面
+│   ├── portfolio_ui.py             # 持仓分析界面
+│   ├── profit_growth_ui.py         # 净利增长界面
+│   ├── sector_strategy_ui.py       # 智策板块界面
+│   ├── small_cap_ui.py             # 小市值界面
+│   ├── smart_monitor_ui.py         # 智能盯盘界面
+│   ├── value_stock_ui.py           # 价值投资界面
+│   └── ...
+├── data/                           # 数据获取模块
+│   ├── stock_data.py               # 股票数据
+│   ├── fund_flow_akshare.py        # 资金流向数据
+│   ├── longhubang_data.py          # 龙虎榜数据
+│   ├── macro_cycle_data.py         # 宏观周期数据
+│   ├── market_sentiment_data.py    # 市场情绪数据
+│   ├── news_announcement_data.py   # 新闻公告数据
+│   ├── news_flow_data.py           # 新闻流量数据
+│   ├── qstock_news_data.py         # QStock新闻数据
+│   ├── quarterly_report_data.py    # 季报数据
+│   ├── risk_data_fetcher.py        # 风险数据
+│   ├── sector_strategy_data.py     # 智策数据
+│   ├── smart_monitor_data.py       # 智能盯盘数据
+│   ├── smart_monitor_tdx_data.py  # TDX数据源
+│   └── ...
+├── agents/                         # AI智能体
+│   ├── ai_agents.py                # 主AI智能体
+│   ├── deepseek_client.py          # DeepSeek客户端
+│   ├── longhubang_agents.py        # 龙虎榜AI分析师
+│   ├── macro_cycle_agents.py       # 宏观周期AI分析师
+│   ├── news_flow_agents.py         # 新闻流量AI分析师
+│   ├── sector_strategy_agents.py   # 智策AI分析师
+│   └── ...
+├── db/                             # 数据库模块
+│   ├── database.py                 # 基础数据库
+│   ├── longhubang_db.py            # 龙虎榜数据库
+│   ├── main_force_batch_db.py      # 主力批量数据库
+│   ├── monitor_db.py               # 监测数据库
+│   ├── news_flow_db.py             # 新闻流量数据库
+│   ├── portfolio_db.py             # 持仓数据库
+│   ├── sector_strategy_db.py       # 智策数据库
+│   ├── smart_monitor_db.py         # 智能盯盘数据库
+│   └── ...
+├── services/                       # 服务层
+│   ├── longhubang_engine.py        # 龙虎榜分析引擎
+│   ├── low_price_bull_service.py   # 低价擒牛服务
+│   ├── macro_cycle_engine.py       # 宏观周期引擎
+│   ├── main_force_analysis.py      # 主力选股分析
+│   ├── monitor_manager.py          # 监测管理器
+│   ├── monitor_scheduler.py        # 监测调度器
+│   ├── monitor_service.py          # 监测服务
+│   ├── news_flow_alert.py          # 新闻流量预警
+│   ├── news_flow_engine.py         # 新闻流量引擎
+│   ├── news_flow_model.py          # 新闻流量模型
+│   ├── news_flow_scheduler.py      # 新闻流量调度器
+│   ├── news_flow_sentiment.py      # 新闻流量情绪分析
+│   ├── notification_service.py     # 通知服务（邮件/Webhook/界面）
+│   ├── portfolio_manager.py        # 持仓管理器
+│   ├── portfolio_scheduler.py      # 持仓调度器
+│   ├── sector_strategy_engine.py   # 智策分析引擎
+│   ├── sector_strategy_scheduler.py # 智策调度器
+│   ├── smart_monitor_deepseek.py  # 智能盯盘DeepSeek
+│   ├── smart_monitor_engine.py     # 智能盯盘引擎
+│   └── ...
+├── strategies/                     # 策略模块
+│   ├── low_price_bull_monitor.py  # 低价擒牛监控
+│   ├── low_price_bull_selector.py  # 低价擒牛选股
+│   ├── low_price_bull_strategy.py # 低价擒牛策略
+│   ├── main_force_selector.py     # 主力选股
+│   ├── profit_growth_monitor.py   # 净利增长监控
+│   ├── profit_growth_selector.py   # 净利增长选股
+│   ├── small_cap_selector.py       # 小市值选股
+│   ├── value_stock_selector.py     # 价值投资选股
+│   ├── value_stock_strategy.py    # 价值投资策略
+│   └── ...
+├── utils/                          # 工具类
+│   ├── logger.py                   # 统一日志系统（新增）
+│   ├── pdf_generator.py            # PDF生成
+│   ├── pdf_generator_fixed.py      # PDF生成（修复版）
+│   ├── pdf_generator_pandoc.py     # PDF生成（Pandoc版）
+│   ├── longhubang_pdf.py           # 龙虎榜PDF
+│   ├── longhubang_scoring.py       # 龙虎榜评分
+│   ├── macro_cycle_pdf.py          # 宏观周期PDF
+│   ├── main_force_pdf_generator.py # 主力选股PDF
+│   ├── news_flow_pdf.py            # 新闻流量PDF
+│   ├── sector_strategy_pdf.py      # 智策PDF
+│   └── ...
+├── log/                            # 日志目录（自动创建）
+│   └── app.log                     # 应用日志文件
 ├── requirements.txt                # 依赖包列表
 ├── run.py                          # 启动脚本
 ├── Dockerfile                      # Docker镜像构建文件 🐳
+├── Dockerfile国内源版             # Docker国内镜像源构建 🐳
+├── Dockerfile国际源版             # Docker国际镜像源构建 🐳
 ├── docker-compose.yml              # Docker编排配置文件 🐳
 ├── .dockerignore                   # Docker构建忽略文件 🐳
-└── DOCKER_DEPLOYMENT.md            # Docker部署详细文档 🐳
+└── docs/                           # 文档目录
+    ├── DOCKER_DEPLOYMENT.md        # Docker部署详细文档 🐳
+    ├── DOCKER_CN_BUILD_GUIDE.md   # 国内镜像源构建指南
+    └── ...
 ```
 
 ### 核心模块说明
@@ -1562,16 +1727,43 @@ DEFAULT_INTERVAL = "1d"    # 默认数据间隔
      - [智策定时分析使用指南.md](docs/智策定时分析使用指南.md)
      - [智策功能总览.md](docs/智策功能总览.md)
 
-### 日志调试
-系统运行时会在控制台输出详细日志，可用于问题诊断。如遇到错误，请查看终端输出。
+### 日志调试 ⭐️ 2026.3.16新增
+系统已实现统一日志系统，所有日志同时输出到控制台和 `log/app.log` 文件，可用于问题诊断。
 
-**Docker部署日志查看**：
+**统一日志系统特性**：
+- ✅ **双重输出**：同时输出到控制台和日志文件
+- ✅ **统一格式**：`时间戳 | 日志级别 | 模块名 | 消息`
+- ✅ **日志轮转**：10MB * 5个备份，防止日志文件过大
+- ✅ **UTF-8编码**：完美支持中文日志
+- ✅ **Docker持久化**：log目录已挂载，日志不会丢失
+
+**日志文件位置**：
+- **本地部署**：`./log/app.log`
+- **Docker部署**：容器内 `/app/log/app.log`，宿主机 `./log/app.log`
+
+**查看日志**：
 ```bash
-# 实时查看日志
+# 查看日志文件（本地）
+tail -f log/app.log
+
+# 查看控制台输出（Docker）
 docker-compose logs -f
 
 # 或查看特定容器日志
 docker logs -f agentsstock1
+
+# 查看日志文件（Docker宿主机）
+tail -f log/app.log
+```
+
+**使用统一日志系统**：
+```python
+from utils.logger import get_logger
+logger = get_logger(__name__)
+
+logger.info("这是一条INFO日志")
+logger.warning("这是一条WARNING日志")
+logger.error("这是一条ERROR日志")
 ```
 
 ### 相关文档

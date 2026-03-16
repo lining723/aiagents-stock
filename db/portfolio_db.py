@@ -10,7 +10,7 @@ from typing import List, Dict, Optional, Tuple
 import os
 
 # 数据库文件路径
-DB_PATH = "portfolio_stocks.db"
+DB_PATH = "db/portfolio_stocks.db"
 
 
 class PortfolioDB:

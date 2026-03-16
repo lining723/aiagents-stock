@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 class NewsFlowDatabase:
     """新闻流量数据库管理类"""
     
-    def __init__(self, db_path: str = "news_flow.db"):
+    def __init__(self, db_path: str = "db/news_flow.db"):
         self.db_path = db_path
         self.init_database()
     
