@@ -13,6 +13,8 @@ services:
       - ./data:/app/data
       # 环境变量配置文件
       - ./.env:/app/.env
+      # 日志文件持久化
+      - ./log:/app/log
     environment:
       # 可以在这里设置环境变量，或者使用.env文件
       - TZ=Asia/Shanghai

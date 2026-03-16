@@ -7,21 +7,51 @@ from datetime import datetime
 import time
 import base64
 import os
-import config
+from utils.logger import get_logger
 
-from stock_data import StockDataFetcher
-from ai_agents import StockAnalysisAgents
-from pdf_generator import display_pdf_export_section
-from database import db
-from monitor_manager import display_monitor_manager, get_monitor_summary
-from monitor_service import monitor_service
-from notification_service import notification_service
-from config_manager import config_manager
-from main_force_ui import display_main_force_selector
-from sector_strategy_ui import display_sector_strategy
-from longhubang_ui import display_longhubang
-from smart_monitor_ui import smart_monitor_ui
-from news_flow_ui import display_news_flow_monitor
+logger = get_logger(__name__)
+logger.info("=" * 80)
+logger.info("AI Agents Stock 系统启动")
+logger.info("=" * 80)
+
+from config.config import (
+    DEFAULT_MODEL_NAME,
+    DEEPSEEK_API_KEY,
+    DEEPSEEK_BASE_URL,
+    TUSHARE_TOKEN,
+    EMAIL_ENABLED,
+    SMTP_SERVER,
+    SMTP_PORT,
+    EMAIL_FROM,
+    EMAIL_PASSWORD,
+    EMAIL_TO,
+    WEBHOOK_ENABLED,
+    WEBHOOK_TYPE,
+    WEBHOOK_URL,
+    WEBHOOK_KEYWORD,
+    MINIQMT_ENABLED,
+    MINIQMT_ACCOUNT_ID,
+    MINIQMT_HOST,
+    MINIQMT_PORT,
+)
+
+from data import StockDataFetcher
+from agents import StockAnalysisAgents
+from utils import display_pdf_export_section
+from db import db
+from services import (
+    monitor_service,
+    display_monitor_manager,
+    get_monitor_summary,
+    notification_service,
+)
+from ui import (
+    display_main_force_selector,
+    display_sector_strategy,
+    display_longhubang,
+    smart_monitor_ui,
+    display_news_flow_monitor,
+)
 
 # 页面配置
 st.set_page_config(
@@ -36,7 +66,7 @@ def show_current_model_info():
     """显示当前使用的AI模型信息"""
     st.sidebar.markdown("---")
     st.sidebar.subheader("🤖 AI模型")
-    st.sidebar.info(f"当前模型: **{config.DEFAULT_MODEL_NAME}**")
+    st.sidebar.info(f"当前模型: **{DEFAULT_MODEL_NAME}**")
     st.sidebar.caption("可在「环境配置」中修改模型名称")
 
 # 自定义CSS样式 - 专业版
@@ -425,7 +455,7 @@ def main():
 
         # 显示当前模型信息
         show_current_model_info()
-        st.session_state.selected_model = config.DEFAULT_MODEL_NAME
+        st.session_state.selected_model = DEFAULT_MODEL_NAME
 
         st.markdown("---")
 
@@ -436,7 +466,7 @@ def main():
         st.markdown(f"**监测服务**: {monitor_status}")
 
         try:
-            from monitor_db import monitor_db
+            from db.monitor_db import monitor_db
             stocks = monitor_db.get_monitored_stocks()
             notifications = monitor_db.get_pending_notifications()
             record_count = db.get_record_count()
@@ -793,7 +823,7 @@ def main():
 def check_api_key():
     """检查API密钥是否配置"""
     try:
-        import config
+        import config.config as config
         return bool(config.DEEPSEEK_API_KEY and config.DEEPSEEK_API_KEY.strip())
     except:
         return False
@@ -900,7 +930,7 @@ def analyze_single_stock_for_batch(symbol, period, enabled_analysts_config=None,
         enable_fundamental = enabled_analysts_config.get('fundamental', True)
         if enable_fundamental and fetcher._is_chinese_stock(symbol):
             try:
-                from quarterly_report_data import QuarterlyReportDataFetcher
+                from data.quarterly_report_data import QuarterlyReportDataFetcher
                 quarterly_fetcher = QuarterlyReportDataFetcher()
                 quarterly_data = quarterly_fetcher.get_quarterly_reports(symbol)
             except:
@@ -915,7 +945,7 @@ def analyze_single_stock_for_batch(symbol, period, enabled_analysts_config=None,
         fund_flow_data = None
         if enable_fund_flow and fetcher._is_chinese_stock(symbol):
             try:
-                from fund_flow_akshare import FundFlowAkshareDataFetcher
+                from data.fund_flow_akshare import FundFlowAkshareDataFetcher
                 fund_flow_fetcher = FundFlowAkshareDataFetcher()
                 fund_flow_data = fund_flow_fetcher.get_fund_flow_data(symbol)
             except:
@@ -925,7 +955,7 @@ def analyze_single_stock_for_batch(symbol, period, enabled_analysts_config=None,
         sentiment_data = None
         if enable_sentiment and fetcher._is_chinese_stock(symbol):
             try:
-                from market_sentiment_data import MarketSentimentDataFetcher
+                from data.market_sentiment_data import MarketSentimentDataFetcher
                 sentiment_fetcher = MarketSentimentDataFetcher()
                 sentiment_data = sentiment_fetcher.get_market_sentiment_data(symbol, stock_data)
             except:
@@ -935,7 +965,7 @@ def analyze_single_stock_for_batch(symbol, period, enabled_analysts_config=None,
         news_data = None
         if enable_news and fetcher._is_chinese_stock(symbol):
             try:
-                from qstock_news_data import QStockNewsDataFetcher
+                from data.qstock_news_data import QStockNewsDataFetcher
                 news_fetcher = QStockNewsDataFetcher()
                 news_data = news_fetcher.get_stock_news(symbol)
             except:
@@ -1017,7 +1047,7 @@ def run_batch_analysis(stock_list, period, batch_mode="顺序分析"):
         'sentiment': st.session_state.get('enable_sentiment', False),
         'news': st.session_state.get('enable_news', False)
     }
-    selected_model = st.session_state.get('selected_model', config.DEFAULT_MODEL_NAME)
+    selected_model = st.session_state.get('selected_model', DEFAULT_MODEL_NAME)
 
     # 创建进度显示
     st.subheader(f"📊 批量分析进行中 ({batch_mode})")
@@ -1176,7 +1206,7 @@ def run_stock_analysis(symbol, period):
         if enable_fundamental and fetcher._is_chinese_stock(symbol):
             status_text.text("📊 正在获取季报数据（akshare数据源）...")
             try:
-                from quarterly_report_data import QuarterlyReportDataFetcher
+                from data.quarterly_report_data import QuarterlyReportDataFetcher
                 quarterly_fetcher = QuarterlyReportDataFetcher()
                 quarterly_data = quarterly_fetcher.get_quarterly_reports(symbol)
                 if quarterly_data and quarterly_data.get('data_success'):
@@ -1203,7 +1233,7 @@ def run_stock_analysis(symbol, period):
         if enable_fund_flow and fetcher._is_chinese_stock(symbol):
             status_text.text("💰 正在获取资金流向数据（akshare数据源）...")
             try:
-                from fund_flow_akshare import FundFlowAkshareDataFetcher
+                from data.fund_flow_akshare import FundFlowAkshareDataFetcher
                 fund_flow_fetcher = FundFlowAkshareDataFetcher()
                 fund_flow_data = fund_flow_fetcher.get_fund_flow_data(symbol)
                 if fund_flow_data and fund_flow_data.get('data_success'):
@@ -1223,7 +1253,7 @@ def run_stock_analysis(symbol, period):
         if enable_sentiment and fetcher._is_chinese_stock(symbol):
             status_text.text("📊 正在获取市场情绪数据（ARBR等指标）...")
             try:
-                from market_sentiment_data import MarketSentimentDataFetcher
+                from data.market_sentiment_data import MarketSentimentDataFetcher
                 sentiment_fetcher = MarketSentimentDataFetcher()
                 sentiment_data = sentiment_fetcher.get_market_sentiment_data(symbol, stock_data)
                 if sentiment_data and sentiment_data.get('data_success'):
@@ -1242,7 +1272,7 @@ def run_stock_analysis(symbol, period):
         if enable_news and fetcher._is_chinese_stock(symbol):
             status_text.text("📰 正在获取新闻数据...")
             try:
-                from qstock_news_data import QStockNewsDataFetcher
+                from data.qstock_news_data import QStockNewsDataFetcher
                 news_fetcher = QStockNewsDataFetcher()
                 news_data = news_fetcher.get_stock_news(symbol)
                 if news_data and news_data.get('data_success'):
@@ -1290,7 +1320,7 @@ def run_stock_analysis(symbol, period):
         # 6. 初始化AI分析系统
         status_text.text("🤖 正在初始化AI分析系统...")
         # 使用选择的模型
-        selected_model = st.session_state.get('selected_model', config.DEFAULT_MODEL_NAME)
+        selected_model = st.session_state.get('selected_model', DEFAULT_MODEL_NAME)
         agents = StockAnalysisAgents(model=selected_model)
         progress_bar.progress(55)
 
@@ -1865,7 +1895,7 @@ def display_add_to_monitor_dialog(record):
         rating = final_decision.get('rating', '买入')
 
         # 检查是否已经在监测列表中
-        from monitor_db import monitor_db
+        from db.monitor_db import monitor_db
         existing_stocks = monitor_db.get_monitored_stocks()
         is_duplicate = any(stock['symbol'] == record['symbol'] for stock in existing_stocks)
 
@@ -1929,7 +1959,7 @@ def display_add_to_monitor_dialog(record):
                         st.balloons()
 
                         # 立即更新一次价格
-                        from monitor_service import monitor_service
+                        from services.monitor_service import monitor_service
                         monitor_service.manual_update_stock(stock_id)
 
                         # 清理session state并跳转到监测页面
@@ -2469,7 +2499,7 @@ def display_config_manager():
 
                         try:
                             # 创建临时通知服务实例
-                            from notification_service import NotificationService
+                            from services.notification_service import NotificationService
                             temp_notification_service = NotificationService()
                             success, message = temp_notification_service.send_test_webhook()
 

@@ -1,0 +1,4 @@
+2026-03-16 07:34:35 | INFO     | __main__             | 这是一条INFO日志
+2026-03-16 07:34:35 | WARNING  | __main__             | 这是一条WARNING日志
+2026-03-16 07:34:35 | ERROR    | __main__             | 这是一条ERROR日志
+2026-03-16 07:34:35 | CRITICAL | __main__             | 这是一条CRITICAL日志
