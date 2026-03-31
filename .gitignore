@@ -1,3 +1,4 @@
+.DS_Store
 /*.rar
 /test_akshare.py
 /test_fixed.py
@@ -10,3 +11,8 @@
 /.cursor
 /openspec
 TradEnv/
+.trae/
+**/__pycache__/**
+frontend/node_modules/
+
+

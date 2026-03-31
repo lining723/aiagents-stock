@@ -1,51 +1,46 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-主力选股批量分析历史记录数据库模块
+主力选股批量分析历史记录数据库模块 (MongoDB 版)
 """
 
-import sqlite3
 import json
 from datetime import datetime
 from typing import List, Dict, Optional, Tuple
 import pandas as pd
+import pymongo
+from bson import ObjectId
+
+from utils.mongo_client import mongo_client
 
 class MainForceBatchDatabase:
-    """主力选股批量分析历史数据库管理类"""
+    """主力选股批量分析历史数据库管理类 (MongoDB 版)"""
     
-    def __init__(self, db_path: str = "db/main_force_batch.db"):
+    def __init__(self):
         """初始化数据库连接"""
-        self.db_path = db_path
-        self._init_database()
+        self.db = mongo_client.db
+        if self.db is not None:
+            self._init_database()
+        else:
+            print("MongoDB 连接未初始化，MainForceBatchDatabase 无法正常工作")
     
     def _init_database(self):
         """初始化数据库表结构"""
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
-        # 批量分析历史记录表
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS batch_analysis_history (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                analysis_date TEXT NOT NULL,
-                batch_count INTEGER NOT NULL,
-                analysis_mode TEXT NOT NULL,
-                success_count INTEGER NOT NULL,
-                failed_count INTEGER NOT NULL,
-                total_time REAL NOT NULL,
-                results_json TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        
-        # 创建索引
-        cursor.execute('''
-            CREATE INDEX IF NOT EXISTS idx_analysis_date 
-            ON batch_analysis_history(analysis_date)
-        ''')
-        
-        conn.commit()
-        conn.close()
+        try:
+            self.db['batch_analysis_history'].create_index([("analysis_date", pymongo.DESCENDING)])
+            self.db['batch_analysis_history'].create_index([("created_at", pymongo.DESCENDING)])
+            print("✅ MongoDB main_force_batch_db 索引初始化成功")
+        except Exception as e:
+            print(f"✅ 数据库初始化错误: {e}")
+
+    def _format_doc(self, doc: dict) -> dict:
+        """格式化 MongoDB 文档，将 _id 转换为 id 字符串"""
+        if not doc:
+            return None
+        formatted = doc.copy()
+        if '_id' in formatted:
+            formatted['id'] = str(formatted.pop('_id'))
+        return formatted
     
     def _clean_results_for_json(self, results: List[Dict]) -> List[Dict]:
         """
@@ -109,7 +104,7 @@ class MainForceBatchDatabase:
         failed_count: int,
         total_time: float,
         results: List[Dict]
-    ) -> int:
+    ) -> str:
         """
         保存批量分析结果
         
@@ -124,26 +119,22 @@ class MainForceBatchDatabase:
         Returns:
             记录ID
         """
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
         analysis_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
-        # 清理结果数据，确保可以JSON序列化
         cleaned_results = self._clean_results_for_json(results)
-        results_json = json.dumps(cleaned_results, ensure_ascii=False, default=str)
         
-        cursor.execute('''
-            INSERT INTO batch_analysis_history 
-            (analysis_date, batch_count, analysis_mode, success_count, failed_count, total_time, results_json)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (analysis_date, batch_count, analysis_mode, success_count, failed_count, total_time, results_json))
+        doc = {
+            "analysis_date": analysis_date,
+            "batch_count": batch_count,
+            "analysis_mode": analysis_mode,
+            "success_count": success_count,
+            "failed_count": failed_count,
+            "total_time": total_time,
+            "results": cleaned_results,
+            "created_at": datetime.now()
+        }
         
-        record_id = cursor.lastrowid
-        conn.commit()
-        conn.close()
-        
-        return record_id
+        result = self.db['batch_analysis_history'].insert_one(doc)
+        return str(result.inserted_id)
     
     def get_all_history(self, limit: int = 50) -> List[Dict]:
         """
@@ -155,42 +146,13 @@ class MainForceBatchDatabase:
         Returns:
             历史记录列表
         """
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            SELECT id, analysis_date, batch_count, analysis_mode, 
-                   success_count, failed_count, total_time, results_json, created_at
-            FROM batch_analysis_history
-            ORDER BY created_at DESC
-            LIMIT ?
-        ''', (limit,))
-        
-        rows = cursor.fetchall()
-        conn.close()
-        
+        cursor = self.db['batch_analysis_history'].find().sort("created_at", pymongo.DESCENDING).limit(limit)
         history = []
-        for row in rows:
-            try:
-                results = json.loads(row[7])
-            except:
-                results = []
-            
-            history.append({
-                'id': row[0],
-                'analysis_date': row[1],
-                'batch_count': row[2],
-                'analysis_mode': row[3],
-                'success_count': row[4],
-                'failed_count': row[5],
-                'total_time': row[6],
-                'results': results,
-                'created_at': row[8]
-            })
-        
+        for doc in cursor:
+            history.append(self._format_doc(doc))
         return history
     
-    def get_record_by_id(self, record_id: int) -> Optional[Dict]:
+    def get_record_by_id(self, record_id: str) -> Optional[Dict]:
         """
         根据ID获取单条记录
         
@@ -200,40 +162,10 @@ class MainForceBatchDatabase:
         Returns:
             记录详情
         """
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            SELECT id, analysis_date, batch_count, analysis_mode, 
-                   success_count, failed_count, total_time, results_json, created_at
-            FROM batch_analysis_history
-            WHERE id = ?
-        ''', (record_id,))
-        
-        row = cursor.fetchone()
-        conn.close()
-        
-        if not row:
-            return None
-        
-        try:
-            results = json.loads(row[7])
-        except:
-            results = []
-        
-        return {
-            'id': row[0],
-            'analysis_date': row[1],
-            'batch_count': row[2],
-            'analysis_mode': row[3],
-            'success_count': row[4],
-            'failed_count': row[5],
-            'total_time': row[6],
-            'results': results,
-            'created_at': row[8]
-        }
+        doc = self.db['batch_analysis_history'].find_one({"_id": ObjectId(record_id)})
+        return self._format_doc(doc)
     
-    def delete_record(self, record_id: int) -> bool:
+    def delete_record(self, record_id: str) -> bool:
         """
         删除记录
         
@@ -243,16 +175,8 @@ class MainForceBatchDatabase:
         Returns:
             是否删除成功
         """
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
-        cursor.execute('DELETE FROM batch_analysis_history WHERE id = ?', (record_id,))
-        
-        affected_rows = cursor.rowcount
-        conn.commit()
-        conn.close()
-        
-        return affected_rows > 0
+        result = self.db['batch_analysis_history'].delete_one({"_id": ObjectId(record_id)})
+        return result.deleted_count > 0
     
     def get_statistics(self) -> Dict:
         """
@@ -261,37 +185,41 @@ class MainForceBatchDatabase:
         Returns:
             统计数据
         """
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
+        pipeline = [
+            {
+                "$group": {
+                    "_id": None,
+                    "total_records": {"$sum": 1},
+                    "total_stocks": {"$sum": "$batch_count"},
+                    "total_success": {"$sum": "$success_count"},
+                    "total_failed": {"$sum": "$failed_count"},
+                    "avg_time": {"$avg": "$total_time"}
+                }
+            }
+        ]
         
-        # 总记录数
-        cursor.execute('SELECT COUNT(*) FROM batch_analysis_history')
-        total_records = cursor.fetchone()[0]
+        result = list(self.db['batch_analysis_history'].aggregate(pipeline))
         
-        # 总分析股票数
-        cursor.execute('SELECT SUM(batch_count) FROM batch_analysis_history')
-        total_stocks = cursor.fetchone()[0] or 0
-        
-        # 总成功数
-        cursor.execute('SELECT SUM(success_count) FROM batch_analysis_history')
-        total_success = cursor.fetchone()[0] or 0
-        
-        # 总失败数
-        cursor.execute('SELECT SUM(failed_count) FROM batch_analysis_history')
-        total_failed = cursor.fetchone()[0] or 0
-        
-        # 平均耗时
-        cursor.execute('SELECT AVG(total_time) FROM batch_analysis_history')
-        avg_time = cursor.fetchone()[0] or 0
-        
-        conn.close()
+        if not result:
+            return {
+                'total_records': 0,
+                'total_stocks_analyzed': 0,
+                'total_success': 0,
+                'total_failed': 0,
+                'average_time': 0,
+                'success_rate': 0
+            }
+            
+        stats = result[0]
+        total_stocks = stats.get('total_stocks', 0)
+        total_success = stats.get('total_success', 0)
         
         return {
-            'total_records': total_records,
+            'total_records': stats.get('total_records', 0),
             'total_stocks_analyzed': total_stocks,
             'total_success': total_success,
-            'total_failed': total_failed,
-            'average_time': round(avg_time, 2),
+            'total_failed': stats.get('total_failed', 0),
+            'average_time': round(stats.get('avg_time', 0), 2),
             'success_rate': round(total_success / total_stocks * 100, 2) if total_stocks > 0 else 0
         }
 

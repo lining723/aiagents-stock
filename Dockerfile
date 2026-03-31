@@ -13,12 +13,13 @@ RUN echo "deb https://mirrors.aliyun.com/debian/ bookworm main" > /etc/apt/sourc
 # 设置工作目录
 WORKDIR /app
 
-# 安装基础依赖、中文字体和时区数据
+# 安装基础依赖、SQLite3 开发库、中文字体和时区数据
 RUN apt-get update && apt-get install -y \
     curl \
     tar \
     xz-utils \
     ca-certificates \
+    libsqlite3-dev \
     fonts-noto-cjk \
     fonts-wqy-zenhei \
     fonts-wqy-microhei \

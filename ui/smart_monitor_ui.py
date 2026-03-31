@@ -403,7 +403,7 @@ def render_monitor_tasks():
                         st.rerun()
                 except Exception as e:
                     error_msg = str(e)
-                    if "UNIQUE constraint failed" in error_msg:
+                    if "UNIQUE constraint failed" in error_msg or "E11000 duplicate key error" in error_msg:
                         st.error(f"❌ 股票代码 {stock_code} 已存在监控任务！")
                         st.info("💡 请在下方任务列表中找到该任务")
                     else:

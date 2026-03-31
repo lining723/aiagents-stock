@@ -1,34 +1,36 @@
 version: '3.8'
 
 services:
-  agentsstock:
+  backend:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: agentsstock1
-    ports:
-      - "8503:8503"
-    volumes:
-      # 数据和数据库持久化 - 使用目录挂载而不是文件挂载
-      - ./data:/app/data
-      # 环境变量配置文件
-      - ./.env:/app/.env
-      # 日志文件持久化
-      - ./log:/app/log
-    environment:
-      # 可以在这里设置环境变量，或者使用.env文件
-      - TZ=Asia/Shanghai
+      dockerfile: backend/Dockerfile
+    container_name: ai-agents-stock-backend
     restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./data:/app/data
+      - ./db:/app/db
+      - ./config:/app/config
     networks:
-      - agentsstock-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8503/_stcore/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
+      - ai-agents-stock-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: ai-agents-stock-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - ai-agents-stock-network
 
 networks:
-  agentsstock-network:
+  ai-agents-stock-network:
     driver: bridge
-

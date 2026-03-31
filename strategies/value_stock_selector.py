@@ -19,13 +19,13 @@ class ValueStockSelector:
         self.raw_data = None
         self.selected_stocks = None
 
-    def get_value_stocks(self, top_n: int = 10) -> Tuple[bool, Optional[pd.DataFrame], str]:
+    def get_value_stocks(self, pe_max: float = 20, pb_max: float = 1.5, top_n: int = 10) -> Tuple[bool, Optional[pd.DataFrame], str]:
         """
         获取低估值优质股票
 
         选股策略：
-        - 市盈率 ≤ 20
-        - 市净率 ≤ 1.5
+        - 市盈率 ≤ pe_max
+        - 市净率 ≤ pb_max
         - 股息率 ≥ 1%
         - 资产负债率 ≤ 30%
         - 非ST
@@ -34,6 +34,8 @@ class ValueStockSelector:
         - 按流通市值由小到大排名
 
         Args:
+            pe_max: 市盈率最大值
+            pb_max: 市净率最大值
             top_n: 返回前N只股票
 
         Returns:
@@ -43,15 +45,15 @@ class ValueStockSelector:
             print(f"\n{'='*60}")
             print(f"💎 低估值选股 - 数据获取中")
             print(f"{'='*60}")
-            print(f"策略: PE≤20 + PB≤1.5 + 股息率≥1% + 资产负债率≤30%")
+            print(f"策略: PE≤{pe_max} + PB≤{pb_max} + 股息率≥1% + 资产负债率≤30%")
             print(f"排除: ST、科创板、创业板")
             print(f"排序: 按流通市值由小到大")
             print(f"目标: 筛选前{top_n}只股票")
 
             # 构建问财查询语句
             query = (
-                "市盈率小于等于20，"
-                "市净率小于等于1.5，"
+                f"市盈率小于等于{pe_max}，"
+                f"市净率小于等于{pb_max}，"
                 "股息率大于等于1%，"
                 "资产负债率小于等于30%，"
                 "非st，"

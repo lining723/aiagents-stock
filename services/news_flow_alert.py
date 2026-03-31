@@ -102,7 +102,7 @@ class NewsFlowAlertSystem:
     def check_alerts(self, current_data: Dict, 
                      history_data: Dict = None,
                      sentiment_data: Dict = None,
-                     snapshot_id: int = None) -> List[Dict]:
+                     snapshot_id: str = None) -> List[Dict]:
         """
         检查所有预警条件
         

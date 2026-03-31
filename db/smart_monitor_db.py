@@ -1,630 +1,299 @@
 """
-智能盯盘 - 数据库模块
+智能盯盘 - 数据库模块 (MongoDB 版)
 记录AI决策、交易记录、监控配置等
 """
 
-import sqlite3
 import logging
 from typing import Dict, List, Optional
 from datetime import datetime
 import json
+import pymongo
+from bson import ObjectId
+
+from utils.mongo_client import mongo_client
 
 
 class SmartMonitorDB:
-    """智能盯盘数据库"""
+    """智能盯盘数据库 (MongoDB 版)"""
     
-    def __init__(self, db_file: str = 'smart_monitor.db'):
+    def __init__(self):
         """
         初始化数据库
-        
-        Args:
-            db_file: 数据库文件路径
         """
-        self.db_file = db_file
+        self.db = mongo_client.db
         self.logger = logging.getLogger(__name__)
-        self._init_database()
+        if self.db is not None:
+            self._init_database()
+        else:
+            self.logger.error("MongoDB 连接未初始化，SmartMonitorDB 无法正常工作")
     
     def _init_database(self):
         """初始化数据库表结构"""
-        conn = sqlite3.connect(self.db_file)
-        cursor = conn.cursor()
-        
-        # 1. 监控任务表
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS monitor_tasks (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                task_name TEXT NOT NULL,
-                stock_code TEXT NOT NULL,
-                stock_name TEXT,
-                enabled INTEGER DEFAULT 1,
-                check_interval INTEGER DEFAULT 300,
-                auto_trade INTEGER DEFAULT 0,
-                position_size_pct REAL DEFAULT 20,
-                stop_loss_pct REAL DEFAULT 5,
-                take_profit_pct REAL DEFAULT 10,
-                qmt_account_id TEXT,
-                notify_email TEXT,
-                notify_webhook TEXT,
-                has_position INTEGER DEFAULT 0,
-                position_cost REAL DEFAULT 0,
-                position_quantity INTEGER DEFAULT 0,
-                position_date TEXT,
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE(stock_code)
-            )
-        ''')
-        
-        # 添加持仓相关字段（如果表已存在但缺少这些字段）
         try:
-            cursor.execute("ALTER TABLE monitor_tasks ADD COLUMN has_position INTEGER DEFAULT 0")
-        except sqlite3.OperationalError:
-            pass
-        
-        try:
-            cursor.execute("ALTER TABLE monitor_tasks ADD COLUMN position_cost REAL DEFAULT 0")
-        except sqlite3.OperationalError:
-            pass
-        
-        try:
-            cursor.execute("ALTER TABLE monitor_tasks ADD COLUMN position_quantity INTEGER DEFAULT 0")
-        except sqlite3.OperationalError:
-            pass
-        
-        try:
-            cursor.execute("ALTER TABLE monitor_tasks ADD COLUMN position_date TEXT")
-        except sqlite3.OperationalError:
-            pass
-        
-        # 添加交易时段监控字段
-        try:
-            cursor.execute("ALTER TABLE monitor_tasks ADD COLUMN trading_hours_only INTEGER DEFAULT 1")
-        except sqlite3.OperationalError:
-            pass
-        
-        # 2. AI决策记录表
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS ai_decisions (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                stock_code TEXT NOT NULL,
-                stock_name TEXT,
-                decision_time TEXT NOT NULL,
-                trading_session TEXT,
-                action TEXT NOT NULL,
-                confidence INTEGER,
-                reasoning TEXT,
-                position_size_pct REAL,
-                stop_loss_pct REAL,
-                take_profit_pct REAL,
-                risk_level TEXT,
-                key_price_levels TEXT,
-                market_data TEXT,
-                account_info TEXT,
-                executed INTEGER DEFAULT 0,
-                execution_result TEXT,
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        
-        # 3. 交易记录表
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS trade_records (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                stock_code TEXT NOT NULL,
-                stock_name TEXT,
-                trade_type TEXT NOT NULL,
-                quantity INTEGER,
-                price REAL,
-                amount REAL,
-                order_id TEXT,
-                order_status TEXT,
-                ai_decision_id INTEGER,
-                trade_time TEXT NOT NULL,
-                commission REAL DEFAULT 0,
-                tax REAL DEFAULT 0,
-                profit_loss REAL DEFAULT 0,
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY(ai_decision_id) REFERENCES ai_decisions(id)
-            )
-        ''')
-        
-        # 4. 持仓监控表
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS position_monitor (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                stock_code TEXT NOT NULL,
-                stock_name TEXT,
-                quantity INTEGER,
-                cost_price REAL,
-                current_price REAL,
-                profit_loss REAL,
-                profit_loss_pct REAL,
-                holding_days INTEGER,
-                buy_date TEXT,
-                stop_loss_price REAL,
-                take_profit_price REAL,
-                last_check_time TEXT,
-                status TEXT DEFAULT 'holding',
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE(stock_code)
-            )
-        ''')
-        
-        # 5. 通知记录表
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS notifications (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                stock_code TEXT,
-                notify_type TEXT NOT NULL,
-                notify_target TEXT,
-                subject TEXT,
-                content TEXT,
-                status TEXT DEFAULT 'pending',
-                error_msg TEXT,
-                sent_at TEXT,
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        
-        # 6. 系统日志表
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS system_logs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                log_level TEXT,
-                module TEXT,
-                message TEXT,
-                details TEXT,
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        
-        conn.commit()
-        conn.close()
-        self.logger.info(f"数据库初始化完成: {self.db_file}")
+            # 1. 监控任务表
+            self.db['monitor_tasks'].create_index([("stock_code", pymongo.ASCENDING)], unique=True)
+            self.db['monitor_tasks'].create_index([("enabled", pymongo.ASCENDING)])
+            
+            # 2. AI决策记录表
+            self.db['ai_decisions'].create_index([("stock_code", pymongo.ASCENDING)])
+            self.db['ai_decisions'].create_index([("decision_time", pymongo.DESCENDING)])
+            
+            # 3. 交易记录表
+            self.db['trade_records'].create_index([("stock_code", pymongo.ASCENDING)])
+            self.db['trade_records'].create_index([("trade_time", pymongo.DESCENDING)])
+            
+            # 4. 持仓监控表
+            self.db['position_monitor'].create_index([("stock_code", pymongo.ASCENDING)], unique=True)
+            self.db['position_monitor'].create_index([("status", pymongo.ASCENDING)])
+            
+            # 5. 通知记录表
+            self.db['smart_notifications'].create_index([("stock_code", pymongo.ASCENDING)])
+            self.db['smart_notifications'].create_index([("created_at", pymongo.DESCENDING)])
+            
+            # 6. 系统日志表
+            self.db['system_logs'].create_index([("created_at", pymongo.DESCENDING)])
+            
+            self.logger.info("数据库初始化完成 (MongoDB)")
+        except Exception as e:
+            self.logger.error(f"数据库初始化失败: {e}")
+            
+    def _format_doc(self, doc: dict) -> dict:
+        """格式化 MongoDB 文档，将 _id 转换为 id 字符串"""
+        if not doc:
+            return None
+        formatted = doc.copy()
+        if '_id' in formatted:
+            formatted['id'] = str(formatted.pop('_id'))
+        if 'ai_decision_id' in formatted and isinstance(formatted['ai_decision_id'], ObjectId):
+            formatted['ai_decision_id'] = str(formatted['ai_decision_id'])
+        return formatted
     
     # ========== 监控任务管理 ==========
     
-    def add_monitor_task(self, task_data: Dict) -> int:
+    def add_monitor_task(self, task_data: Dict) -> str:
         """添加监控任务"""
-        conn = sqlite3.connect(self.db_file)
-        cursor = conn.cursor()
+        doc = {
+            "task_name": task_data.get('task_name'),
+            "stock_code": task_data.get('stock_code'),
+            "stock_name": task_data.get('stock_name'),
+            "enabled": task_data.get('enabled', 1),
+            "check_interval": task_data.get('check_interval', 300),
+            "auto_trade": task_data.get('auto_trade', 0),
+            "trading_hours_only": task_data.get('trading_hours_only', 1),
+            "position_size_pct": task_data.get('position_size_pct', 20),
+            "stop_loss_pct": task_data.get('stop_loss_pct', 5),
+            "take_profit_pct": task_data.get('take_profit_pct', 10),
+            "qmt_account_id": task_data.get('qmt_account_id'),
+            "notify_email": task_data.get('notify_email'),
+            "notify_webhook": task_data.get('notify_webhook'),
+            "has_position": task_data.get('has_position', 0),
+            "position_cost": task_data.get('position_cost', 0),
+            "position_quantity": task_data.get('position_quantity', 0),
+            "position_date": task_data.get('position_date'),
+            "created_at": datetime.now(),
+            "updated_at": datetime.now()
+        }
         
-        cursor.execute('''
-            INSERT INTO monitor_tasks 
-            (task_name, stock_code, stock_name, enabled, check_interval, 
-             auto_trade, trading_hours_only, position_size_pct, stop_loss_pct, take_profit_pct,
-             qmt_account_id, notify_email, notify_webhook,
-             has_position, position_cost, position_quantity, position_date)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (
-            task_data.get('task_name'),
-            task_data.get('stock_code'),
-            task_data.get('stock_name'),
-            task_data.get('enabled', 1),
-            task_data.get('check_interval', 300),
-            task_data.get('auto_trade', 0),
-            task_data.get('trading_hours_only', 1),
-            task_data.get('position_size_pct', 20),
-            task_data.get('stop_loss_pct', 5),
-            task_data.get('take_profit_pct', 10),
-            task_data.get('qmt_account_id'),
-            task_data.get('notify_email'),
-            task_data.get('notify_webhook'),
-            task_data.get('has_position', 0),
-            task_data.get('position_cost', 0),
-            task_data.get('position_quantity', 0),
-            task_data.get('position_date')
-        ))
-        
-        task_id = cursor.lastrowid
-        conn.commit()
-        conn.close()
-        
-        position_info = f"（持仓: {task_data.get('position_quantity')}股 @ {task_data.get('position_cost')}元）" if task_data.get('has_position') else ""
-        self.logger.info(f"添加监控任务: {task_data.get('stock_code')} - {task_data.get('task_name')} {position_info}")
-        return task_id
+        try:
+            result = self.db['monitor_tasks'].insert_one(doc)
+            task_id = str(result.inserted_id)
+            
+            position_info = f"（持仓: {task_data.get('position_quantity')}股 @ {task_data.get('position_cost')}元）" if task_data.get('has_position') else ""
+            self.logger.info(f"添加监控任务: {task_data.get('stock_code')} - {task_data.get('task_name')} {position_info}")
+            return task_id
+        except pymongo.errors.DuplicateKeyError:
+            self.logger.warning(f"监控任务已存在: {task_data.get('stock_code')}")
+            existing = self.db['monitor_tasks'].find_one({"stock_code": task_data.get('stock_code')})
+            return str(existing['_id'])
     
     def get_monitor_tasks(self, enabled_only: bool = True) -> List[Dict]:
         """获取监控任务列表"""
-        conn = sqlite3.connect(self.db_file)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        
-        if enabled_only:
-            cursor.execute('SELECT * FROM monitor_tasks WHERE enabled = 1 ORDER BY id DESC')
-        else:
-            cursor.execute('SELECT * FROM monitor_tasks ORDER BY id DESC')
-        
-        rows = cursor.fetchall()
-        conn.close()
-        
-        return [dict(row) for row in rows]
-    
-    def update_monitor_task(self, task_id: int, updates: Dict):
-        """更新监控任务"""
-        conn = sqlite3.connect(self.db_file)
-        cursor = conn.cursor()
-        
-        set_clause = ', '.join([f"{k} = ?" for k in updates.keys()])
-        values = list(updates.values()) + [task_id]
-        
-        cursor.execute(f'''
-            UPDATE monitor_tasks 
-            SET {set_clause}, updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-        ''', values)
-        
-        conn.commit()
-        conn.close()
+        query = {"enabled": 1} if enabled_only else {}
+        cursor = self.db['monitor_tasks'].find(query).sort("_id", pymongo.DESCENDING)
+        return [self._format_doc(doc) for doc in cursor]
     
     def update_monitor_task(self, stock_code: str, task_data: Dict):
         """更新监控任务"""
-        conn = sqlite3.connect(self.db_file)
-        cursor = conn.cursor()
+        updates = task_data.copy()
+        # Remove fields that shouldn't be blindly updated if they exist
+        updates.pop('stock_code', None)
+        updates['updated_at'] = datetime.now()
         
-        # 构建更新语句
-        update_fields = []
-        values = []
-        
-        if 'task_name' in task_data:
-            update_fields.append('task_name = ?')
-            values.append(task_data['task_name'])
-        
-        if 'check_interval' in task_data:
-            update_fields.append('check_interval = ?')
-            values.append(task_data['check_interval'])
-        
-        if 'auto_trade' in task_data:
-            update_fields.append('auto_trade = ?')
-            values.append(task_data['auto_trade'])
-        
-        if 'trading_hours_only' in task_data:
-            update_fields.append('trading_hours_only = ?')
-            values.append(task_data['trading_hours_only'])
-        
-        if 'position_size_pct' in task_data:
-            update_fields.append('position_size_pct = ?')
-            values.append(task_data['position_size_pct'])
-        
-        if 'has_position' in task_data:
-            update_fields.append('has_position = ?')
-            values.append(task_data['has_position'])
-        
-        if 'position_cost' in task_data:
-            update_fields.append('position_cost = ?')
-            values.append(task_data['position_cost'])
-        
-        if 'position_quantity' in task_data:
-            update_fields.append('position_quantity = ?')
-            values.append(task_data['position_quantity'])
-        
-        if 'position_date' in task_data:
-            update_fields.append('position_date = ?')
-            values.append(task_data['position_date'])
-        
-        if 'notify_email' in task_data:
-            update_fields.append('notify_email = ?')
-            values.append(task_data['notify_email'])
-        
-        # 添加更新时间
-        update_fields.append('updated_at = CURRENT_TIMESTAMP')
-        
-        # 添加WHERE条件
-        values.append(stock_code)
-        
-        sql = f"UPDATE monitor_tasks SET {', '.join(update_fields)} WHERE stock_code = ?"
-        cursor.execute(sql, values)
-        
-        conn.commit()
-        conn.close()
-        
+        self.db['monitor_tasks'].update_one(
+            {"stock_code": stock_code},
+            {"$set": updates}
+        )
         self.logger.info(f"更新监控任务: {stock_code}")
+        
+    def update_monitor_task_by_id(self, task_id: str, updates: Dict):
+        """通过 ID 更新监控任务"""
+        upd = updates.copy()
+        upd['updated_at'] = datetime.now()
+        self.db['monitor_tasks'].update_one(
+            {"_id": ObjectId(task_id)},
+            {"$set": upd}
+        )
     
-    def delete_monitor_task(self, task_id: int):
+    def delete_monitor_task(self, task_id: str):
         """删除监控任务"""
-        conn = sqlite3.connect(self.db_file)
-        cursor = conn.cursor()
-        
-        cursor.execute('DELETE FROM monitor_tasks WHERE id = ?', (task_id,))
-        
-        conn.commit()
-        conn.close()
+        self.db['monitor_tasks'].delete_one({"_id": ObjectId(task_id)})
     
     # ========== AI决策记录 ==========
     
-    def save_ai_decision(self, decision_data: Dict) -> int:
+    def save_ai_decision(self, decision_data: Dict) -> str:
         """保存AI决策"""
-        conn = sqlite3.connect(self.db_file)
-        cursor = conn.cursor()
+        doc = {
+            "stock_code": decision_data.get('stock_code'),
+            "stock_name": decision_data.get('stock_name'),
+            "decision_time": decision_data.get('decision_time', datetime.now().strftime('%Y-%m-%d %H:%M:%S')),
+            "trading_session": decision_data.get('trading_session'),
+            "action": decision_data.get('action'),
+            "confidence": decision_data.get('confidence'),
+            "reasoning": decision_data.get('reasoning'),
+            "position_size_pct": decision_data.get('position_size_pct'),
+            "stop_loss_pct": decision_data.get('stop_loss_pct'),
+            "take_profit_pct": decision_data.get('take_profit_pct'),
+            "risk_level": decision_data.get('risk_level'),
+            "key_price_levels": decision_data.get('key_price_levels', {}),
+            "market_data": decision_data.get('market_data', {}),
+            "account_info": decision_data.get('account_info', {}),
+            "executed": 0,
+            "execution_result": None,
+            "created_at": datetime.now()
+        }
         
-        cursor.execute('''
-            INSERT INTO ai_decisions
-            (stock_code, stock_name, decision_time, trading_session,
-             action, confidence, reasoning, position_size_pct,
-             stop_loss_pct, take_profit_pct, risk_level,
-             key_price_levels, market_data, account_info)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (
-            decision_data.get('stock_code'),
-            decision_data.get('stock_name'),
-            decision_data.get('decision_time', datetime.now().strftime('%Y-%m-%d %H:%M:%S')),
-            decision_data.get('trading_session'),
-            decision_data.get('action'),
-            decision_data.get('confidence'),
-            decision_data.get('reasoning'),
-            decision_data.get('position_size_pct'),
-            decision_data.get('stop_loss_pct'),
-            decision_data.get('take_profit_pct'),
-            decision_data.get('risk_level'),
-            json.dumps(decision_data.get('key_price_levels', {})),
-            json.dumps(decision_data.get('market_data', {})),
-            json.dumps(decision_data.get('account_info', {}))
-        ))
-        
-        decision_id = cursor.lastrowid
-        conn.commit()
-        conn.close()
-        
-        return decision_id
+        result = self.db['ai_decisions'].insert_one(doc)
+        return str(result.inserted_id)
     
     def get_ai_decisions(self, stock_code: str = None, limit: int = 100) -> List[Dict]:
         """获取AI决策历史"""
-        conn = sqlite3.connect(self.db_file)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        
-        if stock_code:
-            cursor.execute('''
-                SELECT * FROM ai_decisions 
-                WHERE stock_code = ? 
-                ORDER BY decision_time DESC 
-                LIMIT ?
-            ''', (stock_code, limit))
-        else:
-            cursor.execute('''
-                SELECT * FROM ai_decisions 
-                ORDER BY decision_time DESC 
-                LIMIT ?
-            ''', (limit,))
-        
-        rows = cursor.fetchall()
-        conn.close()
-        
-        decisions = []
-        for row in rows:
-            d = dict(row)
-            # 解析JSON字段
-            d['key_price_levels'] = json.loads(d['key_price_levels']) if d['key_price_levels'] else {}
-            d['market_data'] = json.loads(d['market_data']) if d['market_data'] else {}
-            d['account_info'] = json.loads(d['account_info']) if d['account_info'] else {}
-            decisions.append(d)
-        
-        return decisions
+        query = {"stock_code": stock_code} if stock_code else {}
+        cursor = self.db['ai_decisions'].find(query).sort("decision_time", pymongo.DESCENDING).limit(limit)
+        return [self._format_doc(doc) for doc in cursor]
     
-    def update_decision_execution(self, decision_id: int, executed: bool, result: str):
+    def update_decision_execution(self, decision_id: str, executed: bool, result: str):
         """更新决策执行状态"""
-        conn = sqlite3.connect(self.db_file)
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            UPDATE ai_decisions 
-            SET executed = ?, execution_result = ?
-            WHERE id = ?
-        ''', (1 if executed else 0, result, decision_id))
-        
-        conn.commit()
-        conn.close()
+        self.db['ai_decisions'].update_one(
+            {"_id": ObjectId(decision_id)},
+            {"$set": {"executed": 1 if executed else 0, "execution_result": result}}
+        )
     
     # ========== 交易记录 ==========
     
-    def save_trade_record(self, trade_data: Dict) -> int:
+    def save_trade_record(self, trade_data: Dict) -> str:
         """保存交易记录"""
-        conn = sqlite3.connect(self.db_file)
-        cursor = conn.cursor()
+        doc = {
+            "stock_code": trade_data.get('stock_code'),
+            "stock_name": trade_data.get('stock_name'),
+            "trade_type": trade_data.get('trade_type'),
+            "quantity": trade_data.get('quantity'),
+            "price": trade_data.get('price'),
+            "amount": trade_data.get('amount'),
+            "order_id": trade_data.get('order_id'),
+            "order_status": trade_data.get('order_status'),
+            "ai_decision_id": str(trade_data.get('ai_decision_id')) if trade_data.get('ai_decision_id') else None,
+            "trade_time": trade_data.get('trade_time', datetime.now().strftime('%Y-%m-%d %H:%M:%S')),
+            "commission": trade_data.get('commission', 0),
+            "tax": trade_data.get('tax', 0),
+            "profit_loss": trade_data.get('profit_loss', 0),
+            "created_at": datetime.now()
+        }
         
-        cursor.execute('''
-            INSERT INTO trade_records
-            (stock_code, stock_name, trade_type, quantity, price, amount,
-             order_id, order_status, ai_decision_id, trade_time,
-             commission, tax, profit_loss)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (
-            trade_data.get('stock_code'),
-            trade_data.get('stock_name'),
-            trade_data.get('trade_type'),
-            trade_data.get('quantity'),
-            trade_data.get('price'),
-            trade_data.get('amount'),
-            trade_data.get('order_id'),
-            trade_data.get('order_status'),
-            trade_data.get('ai_decision_id'),
-            trade_data.get('trade_time', datetime.now().strftime('%Y-%m-%d %H:%M:%S')),
-            trade_data.get('commission', 0),
-            trade_data.get('tax', 0),
-            trade_data.get('profit_loss', 0)
-        ))
-        
-        record_id = cursor.lastrowid
-        conn.commit()
-        conn.close()
-        
-        return record_id
+        result = self.db['trade_records'].insert_one(doc)
+        return str(result.inserted_id)
     
     def get_trade_records(self, stock_code: str = None, limit: int = 100) -> List[Dict]:
         """获取交易记录"""
-        conn = sqlite3.connect(self.db_file)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        
-        if stock_code:
-            cursor.execute('''
-                SELECT * FROM trade_records 
-                WHERE stock_code = ? 
-                ORDER BY trade_time DESC 
-                LIMIT ?
-            ''', (stock_code, limit))
-        else:
-            cursor.execute('''
-                SELECT * FROM trade_records 
-                ORDER BY trade_time DESC 
-                LIMIT ?
-            ''', (limit,))
-        
-        rows = cursor.fetchall()
-        conn.close()
-        
-        return [dict(row) for row in rows]
+        query = {"stock_code": stock_code} if stock_code else {}
+        cursor = self.db['trade_records'].find(query).sort("trade_time", pymongo.DESCENDING).limit(limit)
+        return [self._format_doc(doc) for doc in cursor]
     
     # ========== 持仓监控 ==========
     
     def save_position(self, position_data: Dict):
         """保存/更新持仓信息"""
-        conn = sqlite3.connect(self.db_file)
-        cursor = conn.cursor()
+        updates = {
+            "stock_name": position_data.get('stock_name'),
+            "quantity": position_data.get('quantity'),
+            "cost_price": position_data.get('cost_price'),
+            "current_price": position_data.get('current_price'),
+            "profit_loss": position_data.get('profit_loss'),
+            "profit_loss_pct": position_data.get('profit_loss_pct'),
+            "holding_days": position_data.get('holding_days'),
+            "buy_date": position_data.get('buy_date'),
+            "stop_loss_price": position_data.get('stop_loss_price'),
+            "take_profit_price": position_data.get('take_profit_price'),
+            "last_check_time": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            "status": 'holding',
+            "updated_at": datetime.now()
+        }
         
-        # 检查是否已存在
-        cursor.execute('SELECT id FROM position_monitor WHERE stock_code = ?', 
-                      (position_data.get('stock_code'),))
-        existing = cursor.fetchone()
-        
-        if existing:
-            # 更新
-            cursor.execute('''
-                UPDATE position_monitor
-                SET stock_name = ?, quantity = ?, cost_price = ?,
-                    current_price = ?, profit_loss = ?, profit_loss_pct = ?,
-                    holding_days = ?, stop_loss_price = ?, take_profit_price = ?,
-                    last_check_time = ?, updated_at = CURRENT_TIMESTAMP
-                WHERE stock_code = ?
-            ''', (
-                position_data.get('stock_name'),
-                position_data.get('quantity'),
-                position_data.get('cost_price'),
-                position_data.get('current_price'),
-                position_data.get('profit_loss'),
-                position_data.get('profit_loss_pct'),
-                position_data.get('holding_days'),
-                position_data.get('stop_loss_price'),
-                position_data.get('take_profit_price'),
-                datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                position_data.get('stock_code')
-            ))
-        else:
-            # 插入
-            cursor.execute('''
-                INSERT INTO position_monitor
-                (stock_code, stock_name, quantity, cost_price, current_price,
-                 profit_loss, profit_loss_pct, holding_days, buy_date,
-                 stop_loss_price, take_profit_price, last_check_time, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (
-                position_data.get('stock_code'),
-                position_data.get('stock_name'),
-                position_data.get('quantity'),
-                position_data.get('cost_price'),
-                position_data.get('current_price'),
-                position_data.get('profit_loss'),
-                position_data.get('profit_loss_pct'),
-                position_data.get('holding_days'),
-                position_data.get('buy_date'),
-                position_data.get('stop_loss_price'),
-                position_data.get('take_profit_price'),
-                datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                'holding'
-            ))
-        
-        conn.commit()
-        conn.close()
+        self.db['position_monitor'].update_one(
+            {"stock_code": position_data.get('stock_code')},
+            {"$set": updates, "$setOnInsert": {"created_at": datetime.now()}},
+            upsert=True
+        )
     
     def get_positions(self) -> List[Dict]:
         """获取所有持仓"""
-        conn = sqlite3.connect(self.db_file)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        
-        cursor.execute('SELECT * FROM position_monitor WHERE status = "holding" ORDER BY id DESC')
-        
-        rows = cursor.fetchall()
-        conn.close()
-        
-        return [dict(row) for row in rows]
+        cursor = self.db['position_monitor'].find({"status": "holding"}).sort("_id", pymongo.DESCENDING)
+        return [self._format_doc(doc) for doc in cursor]
     
     def close_position(self, stock_code: str):
         """关闭持仓记录"""
-        conn = sqlite3.connect(self.db_file)
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            UPDATE position_monitor 
-            SET status = 'closed', updated_at = CURRENT_TIMESTAMP
-            WHERE stock_code = ?
-        ''', (stock_code,))
-        
-        conn.commit()
-        conn.close()
+        self.db['position_monitor'].update_one(
+            {"stock_code": stock_code},
+            {"$set": {"status": "closed", "updated_at": datetime.now()}}
+        )
     
     # ========== 通知记录 ==========
     
-    def save_notification(self, notify_data: Dict) -> int:
+    def save_notification(self, notify_data: Dict) -> str:
         """保存通知记录"""
-        conn = sqlite3.connect(self.db_file)
-        cursor = conn.cursor()
+        doc = {
+            "stock_code": notify_data.get('stock_code'),
+            "notify_type": notify_data.get('notify_type'),
+            "notify_target": notify_data.get('notify_target'),
+            "subject": notify_data.get('subject'),
+            "content": notify_data.get('content'),
+            "status": notify_data.get('status', 'pending'),
+            "error_msg": None,
+            "sent_at": None,
+            "created_at": datetime.now()
+        }
         
-        cursor.execute('''
-            INSERT INTO notifications
-            (stock_code, notify_type, notify_target, subject, content, status)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', (
-            notify_data.get('stock_code'),
-            notify_data.get('notify_type'),
-            notify_data.get('notify_target'),
-            notify_data.get('subject'),
-            notify_data.get('content'),
-            notify_data.get('status', 'pending')
-        ))
-        
-        notify_id = cursor.lastrowid
-        conn.commit()
-        conn.close()
-        
-        return notify_id
+        result = self.db['smart_notifications'].insert_one(doc)
+        return str(result.inserted_id)
     
-    def update_notification_status(self, notify_id: int, status: str, error_msg: str = None):
+    def update_notification_status(self, notify_id: str, status: str, error_msg: str = None):
         """更新通知状态"""
-        conn = sqlite3.connect(self.db_file)
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            UPDATE notifications 
-            SET status = ?, error_msg = ?, sent_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-        ''', (status, error_msg, notify_id))
-        
-        conn.commit()
-        conn.close()
+        self.db['smart_notifications'].update_one(
+            {"_id": ObjectId(notify_id)},
+            {"$set": {
+                "status": status,
+                "error_msg": error_msg,
+                "sent_at": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }}
+        )
     
     # ========== 系统日志 ==========
     
     def log_system_event(self, level: str, module: str, message: str, details: str = None):
         """记录系统日志"""
-        conn = sqlite3.connect(self.db_file)
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            INSERT INTO system_logs (log_level, module, message, details)
-            VALUES (?, ?, ?, ?)
-        ''', (level, module, message, details))
-        
-        conn.commit()
-        conn.close()
+        self.db['system_logs'].insert_one({
+            "log_level": level,
+            "module": module,
+            "message": message,
+            "details": details,
+            "created_at": datetime.now()
+        })
 
 
 if __name__ == '__main__':
     # 测试数据库
     logging.basicConfig(level=logging.INFO)
     
-    db = SmartMonitorDB('test_smart_monitor.db')
+    db = SmartMonitorDB()
     
     # 测试添加监控任务
     task_id = db.add_monitor_task({

@@ -4,6 +4,7 @@ import schedule
 from datetime import datetime, timedelta
 from typing import Dict, List
 import streamlit as st
+import logging
 import os
 from utils.logger import get_logger
 logger = get_logger(__name__)
@@ -293,7 +294,7 @@ class StockMonitorService:
         
         return need_update
     
-    def manual_update_stock(self, stock_id: int):
+    def manual_update_stock(self, stock_id: str):
         """手动更新股票价格"""
         stock = monitor_db.get_stock_by_id(stock_id)
         if stock:

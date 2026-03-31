@@ -15,7 +15,7 @@ import os
 class ProfitGrowthMonitor:
     """净利增长策略监控数据库管理"""
     
-    def __init__(self, db_path: str = "profit_growth_monitor.db"):
+    def __init__(self, db_path: str = "db/proprofit_growth_monitor.db"):
         """
         初始化监控数据库
         

@@ -30,7 +30,7 @@ class PortfolioManager:
     
     def add_stock(self, code: str, name: str, cost_price: Optional[float] = None,
                   quantity: Optional[int] = None, note: str = "", 
-                  auto_monitor: bool = True) -> Tuple[bool, str, Optional[int]]:
+                  auto_monitor: bool = True) -> Tuple[bool, str, Optional[str]]:
         """
         添加持仓股票
         
@@ -63,7 +63,7 @@ class PortfolioManager:
         except Exception as e:
             return False, f"添加失败: {str(e)}", None
     
-    def update_stock(self, stock_id: int, **kwargs) -> Tuple[bool, str]:
+    def update_stock(self, stock_id: str, **kwargs) -> Tuple[bool, str]:
         """
         更新持仓股票信息
         
@@ -83,7 +83,7 @@ class PortfolioManager:
         except Exception as e:
             return False, f"更新失败: {str(e)}"
     
-    def delete_stock(self, stock_id: int) -> Tuple[bool, str]:
+    def delete_stock(self, stock_id: str) -> Tuple[bool, str]:
         """
         删除持仓股票（级联删除分析历史）
         
@@ -102,7 +102,7 @@ class PortfolioManager:
         except Exception as e:
             return False, f"删除失败: {str(e)}"
     
-    def get_stock(self, stock_id: int) -> Optional[Dict]:
+    def get_stock(self, stock_id: str) -> Optional[Dict]:
         """获取单只持仓股票信息"""
         return self.db.get_stock(stock_id)
     
@@ -384,7 +384,7 @@ class PortfolioManager:
     
     # ==================== 分析结果保存 ====================
     
-    def save_analysis_results(self, analysis_results: Dict) -> List[int]:
+    def save_analysis_results(self, analysis_results: Dict) -> List[str]:
         """
         保存批量分析结果到数据库
         
@@ -494,11 +494,11 @@ class PortfolioManager:
     
     # ==================== 分析历史查询 ====================
     
-    def get_analysis_history(self, stock_id: int, limit: int = 10) -> List[Dict]:
+    def get_analysis_history(self, stock_id: str, limit: int = 10) -> List[Dict]:
         """获取股票分析历史"""
         return self.db.get_analysis_history(stock_id, limit)
     
-    def get_latest_analysis(self, stock_id: int) -> Optional[Dict]:
+    def get_latest_analysis(self, stock_id: str) -> Optional[Dict]:
         """获取最新一次分析"""
         return self.db.get_latest_analysis(stock_id)
     
@@ -506,7 +506,7 @@ class PortfolioManager:
         """获取所有持仓股票的最新分析"""
         return self.db.get_all_latest_analysis()
     
-    def get_rating_changes(self, stock_id: int, days: int = 30) -> List[Tuple]:
+    def get_rating_changes(self, stock_id: str, days: int = 30) -> List[Tuple]:
         """获取评级变化"""
         return self.db.get_rating_changes(stock_id, days)
 

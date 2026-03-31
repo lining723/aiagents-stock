@@ -364,7 +364,7 @@ def display_stock_card(stock: Dict):
         
         st.markdown("</div>", unsafe_allow_html=True)
 
-def display_edit_dialog(stock_id: int):
+def display_edit_dialog(stock_id: str):
     """显示编辑股票对话框"""
     
     stock = monitor_db.get_stock_by_id(stock_id)
@@ -453,7 +453,7 @@ def display_edit_dialog(stock_id: int):
             del st.session_state.editing_stock_id
             st.rerun()
 
-def display_delete_confirm_dialog(stock_id: int):
+def display_delete_confirm_dialog(stock_id: str):
     """显示删除确认对话框"""
     
     stock = monitor_db.get_stock_by_id(stock_id)

@@ -150,7 +150,7 @@ class NewsFlowScheduler:
     
     def _log_task(self, task_name: str, task_type: str, 
                   status: str, message: str = '', 
-                  duration: float = 0, snapshot_id: int = None):
+                  duration: float = 0, snapshot_id: str = None):
         """记录任务日志"""
         try:
             if self.db:
