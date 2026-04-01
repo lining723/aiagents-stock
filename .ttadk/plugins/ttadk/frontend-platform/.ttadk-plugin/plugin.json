@@ -1,0 +1,36 @@
+{
+  "name": "ttadk/frontend-platform",
+  "display_name": "TTADK Frontend Platform",
+  "version": "1.0.0",
+  "description": "前端平台工具和框架知识库",
+  "author": { "name": "ttadk", "email": "ttadk@bytedance.com" },
+  "tags": [],
+  "skills": [
+    {
+      "name": "platform-knowledge",
+      "path": "platform-knowledge"
+    },
+    {
+      "name": "gulux-knowledge",
+      "path": "gulux-knowledge"
+    },
+    {
+      "name": "semi-ui-knowledge",
+      "path": "semi-ui-knowledge"
+    },
+    {
+      "name": "edenx-knowledge",
+      "path": "edenx-knowledge"
+    }
+  ],
+  "mcps": [
+    {
+      "name": "semi-ui",
+      "path": "semi-ui.json"
+    },
+    {
+      "name": "playwright",
+      "path": "playwright.json"
+    }
+  ]
+}

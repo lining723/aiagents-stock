@@ -14,5 +14,6 @@ TradEnv/
 .trae/
 **/__pycache__/**
 frontend/node_modules/
+.claude/
 
 
