@@ -4,20 +4,18 @@ import sys
 import os
 import pandas as pd
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-
-from backend.schemas.stock import (
+from schemas.stock import (
     ValueStockRequest,
     MainForceStockRequest,
     StockInfo,
-    StockListResponse,
+    StockListResponse
 )
-from backend.schemas.response import SuccessResponse
+from schemas.response import SuccessResponse
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/stock", tags=["选股模块"])
+router = APIRouter(tags=["选股模块"])
 
 
 def convert_df_to_stock_info(df) -> List[StockInfo]:
@@ -26,18 +24,49 @@ def convert_df_to_stock_info(df) -> List[StockInfo]:
     if df is None or df.empty:
         return stocks
     
+    def get_val(row, keys, default=0):
+        for k in keys:
+            # 1. 优先尝试精确匹配
+            if k in row.index:
+                val = row[k]
+                if not pd.isna(val):
+                    try:
+                        return float(val)
+                    except (ValueError, TypeError):
+                        pass
+            
+            # 2. 尝试前缀/包含匹配（应对问财的动态日期后缀如：市盈率(pe)[20260331]）
+            for col in row.index:
+                if isinstance(col, str) and (col.startswith(k) or k in col):
+                    # 避免将预测值误认为当前值
+                    if '预测' in col and '预测' not in k:
+                        continue
+                    val = row[col]
+                    if not pd.isna(val):
+                        try:
+                            return float(val)
+                        except (ValueError, TypeError):
+                            pass
+        return default
+
     for _, row in df.iterrows():
+        # 提取市值，并标准化单位为元
+        market_cap_val = get_val(row, ['总市值', 'a股市值', '流通市值'])
+        # 如果数值小于 10万，我们认为其单位为"亿"，需转换为"元"以适配前端
+        if market_cap_val and market_cap_val < 100000:
+            market_cap_val = market_cap_val * 100000000
+
         stock = StockInfo(
             symbol=str(row.get('股票代码', row.get('代码', 'N/A'))),
             name=str(row.get('股票简称', row.get('名称', 'N/A'))),
-            pe_ratio=float(row.get('市盈率', row.get('市盈率(动态)', 0))),
-            pb_ratio=float(row.get('市净率', 0)),
-            dividend_rate=float(row.get('股息率', 0)),
-            debt_ratio=float(row.get('资产负债率', 0)),
-            market_cap=float(row.get('总市值', row.get('流通市值', 0))),
+            pe_ratio=get_val(row, ['市盈率(pe)', '市盈率(动态)', '市盈率']),
+            pb_ratio=get_val(row, ['市净率(pb)', '市净率']),
+            dividend_rate=get_val(row, ['股息率']),
+            debt_ratio=get_val(row, ['资产负债率']),
+            market_cap=market_cap_val,
             industry=str(row.get('所属同花顺行业', row.get('所属行业', 'N/A'))),
-            range_change=float(row.get('区间涨跌幅:前复权', row.get('区间涨跌幅', 0))),
-            main_fund_inflow=float(row.get('区间主力资金流向', row.get('主力资金净流入', 0))),
+            range_change=get_val(row, ['区间涨跌幅:前复权', '区间涨跌幅', '涨跌幅']),
+            main_fund_inflow=get_val(row, ['区间主力资金流向', '主力资金净流入', '区间主力资金净流入']),
         )
         stocks.append(stock)
     return stocks

@@ -3,9 +3,7 @@ from typing import List
 import sys
 import os
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-
-from backend.schemas.monitor import (
+from schemas.monitor import (
     MonitoredStockCreate,
     MonitoredStockUpdate,
     MonitoredStockListResponse,
@@ -16,12 +14,12 @@ from backend.schemas.monitor import (
     MonitorConfig,
     MonitorConfigResponse,
 )
-from backend.schemas.response import SuccessResponse
+from schemas.response import SuccessResponse
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/monitor", tags=["智能盯盘模块"])
+router = APIRouter(tags=["智能盯盘模块"])
 
 monitor_config = MonitorConfig(
     monitor_enabled=False,

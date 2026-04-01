@@ -35,7 +35,12 @@ class StockAgents:
             signal = ind.get('signal', '')
             desc = ind.get('description', '')
             signal_text = {'buy': '买入', 'sell': '卖出', 'hold': '观望'}.get(signal, signal)
-            text += f"- {name}: {value:.2f} ({signal_text}) - {desc}\n"
+            
+            # 对于布林带和均线趋势这种可能不需要强制附带数值 value 的指标进行微调显示
+            if name in ['布林带(BOLL)', '均线趋势'] and value == 0:
+                text += f"- {name}: ({signal_text}) - {desc}\n"
+            else:
+                text += f"- {name}: {value:.2f} ({signal_text}) - {desc}\n"
 
         return text
 

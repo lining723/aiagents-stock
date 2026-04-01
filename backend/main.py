@@ -2,14 +2,11 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
-import sys
-import os
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from backend.core.config import settings
-from backend.schemas.response import SuccessResponse, ErrorResponse, HealthCheckResponse
-from backend.api.v1 import stock_router, longhubang_router, monitor_router, analysis_router
+# 移除通过 sys.path.append 动态修改包导入路径的逻辑，要求在启动时设置 PYTHONPATH=backend
+from core.config import settings
+from schemas.response import SuccessResponse, ErrorResponse, HealthCheckResponse
+from api.v1 import stock, longhubang, monitor, analysis
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -41,10 +38,11 @@ app.add_middleware(
 )
 
 
-app.include_router(stock_router, prefix=settings.API_V1_STR)
-app.include_router(longhubang_router, prefix=settings.API_V1_STR)
-app.include_router(monitor_router, prefix=settings.API_V1_STR)
-app.include_router(analysis_router, prefix=settings.API_V1_STR)
+# 注册路由
+app.include_router(stock.router, prefix=f"{settings.API_V1_STR}/stock", tags=["股票分析"])
+app.include_router(longhubang.router, prefix=f"{settings.API_V1_STR}/longhubang", tags=["龙虎榜"])
+app.include_router(monitor.router, prefix=f"{settings.API_V1_STR}/monitor", tags=["智能盯盘"])
+app.include_router(analysis.router, prefix=f"{settings.API_V1_STR}/analysis", tags=["深度分析"])
 
 
 @app.exception_handler(Exception)
@@ -84,7 +82,7 @@ async def root():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
-        "backend.main:app",
+        "main:app",
         host=settings.BACKEND_HOST,
         port=settings.BACKEND_PORT,
         reload=True,

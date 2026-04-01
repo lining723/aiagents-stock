@@ -1,12 +1,7 @@
 from fastapi import APIRouter, HTTPException
-from typing import List, Any
-import sys
-import os
+from typing import Any
 import math
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-
-from backend.schemas.analysis import (
+from schemas.analysis import (
     TechnicalAnalysisRequest,
     FundamentalAnalysisRequest,
     ComprehensiveAnalysisRequest,
@@ -25,7 +20,7 @@ from backend.schemas.analysis import (
     AnalysisHistoryListResponse,
     AnalysisHistoryDetailResponse,
 )
-from backend.schemas.response import SuccessResponse
+from schemas.response import SuccessResponse
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -44,7 +39,7 @@ def clean_nan_values(data: Any) -> Any:
     else:
         return data
 
-router = APIRouter(prefix="/analysis", tags=["股票分析"])
+router = APIRouter(tags=["股票分析"])
 
 
 @router.post("/technical", response_model=SuccessResponse[TechnicalAnalysisResponse])
@@ -332,9 +327,7 @@ async def get_ai_analysis(request: AIAnalysisRequest):
     """
     try:
         logger.info(f"AI分析请求: symbol={request.symbol}, days_ago={request.days_ago}")
-
-        import sys
-        import os        
+        
         from agents.stock_agents import StockAgents
         from services.stock_analyzer import StockAnalyzer
 
@@ -410,14 +403,6 @@ async def get_batch_ai_analysis(request: BatchAIAnalysisRequest):
     try:
         logger.info(f"批量AI分析请求: symbols={request.symbols}, days_ago={request.days_ago}")
         
-        import sys
-        import os
-        
-        # 确保将项目根目录加到 PYTHONPATH 中，解决 FastAPI (backend) 环境下的包引用问题
-        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-        if project_root not in sys.path:
-            sys.path.insert(0, project_root)
-            
         from agents.stock_agents import StockAgents
         from services.stock_analyzer import StockAnalyzer
         from db.database import db

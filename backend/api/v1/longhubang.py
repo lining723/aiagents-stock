@@ -5,21 +5,19 @@ import os
 from datetime import datetime, timedelta
 import uuid
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-
-from backend.schemas.longhubang import (
+from schemas.longhubang import (
     LonghubangAnalysisRequest,
     LonghubangAnalysisResponse,
     LonghubangReportListResponse,
     LonghubangReportInfo,
     LonghubangReportDetail,
 )
-from backend.schemas.response import SuccessResponse
+from schemas.response import SuccessResponse
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/longhubang", tags=["智瞰龙虎模块"])
+router = APIRouter(tags=["智瞰龙虎模块"])
 
 
 @router.post("/analyze", response_model=SuccessResponse[LonghubangAnalysisResponse])
@@ -29,12 +27,6 @@ async def analyze_longhubang(request: LonghubangAnalysisRequest):
     """
     try:
         logger.info(f"智瞰龙虎分析请求: {request}")
-        
-        import sys
-        import os
-        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        if project_root not in sys.path:
-            sys.path.insert(0, project_root)
         
         from services.longhubang_engine import LonghubangEngine
         

@@ -103,6 +103,11 @@ export default function MainForceStock() {
     return `${sign}${val.toFixed(2)}%`
   }
 
+  const formatNormalPercent = (val?: number) => {
+    if (val === undefined || val === null) return '-'
+    return `${val.toFixed(2)}%`
+  }
+
   const formatFundFlow = (val?: number) => {
     if (val === undefined || val === null) return '-'
     const color = val >= 0 ? '#52c41a' : '#ff4d4f'
@@ -151,6 +156,20 @@ export default function MainForceStock() {
       key: 'pb_ratio',
       width: 80,
       render: (val: number) => val?.toFixed?.(2) || '-',
+    },
+    {
+      title: '股息率',
+      dataIndex: 'dividend_rate',
+      key: 'dividend_rate',
+      width: 80,
+      render: formatNormalPercent,
+    },
+    {
+      title: '资产负债率',
+      dataIndex: 'debt_ratio',
+      key: 'debt_ratio',
+      width: 90,
+      render: formatNormalPercent,
     },
     {
       title: '市值',

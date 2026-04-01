@@ -385,3 +385,189 @@ NameError: name 'project_root' is not defined
 2026-03-20 15:25:30 | INFO     | backend.api.v1.analysis | 正在分析股票: 300724.SZ
 2026-03-20 15:26:41 | INFO     | backend.api.v1.analysis | 批量AI分析结果已保存到历史记录: 300724.SZ
 2026-03-20 16:36:47 | INFO     | backend.main         | AI Agents Stock API 关闭
+2026-03-31 14:34:17 | INFO     | backend.main         | ================================================================================
+2026-03-31 14:34:17 | INFO     | backend.main         | AI Agents Stock API 启动
+2026-03-31 14:34:17 | INFO     | backend.main         | 版本: 1.0.0
+2026-03-31 14:34:17 | INFO     | backend.main         | ================================================================================
+2026-03-31 14:35:18 | INFO     | backend.api.v1.stock | 低估值选股请求: top_n=10
+2026-03-31 14:35:22 | INFO     | backend.api.v1.stock | 低估值选股成功: 10 只股票
+2026-03-31 14:46:32 | INFO     | backend.main         | AI Agents Stock API 关闭
+2026-03-31 14:46:36 | INFO     | backend.main         | ================================================================================
+2026-03-31 14:46:36 | INFO     | backend.main         | AI Agents Stock API 启动
+2026-03-31 14:46:36 | INFO     | backend.main         | 版本: 1.0.0
+2026-03-31 14:46:36 | INFO     | backend.main         | ================================================================================
+2026-03-31 14:49:54 | INFO     | backend.main         | ================================================================================
+2026-03-31 14:49:54 | INFO     | backend.main         | AI Agents Stock API 启动
+2026-03-31 14:49:54 | INFO     | backend.main         | 版本: 1.0.0
+2026-03-31 14:49:54 | INFO     | backend.main         | ================================================================================
+2026-03-31 14:50:00 | INFO     | backend.api.v1.stock | 主力选股请求: days_ago=1 min_market_cap=50.0 max_market_cap=500.0 max_range_change=20.0 top_n=5
+2026-03-31 14:50:25 | INFO     | backend.api.v1.stock | 主力选股成功: 5 只股票
+2026-03-31 14:50:57 | INFO     | backend.api.v1.stock | 低估值选股请求: top_n=5
+2026-03-31 14:50:59 | INFO     | backend.api.v1.stock | 低估值选股成功: 5 只股票
+2026-03-31 14:53:07 | INFO     | backend.api.v1.stock | 低估值选股请求: top_n=10
+2026-03-31 14:53:09 | INFO     | backend.api.v1.stock | 低估值选股成功: 10 只股票
+2026-03-31 14:53:19 | INFO     | backend.api.v1.analysis | 批量AI分析请求: symbols=['002818.SZ', '000655.SZ', '002393.SZ', '002233.SZ', '600529.SH', '600717.SH', '600420.SH', '601326.SH', '601333.SH', '601000.SH'], days_ago=60
+2026-03-31 14:53:22 | ERROR    | backend.api.v1.analysis | 批量AI分析异常: No module named 'agents.stock_agents'
+Traceback (most recent call last):
+  File "/Users/bytedance/aiagents-stock/backend/api/v1/analysis.py", line 421, in get_batch_ai_analysis
+    from agents.stock_agents import StockAgents
+ModuleNotFoundError: No module named 'agents.stock_agents'
+2026-03-31 14:53:38 | INFO     | db.news_flow_db      | ✅ 新闻流量数据库初始化完成 (MongoDB)
+2026-03-31 14:53:45 | INFO     | backend.api.v1.stock | 主力选股请求: days_ago=5 min_market_cap=10.0 max_market_cap=500.0 max_range_change=20.0 top_n=10
+2026-03-31 14:54:10 | INFO     | backend.api.v1.stock | 主力选股成功: 10 只股票
+2026-03-31 14:55:44 | INFO     | backend.main         | AI Agents Stock API 关闭
+2026-03-31 14:55:46 | INFO     | backend.main         | ================================================================================
+2026-03-31 14:55:46 | INFO     | backend.main         | AI Agents Stock API 启动
+2026-03-31 14:55:46 | INFO     | backend.main         | 版本: 1.0.0
+2026-03-31 14:55:46 | INFO     | backend.main         | ================================================================================
+2026-03-31 14:55:46 | INFO     | backend.main         | AI Agents Stock API 关闭
+2026-03-31 14:56:49 | INFO     | backend.main         | ================================================================================
+2026-03-31 14:56:49 | INFO     | backend.main         | AI Agents Stock API 启动
+2026-03-31 14:56:49 | INFO     | backend.main         | 版本: 1.0.0
+2026-03-31 14:56:49 | INFO     | backend.main         | ================================================================================
+2026-03-31 14:56:58 | INFO     | db.news_flow_db      | ✅ 新闻流量数据库初始化完成 (MongoDB)
+2026-03-31 14:57:04 | INFO     | backend.api.v1.stock | 主力选股请求: days_ago=5 min_market_cap=10.0 max_market_cap=500.0 max_range_change=20.0 top_n=10
+2026-03-31 14:57:31 | INFO     | backend.api.v1.stock | 主力选股成功: 10 只股票
+2026-03-31 14:57:43 | INFO     | backend.api.v1.analysis | 批量AI分析请求: symbols=['600105.SH', '002342.SZ', '002240.SZ'], days_ago=60
+2026-03-31 14:57:47 | INFO     | backend.api.v1.analysis | 正在分析股票: 600105.SH
+2026-03-31 14:59:06 | INFO     | backend.api.v1.analysis | 批量AI分析结果已保存到历史记录: 600105.SH
+2026-03-31 14:59:06 | INFO     | backend.api.v1.analysis | 正在分析股票: 002342.SZ
+2026-03-31 15:00:29 | INFO     | backend.api.v1.analysis | 批量AI分析结果已保存到历史记录: 002342.SZ
+2026-03-31 15:00:29 | INFO     | backend.api.v1.analysis | 正在分析股票: 002240.SZ
+2026-03-31 15:00:48 | INFO     | backend.main         | ================================================================================
+2026-03-31 15:00:48 | INFO     | backend.main         | AI Agents Stock API 启动
+2026-03-31 15:00:48 | INFO     | backend.main         | 版本: 1.0.0
+2026-03-31 15:00:48 | INFO     | backend.main         | ================================================================================
+2026-03-31 15:00:58 | INFO     | backend.api.v1.analysis | 综合分析请求: symbol=600105.SH, days_ago=60
+2026-03-31 15:00:58 | INFO     | backend.api.v1.analysis | 技术分析请求: symbol=600105.SH, days_ago=60
+2026-03-31 15:01:04 | INFO     | backend.api.v1.analysis | 技术分析完成: 600105.SH
+2026-03-31 15:01:04 | INFO     | backend.api.v1.analysis | 基本面分析请求: symbol=600105.SH
+2026-03-31 15:01:06 | INFO     | backend.api.v1.analysis | 基本面分析完成: 600105.SH
+2026-03-31 15:01:06 | INFO     | backend.api.v1.analysis | 综合分析完成: 600105.SH
+2026-03-31 15:05:11 | INFO     | backend.main         | AI Agents Stock API 关闭
+2026-03-31 15:05:31 | INFO     | backend.main         | ================================================================================
+2026-03-31 15:05:31 | INFO     | backend.main         | AI Agents Stock API 启动
+2026-03-31 15:05:31 | INFO     | backend.main         | 版本: 1.0.0
+2026-03-31 15:05:31 | INFO     | backend.main         | ================================================================================
+2026-03-31 15:05:49 | INFO     | backend.api.v1.stock | 主力选股请求: days_ago=5 min_market_cap=10.0 max_market_cap=500.0 max_range_change=20.0 top_n=10
+2026-03-31 15:06:14 | INFO     | backend.api.v1.stock | 主力选股成功: 10 只股票
+2026-03-31 15:06:51 | INFO     | backend.api.v1.analysis | 批量AI分析请求: symbols=['600105.SH', '002342.SZ', '002240.SZ'], days_ago=60
+2026-03-31 15:06:54 | INFO     | db.news_flow_db      | ✅ 新闻流量数据库初始化完成 (MongoDB)
+2026-03-31 15:06:54 | INFO     | backend.api.v1.analysis | 正在分析股票: 600105.SH
+2026-03-31 15:08:18 | INFO     | backend.api.v1.analysis | 批量AI分析结果已保存到历史记录: 600105.SH
+2026-03-31 15:08:18 | INFO     | backend.api.v1.analysis | 正在分析股票: 002342.SZ
+2026-03-31 15:09:38 | INFO     | backend.api.v1.analysis | 批量AI分析结果已保存到历史记录: 002342.SZ
+2026-03-31 15:09:38 | INFO     | backend.api.v1.analysis | 正在分析股票: 002240.SZ
+2026-03-31 15:10:50 | INFO     | backend.api.v1.analysis | 批量AI分析结果已保存到历史记录: 002240.SZ
+2026-03-31 15:21:07 | INFO     | backend.main         | AI Agents Stock API 关闭
+2026-03-31 15:24:41 | INFO     | backend.main         | ================================================================================
+2026-03-31 15:24:41 | INFO     | backend.main         | AI Agents Stock API 启动
+2026-03-31 15:24:41 | INFO     | backend.main         | 版本: 1.0.0
+2026-03-31 15:24:41 | INFO     | backend.main         | ================================================================================
+2026-03-31 15:24:58 | INFO     | db.news_flow_db      | ✅ 新闻流量数据库初始化完成 (MongoDB)
+2026-03-31 15:24:58 | INFO     | backend.api.v1.analysis | 综合分析请求: symbol=000001, days_ago=60
+2026-03-31 15:24:58 | INFO     | backend.api.v1.analysis | 技术分析请求: symbol=000001, days_ago=60
+2026-03-31 15:25:07 | INFO     | backend.api.v1.analysis | 技术分析完成: 000001
+2026-03-31 15:25:07 | INFO     | backend.api.v1.analysis | 基本面分析请求: symbol=000001
+2026-03-31 15:25:09 | INFO     | backend.api.v1.analysis | 基本面分析完成: 000001
+2026-03-31 15:25:09 | INFO     | backend.api.v1.analysis | 综合分析完成: 000001
+2026-03-31 15:25:09 | INFO     | backend.api.v1.analysis | 综合分析请求: symbol=000001, days_ago=60
+2026-03-31 15:25:09 | INFO     | backend.api.v1.analysis | 技术分析请求: symbol=000001, days_ago=60
+2026-03-31 15:25:11 | INFO     | backend.api.v1.analysis | 技术分析完成: 000001
+2026-03-31 15:25:11 | INFO     | backend.api.v1.analysis | 基本面分析请求: symbol=000001
+2026-03-31 15:25:12 | INFO     | backend.api.v1.analysis | 基本面分析完成: 000001
+2026-03-31 15:25:12 | INFO     | backend.api.v1.analysis | 综合分析完成: 000001
+2026-03-31 15:25:12 | INFO     | backend.api.v1.analysis | AI分析请求: symbol=000001, days_ago=60
+2026-03-31 15:25:16 | ERROR    | backend.api.v1.analysis | AI分析异常: No module named 'agents.stock_agents'
+Traceback (most recent call last):
+  File "/Users/bytedance/aiagents-stock/backend/api/v1/analysis.py", line 333, in get_ai_analysis
+    from agents.stock_agents import StockAgents
+ModuleNotFoundError: No module named 'agents.stock_agents'
+2026-03-31 15:25:16 | INFO     | backend.api.v1.analysis | AI分析请求: symbol=000001, days_ago=60
+2026-03-31 15:25:16 | ERROR    | backend.api.v1.analysis | AI分析异常: No module named 'agents.stock_agents'
+Traceback (most recent call last):
+  File "/Users/bytedance/aiagents-stock/backend/api/v1/analysis.py", line 333, in get_ai_analysis
+    from agents.stock_agents import StockAgents
+ModuleNotFoundError: No module named 'agents.stock_agents'
+2026-03-31 15:26:14 | INFO     | backend.main         | AI Agents Stock API 关闭
+2026-03-31 15:26:16 | INFO     | backend.main         | ================================================================================
+2026-03-31 15:26:16 | INFO     | backend.main         | AI Agents Stock API 启动
+2026-03-31 15:26:16 | INFO     | backend.main         | 版本: 1.0.0
+2026-03-31 15:26:16 | INFO     | backend.main         | ================================================================================
+2026-03-31 15:27:45 | INFO     | backend.api.v1.analysis | AI分析请求: symbol=000001, days_ago=60
+2026-03-31 15:27:46 | ERROR    | backend.api.v1.analysis | AI分析异常: No module named 'agents.stock_agents'
+Traceback (most recent call last):
+  File "/Users/bytedance/aiagents-stock/backend/api/v1/analysis.py", line 333, in get_ai_analysis
+    from agents.stock_agents import StockAgents
+ModuleNotFoundError: No module named 'agents.stock_agents'
+2026-03-31 15:28:43 | INFO     | backend.main         | AI Agents Stock API 关闭
+2026-03-31 15:28:45 | INFO     | backend.main         | ================================================================================
+2026-03-31 15:28:45 | INFO     | backend.main         | AI Agents Stock API 启动
+2026-03-31 15:28:45 | INFO     | backend.main         | 版本: 1.0.0
+2026-03-31 15:28:45 | INFO     | backend.main         | ================================================================================
+2026-03-31 15:28:57 | INFO     | backend.api.v1.analysis | AI分析请求: symbol=000001, days_ago=60
+2026-03-31 15:28:58 | ERROR    | backend.api.v1.analysis | AI分析异常: No module named 'agents.deepseek_client'
+Traceback (most recent call last):
+  File "/Users/bytedance/aiagents-stock/backend/api/v1/analysis.py", line 340, in get_ai_analysis
+    from agents.stock_agents import StockAgents
+ModuleNotFoundError: No module named 'agents.stock_agents'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/bytedance/aiagents-stock/backend/api/v1/analysis.py", line 348, in get_ai_analysis
+    spec.loader.exec_module(stock_agents_module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/Users/bytedance/aiagents-stock/backend/agents/stock_agents.py", line 6, in <module>
+    from agents.deepseek_client import DeepSeekClient
+ModuleNotFoundError: No module named 'agents.deepseek_client'
+2026-03-31 15:29:14 | INFO     | backend.main         | AI Agents Stock API 关闭
+2026-03-31 15:29:16 | INFO     | backend.main         | ================================================================================
+2026-03-31 15:29:16 | INFO     | backend.main         | AI Agents Stock API 启动
+2026-03-31 15:29:16 | INFO     | backend.main         | 版本: 1.0.0
+2026-03-31 15:29:16 | INFO     | backend.main         | ================================================================================
+2026-03-31 15:29:25 | INFO     | backend.main         | AI Agents Stock API 关闭
+2026-03-31 15:29:26 | INFO     | backend.main         | ================================================================================
+2026-03-31 15:29:26 | INFO     | backend.main         | AI Agents Stock API 启动
+2026-03-31 15:29:26 | INFO     | backend.main         | 版本: 1.0.0
+2026-03-31 15:29:26 | INFO     | backend.main         | ================================================================================
+2026-03-31 15:29:57 | INFO     | main                 | ================================================================================
+2026-03-31 15:29:57 | INFO     | main                 | AI Agents Stock API 启动
+2026-03-31 15:29:57 | INFO     | main                 | 版本: 1.0.0
+2026-03-31 15:29:57 | INFO     | main                 | ================================================================================
+2026-03-31 15:30:08 | INFO     | backend.api.v1.analysis | 综合分析请求: symbol=000001, days_ago=60
+2026-03-31 15:30:08 | INFO     | backend.api.v1.analysis | 技术分析请求: symbol=000001, days_ago=60
+2026-03-31 15:30:09 | INFO     | db.news_flow_db      | ✅ 新闻流量数据库初始化完成 (MongoDB)
+2026-03-31 15:30:13 | INFO     | backend.api.v1.analysis | 技术分析完成: 000001
+2026-03-31 15:30:13 | INFO     | backend.api.v1.analysis | 基本面分析请求: symbol=000001
+2026-03-31 15:30:15 | INFO     | backend.api.v1.analysis | 基本面分析完成: 000001
+2026-03-31 15:30:15 | INFO     | backend.api.v1.analysis | 综合分析完成: 000001
+2026-03-31 15:30:21 | INFO     | backend.api.v1.analysis | AI分析请求: symbol=000001, days_ago=60
+2026-03-31 15:31:40 | INFO     | backend.api.v1.analysis | AI分析结果已保存到历史记录: 000001
+2026-03-31 15:31:40 | INFO     | backend.api.v1.analysis | AI分析完成: 000001
+2026-03-31 15:33:31 | INFO     | main                 | AI Agents Stock API 关闭
+2026-03-31 15:33:48 | INFO     | backend.main         | ================================================================================
+2026-03-31 15:33:48 | INFO     | backend.main         | AI Agents Stock API 启动
+2026-03-31 15:33:48 | INFO     | backend.main         | 版本: 1.0.0
+2026-03-31 15:33:48 | INFO     | backend.main         | ================================================================================
+2026-03-31 15:34:00 | INFO     | backend.api.v1.longhubang | 获取智瞰龙虎历史报告列表
+2026-03-31 15:34:01 | INFO     | db.news_flow_db      | ✅ 新闻流量数据库初始化完成 (MongoDB)
+2026-03-31 15:34:01 | INFO     | db.longhubang_db     | [智瞰龙虎] MongoDB 索引初始化完成
+2026-03-31 15:34:01 | INFO     | backend.api.v1.longhubang | 获取到 0 个历史报告
+2026-03-31 15:34:06 | INFO     | backend.api.v1.longhubang | 获取智瞰龙虎历史报告列表
+2026-03-31 15:34:06 | INFO     | db.longhubang_db     | [智瞰龙虎] MongoDB 索引初始化完成
+2026-03-31 15:34:06 | INFO     | backend.api.v1.longhubang | 获取到 0 个历史报告
+2026-03-31 15:34:07 | INFO     | backend.api.v1.longhubang | 获取智瞰龙虎数据统计
+2026-03-31 15:34:07 | INFO     | db.longhubang_db     | [智瞰龙虎] MongoDB 索引初始化完成
+2026-03-31 15:34:07 | INFO     | backend.api.v1.longhubang | 获取数据统计成功
+2026-03-31 15:34:22 | INFO     | backend.api.v1.analysis | 综合分析请求: symbol=002240.SZ, days_ago=60
+2026-03-31 15:34:23 | INFO     | backend.api.v1.analysis | 技术分析请求: symbol=002240.SZ, days_ago=60
+2026-03-31 15:34:30 | INFO     | backend.api.v1.analysis | 技术分析完成: 002240.SZ
+2026-03-31 15:34:30 | INFO     | backend.api.v1.analysis | 基本面分析请求: symbol=002240.SZ
+2026-03-31 15:34:32 | INFO     | backend.api.v1.analysis | 基本面分析完成: 002240.SZ
+2026-03-31 15:34:32 | INFO     | backend.api.v1.analysis | 综合分析完成: 002240.SZ
+2026-03-31 15:34:32 | INFO     | backend.api.v1.analysis | AI分析请求: symbol=002240.SZ, days_ago=60
+2026-03-31 15:36:03 | INFO     | backend.api.v1.analysis | AI分析结果已保存到历史记录: 002240.SZ
+2026-03-31 15:36:03 | INFO     | backend.api.v1.analysis | AI分析完成: 002240.SZ
