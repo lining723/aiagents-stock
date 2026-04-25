@@ -12,9 +12,9 @@ TUSHARE_TOKEN=your_tushare_token_here
 
 # TDX股票数据API配置（优先数据源）
 # 启用TDX数据源：true=启用，false=禁用（使用AKShare）
-TDX_ENABLED=false
+TDX_ENABLED=true
 # TDX接口地址
-TDX_BASE_URL=http://192.168.1.222:8181
+TDX_BASE_URL=http://127.0.0.1:8080
 
 # MiniQMT量化交易配置
 # 启用MiniQMT：true=启用真实交易，false=使用模拟交易
@@ -47,4 +47,3 @@ DINGTALK_KEYWORD=股票
 
 # 数据库配置（可选）
 # DATABASE_URL=sqlite:///./agentsstock1.db
-

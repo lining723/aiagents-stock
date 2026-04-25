@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from fastapi.concurrency import run_in_threadpool
 from typing import List
 import sys
 import os
@@ -33,9 +34,15 @@ async def analyze_longhubang(request: LonghubangAnalysisRequest):
         engine = LonghubangEngine()
         
         if request.analysis_mode == "指定日期" and request.date:
-            results = engine.run_comprehensive_analysis(date=request.date)
+            results = await run_in_threadpool(
+                engine.run_comprehensive_analysis,
+                date=request.date,
+            )
         else:
-            results = engine.run_comprehensive_analysis(days=request.days)
+            results = await run_in_threadpool(
+                engine.run_comprehensive_analysis,
+                days=request.days,
+            )
         
         if not results.get("success", False):
             error_msg = results.get("error", "分析失败")
@@ -130,15 +137,20 @@ async def get_report_detail(report_id: str):
         logger.info(f"获取报告详情成功: report_id={report_id}")
         
         analysis_content = report.get('analysis_content_parsed', {}) or {}
+        data_info = analysis_content.get("data_info", {}) if isinstance(analysis_content, dict) else {}
+        agents_analysis = analysis_content.get("agents_analysis", analysis_content) if isinstance(analysis_content, dict) else {}
+        final_report = analysis_content.get("final_report", {}) if isinstance(analysis_content, dict) else {}
+        if not final_report:
+            final_report = {"summary": report.get("summary", "")}
         
         return SuccessResponse.success(
             data=LonghubangReportDetail(
                 report_id=str(report.get("id", "")),
                 date=str(report.get("analysis_date", "")),
                 created_at=report.get("created_at", datetime.now()),
-                data_info={},
-                agents_analysis=analysis_content,
-                final_report={"summary": report.get("summary", "")},
+                data_info=data_info,
+                agents_analysis=agents_analysis,
+                final_report=final_report,
                 recommended_stocks=report.get("recommended_stocks", []),
             ),
             message="报告详情获取成功",

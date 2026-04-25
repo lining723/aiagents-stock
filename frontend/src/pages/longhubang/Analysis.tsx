@@ -161,7 +161,13 @@ export default function LonghubangAnalysis() {
               <DatePicker
                 style={{ width: '100%' }}
                 onChange={(_, dateString) => setDate(typeof dateString === 'string' ? dateString : dateString[0])}
-                disabledDate={(current) => current && current > dayjs().endOf('day')}
+                disabledDate={(current) =>
+                  !!current && (
+                    current > dayjs().endOf('day') ||
+                    current.day() === 0 ||
+                    current.day() === 6
+                  )
+                }
               />
             </div>
           )}

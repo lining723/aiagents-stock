@@ -1,40 +1,21 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# ============================================
-# AI Agents Stock 部署脚本
-# 功能：Docker 构建及启动
-# 支持：Linux (Ubuntu, CentOS, Debian 等) 和 macOS
-# ============================================
+# AI Agents Stock deployment helper.
+# Supports Linux and macOS with Docker Compose v2 or docker-compose.
 
-set -e
+set -Eeuo pipefail
 
-# 检测操作系统
-detect_os() {
-    case "$(uname -s)" in
-        Linux*)     OS="Linux";;
-        Darwin*)    OS="macOS";;
-        *)          OS="Unknown";;
-    esac
-    echo "$OS"
-}
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
 
-# 颜色定义
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-# 脚本目录
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+COMPOSE_CMD=()
 
-# 当前操作系统
-CURRENT_OS=$(detect_os)
-
-# ============================================
-# 函数：打印信息
-# ============================================
 print_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
@@ -51,242 +32,373 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# ============================================
-# 函数：检查 Docker 是否安装
-# ============================================
+usage() {
+    cat <<'EOF'
+AI Agents Stock 部署脚本
+
+用法:
+  ./deploy.sh [command] [service]
+
+命令:
+  up | deploy      构建并启动全部服务，默认命令
+  start            启动已创建的服务
+  stop             停止服务，不删除容器
+  restart          重启服务
+  down             停止并删除容器，不删除数据卷
+  build            仅构建镜像
+  status | ps      查看 Compose 服务状态
+  logs [service]   查看日志，可指定 backend/frontend/redis/mongo/tdx-api
+  health           检查容器健康状态与 HTTP 入口
+  config           静默校验 Docker Compose 配置
+  help             显示帮助
+
+常用示例:
+  ./deploy.sh
+  ./deploy.sh logs backend
+  ./deploy.sh health
+  ./deploy.sh restart
+EOF
+}
+
+detect_os() {
+    case "$(uname -s)" in
+        Linux*) echo "Linux" ;;
+        Darwin*) echo "macOS" ;;
+        *) echo "Unknown" ;;
+    esac
+}
+
+compose() {
+    "${COMPOSE_CMD[@]}" "$@"
+}
+
 check_docker() {
-    print_info "检查 Docker 安装状态..."
-    print_info "当前操作系统: $CURRENT_OS"
-    
-    # 检查 Docker
-    if ! command -v docker &> /dev/null; then
-        print_error "Docker 未安装！请先安装 Docker。"
-        if [ "$CURRENT_OS" = "Linux" ]; then
-            print_info "Linux 系统 Docker 安装指南："
-            print_info "  Ubuntu/Debian: https://docs.docker.com/engine/install/ubuntu/"
-            print_info "  CentOS/RHEL: https://docs.docker.com/engine/install/centos/"
-        else
-            print_info "Docker 安装指南：https://docs.docker.com/get-docker/"
-        fi
+    local require_daemon="${1:-1}"
+    local current_os
+    current_os="$(detect_os)"
+    print_info "检查 Docker 环境，当前系统: ${current_os}"
+
+    if ! command -v docker >/dev/null 2>&1; then
+        print_error "Docker 未安装，请先安装 Docker。"
+        print_info "安装指南: https://docs.docker.com/get-docker/"
         exit 1
     fi
-    
-    # 检查 Docker Compose
-    DOCKER_COMPOSE_CMD=""
-    if command -v docker-compose &> /dev/null; then
-        DOCKER_COMPOSE_CMD="docker-compose"
-    elif docker compose version &> /dev/null; then
-        DOCKER_COMPOSE_CMD="docker compose"
+
+    if docker compose version >/dev/null 2>&1; then
+        COMPOSE_CMD=(docker compose)
+    elif command -v docker-compose >/dev/null 2>&1; then
+        COMPOSE_CMD=(docker-compose)
     else
-        print_error "Docker Compose 未安装！请先安装 Docker Compose。"
-        print_info "Docker Compose 安装指南：https://docs.docker.com/compose/install/"
+        print_error "Docker Compose 未安装。"
+        print_info "安装指南: https://docs.docker.com/compose/install/"
         exit 1
     fi
-    
-    # 检查 Docker 服务是否运行
-    if ! docker info &> /dev/null; then
-        print_warning "Docker 服务未运行，正在尝试启动..."
-        if [ "$CURRENT_OS" = "Linux" ]; then
-            if command -v systemctl &> /dev/null; then
+
+    if [ "$require_daemon" != "1" ]; then
+        print_success "Docker CLI 可用: ${COMPOSE_CMD[*]}"
+        return 0
+    fi
+
+    if ! docker info >/dev/null 2>&1; then
+        print_warning "Docker 服务未运行，尝试启动 Docker..."
+        if [ "$current_os" = "Linux" ]; then
+            if command -v systemctl >/dev/null 2>&1; then
                 sudo systemctl start docker || true
-            elif command -v service &> /dev/null; then
+            elif command -v service >/dev/null 2>&1; then
                 sudo service docker start || true
             fi
         fi
-        # 再次检查
-        if ! docker info &> /dev/null; then
-            print_error "Docker 服务无法启动，请手动启动 Docker！"
-            exit 1
-        fi
     fi
-    
-    print_success "Docker 环境检查通过"
-    print_info "Docker Compose 命令: $DOCKER_COMPOSE_CMD"
-}
 
-# ============================================
-# 函数：检查 .env 文件
-# ============================================
-check_env_file() {
-    print_info "检查环境配置文件..."
-    
-    if [ ! -f ".env" ]; then
-        print_warning ".env 文件不存在，正在从 .env.example 创建..."
-        
-        if [ -f ".env.example" ]; then
-            cp .env.example .env
-            print_success ".env 文件已创建"
-            print_warning "请编辑 .env 文件，配置您的 API Key 等信息！"
-            echo ""
-            read -p "是否继续部署？(y/n): " -n 1 -r
-            echo
-            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-                print_info "部署已取消"
-                exit 0
-            fi
-        else
-            print_error ".env.example 文件也不存在！请确保项目文件完整。"
-            exit 1
-        fi
-    else
-        print_success ".env 文件存在"
-    fi
-}
-
-# ============================================
-# 函数：创建必要的目录
-# ============================================
-create_directories() {
-    print_info "创建必要的目录..."
-    
-    mkdir -p log
-    mkdir -p data
-    
-    print_success "目录创建完成"
-}
-
-# ============================================
-# 函数：停止旧容器
-# ============================================
-stop_old_containers() {
-    print_info "停止旧容器..."
-    
-    if [ -n "$DOCKER_COMPOSE_CMD" ]; then
-        $DOCKER_COMPOSE_CMD down || true
-    fi
-    
-    print_success "旧容器已停止"
-}
-
-# ============================================
-# 函数：构建并启动
-# ============================================
-build_and_start() {
-    print_info "开始构建并启动服务..."
-    
-    if [ -z "$DOCKER_COMPOSE_CMD" ]; then
-        print_error "Docker Compose 命令未设置！"
+    if ! docker info >/dev/null 2>&1; then
+        print_error "Docker 服务不可用，请手动启动 Docker 后重试。"
         exit 1
     fi
-    
-    $DOCKER_COMPOSE_CMD up -d --build
-    
-    print_success "构建完成"
+
+    print_success "Docker 环境可用: ${COMPOSE_CMD[*]}"
 }
 
-# ============================================
-# 函数：等待服务启动
-# ============================================
-wait_for_service() {
-    print_info "等待服务启动..."
-    
-    local max_attempts=30
-    local attempt=0
-    
-    while [ $attempt -lt $max_attempts ]; do
-        if docker ps --format '{{.Names}}' | grep -q "agentsstock1"; then
-            local health_status=$(docker inspect --format='{{.State.Health.Status}}' agentsstock1 2>/dev/null || echo "unknown")
-            
-            if [ "$health_status" = "healthy" ]; then
-                print_success "服务已启动并健康运行"
-                return 0
-            elif [ "$health_status" = "starting" ]; then
-                print_info "服务正在启动中..."
-            else
-                print_info "检查服务状态..."
+ensure_env_file() {
+    print_info "检查 .env 配置文件..."
+
+    if [ ! -f .env ]; then
+        if [ ! -f .env.example ]; then
+            print_error ".env 与 .env.example 均不存在，无法继续部署。"
+            exit 1
+        fi
+
+        cp .env.example .env
+        print_warning "已从 .env.example 创建 .env。请尽快填写 DEEPSEEK_API_KEY 等配置。"
+
+        if [ -t 0 ] && [ "${DEPLOY_ASSUME_YES:-0}" != "1" ]; then
+            local reply
+            read -r -p "是否继续启动服务？[y/N] " reply
+            if [[ ! "$reply" =~ ^[Yy]$ ]]; then
+                print_info "已取消部署。"
+                exit 0
             fi
         fi
-        
-        attempt=$((attempt + 1))
-        sleep 2
-    done
-    
-    print_warning "服务启动检查超时，请手动检查容器状态"
+    fi
+
+    local api_key
+    api_key="$(grep -E '^DEEPSEEK_API_KEY=' .env 2>/dev/null | tail -n 1 | cut -d= -f2- || true)"
+    api_key="${api_key%\"}"
+    api_key="${api_key#\"}"
+    api_key="${api_key%\'}"
+    api_key="${api_key#\'}"
+
+    if [ -z "$api_key" ] || [ "$api_key" = "your_actual_deepseek_api_key_here" ]; then
+        print_warning "DEEPSEEK_API_KEY 仍是占位值，AI 分析接口会启动但无法正常生成报告。"
+    fi
+
+    print_success ".env 配置文件检查完成"
 }
 
-# ============================================
-# 函数：显示服务信息
-# ============================================
-show_service_info() {
-    echo ""
-    echo "============================================"
-    echo -e "${GREEN}🎉 部署成功！${NC}"
-    echo "============================================"
-    echo ""
-    echo -e "📱 访问地址：${BLUE}http://localhost:8503${NC}"
-    echo ""
-    echo "📋 常用命令："
-    echo "  查看日志：    docker logs -f agentsstock1"
-    echo "  停止服务：    $DOCKER_COMPOSE_CMD down"
-    echo "  重启服务：    $DOCKER_COMPOSE_CMD restart"
-    echo "  查看状态：    docker ps"
-    if [ "$CURRENT_OS" = "Linux" ]; then
-        echo "  Docker状态：  sudo systemctl status docker"
-    fi
-    echo ""
-    echo "📝 日志文件位置："
-    echo "  宿主机：      ./log/app.log"
-    echo "  容器内：      /app/log/app.log"
-    echo ""
-    if [ "$CURRENT_OS" = "Linux" ]; then
-        echo "💡 Linux 系统提示："
-        echo "  如果需要非 root 用户运行 Docker，请执行："
-        echo "    sudo usermod -aG docker \$USER"
-        echo "  然后重新登录使权限生效"
-        echo ""
-    fi
-    echo "============================================"
+create_directories() {
+    print_info "创建运行目录..."
+    mkdir -p log data db config
+    print_success "运行目录已准备"
 }
 
-# ============================================
-# 函数：设置文件权限（Linux 专用）
-# ============================================
 set_permissions() {
-    if [ "$CURRENT_OS" = "Linux" ]; then
-        print_info "设置文件权限..."
-        
-        # 确保脚本有执行权限
-        chmod +x "$0" 2>/dev/null || true
-        
-        # 确保 log 和 data 目录可写
-        chmod 755 log 2>/dev/null || true
-        chmod 755 data 2>/dev/null || true
-        
-        print_success "权限设置完成"
+    if [ "$(detect_os)" = "Linux" ]; then
+        chmod 755 log data db config 2>/dev/null || true
     fi
 }
 
-# ============================================
-# 主函数
-# ============================================
-main() {
+env_value() {
+    local key="$1"
+    local default="$2"
+    local value="${!key:-}"
+
+    if [ -z "$value" ] && [ -f .env ]; then
+        value="$(grep -E "^${key}=" .env 2>/dev/null | tail -n 1 | cut -d= -f2- || true)"
+        value="${value%\"}"
+        value="${value#\"}"
+        value="${value%\'}"
+        value="${value#\'}"
+    fi
+
+    if [ -z "$value" ]; then
+        value="$default"
+    fi
+
+    printf '%s' "$value"
+}
+
+wait_for_container() {
+    local container="$1"
+    local max_attempts="${2:-90}"
+    local attempt=1
+
+    print_info "等待 ${container} 健康..."
+
+    while [ "$attempt" -le "$max_attempts" ]; do
+        local status
+        local health
+
+        status="$(docker inspect --format '{{.State.Status}}' "$container" 2>/dev/null || true)"
+        health="$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{end}}' "$container" 2>/dev/null || true)"
+
+        if [ "$health" = "healthy" ]; then
+            print_success "${container} healthy"
+            return 0
+        fi
+
+        if [ -z "$health" ] && [ "$status" = "running" ]; then
+            print_success "${container} running"
+            return 0
+        fi
+
+        if [ "$status" = "exited" ] || [ "$status" = "dead" ]; then
+            print_error "${container} 状态异常: ${status}"
+            docker logs --tail 80 "$container" || true
+            return 1
+        fi
+
+        sleep 2
+        attempt=$((attempt + 1))
+    done
+
+    print_warning "${container} 健康检查超时，请查看日志定位问题。"
+    return 1
+}
+
+wait_for_services() {
+    local containers=(
+        ai-agents-stock-redis
+        ai-agents-stock-mongo
+        ai-agents-stock-tdx-api
+        ai-agents-stock-backend
+        ai-agents-stock-frontend
+    )
+
+    for container in "${containers[@]}"; do
+        wait_for_container "$container"
+    done
+}
+
+curl_check() {
+    local name="$1"
+    local url="$2"
+
+    if ! command -v curl >/dev/null 2>&1; then
+        print_warning "未安装 curl，跳过 ${name} HTTP 检查: ${url}"
+        return 0
+    fi
+
+    if curl -fsS --max-time 10 "$url" >/dev/null; then
+        print_success "${name} 可访问: ${url}"
+    else
+        print_warning "${name} 暂不可访问: ${url}"
+        return 1
+    fi
+}
+
+health_check() {
+    local backend_port
+    local frontend_port
+    local tdx_port
+
+    backend_port="$(env_value BACKEND_PORT 8000)"
+    frontend_port="$(env_value FRONTEND_PORT 3000)"
+    tdx_port="$(env_value TDX_PORT 8080)"
+
+    print_info "Compose 服务状态:"
+    compose ps
+
+    echo ""
+    print_info "容器健康状态:"
+    for container in \
+        ai-agents-stock-redis \
+        ai-agents-stock-mongo \
+        ai-agents-stock-tdx-api \
+        ai-agents-stock-backend \
+        ai-agents-stock-frontend; do
+        local status
+        local health
+        status="$(docker inspect --format '{{.State.Status}}' "$container" 2>/dev/null || echo "not-found")"
+        health="$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}no-healthcheck{{end}}' "$container" 2>/dev/null || echo "not-found")"
+        echo "  ${container}: ${status} / ${health}"
+    done
+
+    echo ""
+    print_info "HTTP 入口检查:"
+    curl_check "后端 API" "http://127.0.0.1:${backend_port}/health" || true
+    curl_check "前端页面" "http://127.0.0.1:${frontend_port}/" || true
+    curl_check "tdx-api" "http://127.0.0.1:${tdx_port}/api/health" || true
+}
+
+show_service_info() {
+    local backend_port
+    local frontend_port
+    local tdx_port
+
+    backend_port="$(env_value BACKEND_PORT 8000)"
+    frontend_port="$(env_value FRONTEND_PORT 3000)"
+    tdx_port="$(env_value TDX_PORT 8080)"
+
     echo ""
     echo "============================================"
-    echo "  AI Agents Stock 部署脚本"
-    echo "  支持: Linux / macOS"
+    echo -e "${GREEN}AI Agents Stock 部署完成${NC}"
     echo "============================================"
+    echo "前端页面:      http://127.0.0.1:${frontend_port}"
+    echo "后端 API:      http://127.0.0.1:${backend_port}"
+    echo "API 文档:      http://127.0.0.1:${backend_port}/docs"
+    echo "后端健康检查:  http://127.0.0.1:${backend_port}/health"
+    echo "tdx-api:       http://127.0.0.1:${tdx_port}/api/health"
     echo ""
-    
-    # 执行检查
-    check_docker
-    check_env_file
+    echo "常用命令:"
+    echo "  查看状态:    ./deploy.sh status"
+    echo "  查看日志:    ./deploy.sh logs backend"
+    echo "  健康检查:    ./deploy.sh health"
+    echo "  重启服务:    ./deploy.sh restart"
+    echo "  停止服务:    ./deploy.sh down"
+    echo ""
+    echo "日志目录:      ./log"
+    echo "本地数据目录:  ./data ./db"
+    echo "Compose 数据卷: mongo-data redis-data tdx-data"
+    echo "============================================"
+}
+
+deploy() {
+    ensure_env_file
     create_directories
-    
-    # 设置权限（Linux 专用）
     set_permissions
-    
-    # 停止旧容器
-    stop_old_containers
-    
-    # 构建并启动
-    build_and_start
-    
-    # 等待服务启动
-    wait_for_service
-    
-    # 显示信息
+
+    print_info "构建并启动服务..."
+    compose up -d --build
+    wait_for_services
+    health_check
     show_service_info
 }
 
-# 执行主函数
+main() {
+    local command="${1:-up}"
+    local service="${2:-}"
+    local require_daemon=1
+
+    case "$command" in
+        help|-h|--help)
+            usage
+            exit 0
+            ;;
+        config)
+            require_daemon=0
+            ;;
+    esac
+
+    check_docker "$require_daemon"
+
+    case "$command" in
+        up|deploy)
+            deploy
+            ;;
+        start)
+            ensure_env_file
+            compose start
+            wait_for_services
+            show_service_info
+            ;;
+        stop)
+            compose stop
+            ;;
+        restart)
+            compose restart
+            wait_for_services
+            health_check
+            ;;
+        down)
+            compose down
+            ;;
+        build)
+            ensure_env_file
+            compose build
+            ;;
+        status|ps)
+            compose ps
+            ;;
+        logs)
+            if [ -n "$service" ]; then
+                compose logs -f "$service"
+            else
+                compose logs -f
+            fi
+            ;;
+        health)
+            health_check
+            ;;
+        config)
+            ensure_env_file
+            compose config --quiet
+            print_success "Docker Compose 配置校验通过"
+            ;;
+        *)
+            print_error "未知命令: ${command}"
+            usage
+            exit 1
+            ;;
+    esac
+}
+
 main "$@"

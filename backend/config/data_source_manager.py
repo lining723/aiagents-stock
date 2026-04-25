@@ -7,6 +7,7 @@ import os
 import pandas as pd
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from utils.redis_cache import cached_call
 
 # 加载环境变量
 load_dotenv()
@@ -34,6 +35,16 @@ class DataSourceManager:
         else:
             print("ℹ️ 未配置Tushare Token，将仅使用Akshare数据源")
     
+    @cached_call(
+        "kline",
+        key_builder=lambda self, symbol, start_date=None, end_date=None, adjust="qfq": (
+            str(symbol).split(".")[0],
+            (start_date or ""),
+            (end_date or ""),
+            adjust,
+        ),
+        is_valid=lambda result: result is not None and hasattr(result, "empty") and not result.empty,
+    )
     def get_stock_hist_data(self, symbol, start_date=None, end_date=None, adjust='qfq'):
         """
         获取股票历史数据（优先akshare，失败时使用tushare）
@@ -137,6 +148,11 @@ class DataSourceManager:
         print("❌ 所有数据源均获取失败")
         return None
     
+    @cached_call(
+        "fundamental",
+        key_builder=lambda self, symbol: ("basic_info", str(symbol).split(".")[0]),
+        is_valid=lambda result: bool(result and result.get("name") and result.get("name") != "未知"),
+    )
     def get_stock_basic_info(self, symbol):
         """
         获取股票基本信息（优先akshare，失败时使用tushare）
@@ -205,6 +221,11 @@ class DataSourceManager:
         
         return info
     
+    @cached_call(
+        "realtime",
+        key_builder=lambda self, symbol: (str(symbol).split(".")[0],),
+        is_valid=lambda result: bool(result),
+    )
     def get_realtime_quotes(self, symbol):
         """
         获取实时行情数据（优先akshare，失败时使用tushare）
@@ -277,6 +298,11 @@ class DataSourceManager:
         
         return quotes
     
+    @cached_call(
+        "fundamental",
+        key_builder=lambda self, symbol, report_type="income": ("financial", str(symbol).split(".")[0], report_type),
+        is_valid=lambda result: result is not None and hasattr(result, "empty") and not result.empty,
+    )
     def get_financial_data(self, symbol, report_type='income'):
         """
         获取财务数据（优先akshare，失败时使用tushare）
@@ -376,4 +402,3 @@ class DataSourceManager:
 
 # 全局数据源管理器实例
 data_source_manager = DataSourceManager()
-

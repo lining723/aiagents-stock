@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   backend:
     build:
@@ -8,15 +6,42 @@ services:
     container_name: ai-agents-stock-backend
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT:-8000}:8000"
+    env_file:
+      - .env
     environment:
-      - PYTHONUNBUFFERED=1
+      PYTHONUNBUFFERED: "1"
+      TZ: "${TZ:-Asia/Shanghai}"
+      EASTMONEY_PROXY_BASE_URL: "${EASTMONEY_PROXY_BASE_URL:-http://host.docker.internal:8899}"
+      MONGODB_URI: "${DOCKER_MONGODB_URI:-mongodb://mongo:27017/}"
+      MONGODB_DB_NAME: "${MONGODB_DB_NAME:-aiagents_stock}"
+      REDIS_ENABLED: "${REDIS_ENABLED:-true}"
+      REDIS_URL: "${DOCKER_REDIS_URL:-redis://redis:6379/0}"
+      TDX_ENABLED: "${TDX_ENABLED:-true}"
+      TDX_BASE_URL: "${DOCKER_TDX_BASE_URL:-http://tdx-api:8080}"
     volumes:
+      - ./.env:/app/.env:ro
       - ./data:/app/data
       - ./db:/app/db
       - ./config:/app/config
+      - ./log:/app/log
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - ai-agents-stock-network
+    depends_on:
+      redis:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      tdx-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8000/health >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   frontend:
     build:
@@ -25,12 +50,89 @@ services:
     container_name: ai-agents-stock-frontend
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - "${FRONTEND_PORT:-3000}:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - ai-agents-stock-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    container_name: ai-agents-stock-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - ai-agents-stock-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  mongo:
+    image: mongo:7
+    container_name: ai-agents-stock-mongo
+    restart: unless-stopped
+    ports:
+      - "${MONGO_PORT:-27017}:27017"
+    environment:
+      MONGO_INITDB_DATABASE: "${MONGODB_DB_NAME:-aiagents_stock}"
+      TZ: "${TZ:-Asia/Shanghai}"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - ai-agents-stock-network
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval 'db.adminCommand({ ping: 1 }).ok' | grep 1 >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  tdx-api:
+    build:
+      context: ./tdx-api
+      dockerfile: Dockerfile
+    container_name: ai-agents-stock-tdx-api
+    restart: unless-stopped
+    ports:
+      - "${TDX_PORT:-8080}:8080"
+    environment:
+      TZ: "${TZ:-Asia/Shanghai}"
+      NO_PROXY: "*"
+      no_proxy: "*"
+      HTTP_PROXY: ""
+      HTTPS_PROXY: ""
+      http_proxy: ""
+      https_proxy: ""
+    volumes:
+      - tdx-data:/app/data
+    networks:
+      - ai-agents-stock-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
 
 networks:
   ai-agents-stock-network:
     driver: bridge
+
+volumes:
+  mongo-data:
+  redis-data:
+  tdx-data:

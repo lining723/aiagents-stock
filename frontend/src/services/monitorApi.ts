@@ -30,17 +30,17 @@ export const monitorApi = {
     return response.data.data
   },
 
-  getStock: async (stockId: number) => {
+  getStock: async (stockId: string) => {
     const response = await apiGet<MonitoredStockResponse>(`/monitor/stocks/${stockId}`)
     return response.data.data
   },
 
-  updateStock: async (stockId: number, stock: MonitoredStockUpdate) => {
+  updateStock: async (stockId: string, stock: MonitoredStockUpdate) => {
     const response = await apiPut<MonitoredStockResponse>(`/monitor/stocks/${stockId}`, stock)
     return response.data.data
   },
 
-  deleteStock: async (stockId: number) => {
+  deleteStock: async (stockId: string) => {
     const response = await apiDelete<Record<string, any>>(`/monitor/stocks/${stockId}`)
     return response.data.data
   },

@@ -16,10 +16,10 @@ class StreamToLogger(object):
         self.is_redirected = True
 
     def write(self, buf):
-        for line in buf.rstrip().splitlines():
-            # 过滤掉一些框架本身的无用空白输出
-            if line.strip():
-                self.logger.log(self.level, line.rstrip())
+        # 避免只输出换行符等空白字符导致的大量无用日志
+        if buf.strip():
+            # 去除末尾换行符，但不拆分多行，保持原有输出格式
+            self.logger.log(self.level, buf.rstrip())
 
     def flush(self):
         pass

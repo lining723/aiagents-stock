@@ -11,6 +11,7 @@ from typing import Dict, Any, List
 from datetime import datetime, timedelta
 import time
 import logging
+import re
 import config.config as config
 
 class LonghubangEngine:
@@ -92,6 +93,15 @@ class LonghubangEngine:
                 "total_records": summary.get('total_records', 0),
                 "total_stocks": summary.get('total_stocks', 0),
                 "total_youzi": summary.get('total_youzi', 0),
+                "total_buy_amount": summary.get('total_buy_amount', 0),
+                "total_sell_amount": summary.get('total_sell_amount', 0),
+                "total_net_inflow": summary.get('total_net_inflow', 0),
+                # 兼容前端当前字段命名
+                "stock_count": summary.get('total_stocks', 0),
+                "youzi_count": summary.get('total_youzi', 0),
+                "buy_total": round(summary.get('total_buy_amount', 0) / 10000, 2),
+                "sell_total": round(summary.get('total_sell_amount', 0) / 10000, 2),
+                "net_total": round(summary.get('total_net_inflow', 0) / 10000, 2),
                 "summary": summary
             }
             self.logger.info("数据统计完成")
@@ -219,12 +229,17 @@ class LonghubangEngine:
             推荐股票列表
         """
         recommended = []
+        risk_codes = self._extract_risk_stock_codes(chief_analysis)
         
         # 从摘要中获取TOP股票作为基础
         if summary.get('top_stocks'):
-            for idx, stock in enumerate(summary['top_stocks'][:10], 1):
+            for stock in summary['top_stocks']:
+                if stock['code'] in risk_codes:
+                    continue
                 recommended.append({
-                    'rank': idx,
+                    'rank': len(recommended) + 1,
+                    'stock_code': stock['code'],
+                    'stock_name': stock['name'],
                     'code': stock['code'],
                     'name': stock['name'],
                     'net_inflow': stock['net_inflow'],
@@ -235,8 +250,26 @@ class LonghubangEngine:
                     'stop_loss': '待定',
                     'hold_period': '短线'
                 })
+                if len(recommended) >= 10:
+                    break
         
         return recommended
+
+    def _extract_risk_stock_codes(self, analysis: str) -> set:
+        """从首席策略师风险警示区域提取股票代码，避免推荐列表与风险列表冲突。"""
+        if not analysis:
+            return set()
+
+        risk_text = ""
+        for marker in ("高风险警示股票", "风险警示", "高风险股票"):
+            idx = analysis.find(marker)
+            if idx >= 0:
+                risk_text += "\n" + analysis[idx:idx + 5000]
+
+        if not risk_text:
+            return set()
+
+        return set(re.findall(r"\b(?:00\d{4}|30\d{4}|60\d{4}|68\d{4})\b", risk_text))
     
     def _generate_final_report(self, agents_results: Dict, summary: Dict, 
                                recommended_stocks: List[Dict]) -> Dict:
@@ -388,4 +421,3 @@ if __name__ == "__main__":
         print(f"推荐股票: {len(results['recommended_stocks'])}")
     else:
         print(f"\n分析失败: {results.get('error', '未知错误')}")
-

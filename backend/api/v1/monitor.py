@@ -33,6 +33,11 @@ def get_monitor_db():
     return StockMonitorDatabase()
 
 
+def get_monitor_service():
+    from services.monitor_service import monitor_service
+    return monitor_service
+
+
 @router.get("/config", response_model=SuccessResponse[MonitorConfigResponse])
 async def get_monitor_config():
     """
@@ -40,6 +45,12 @@ async def get_monitor_config():
     """
     try:
         logger.info("获取监控配置")
+        service = get_monitor_service()
+        monitor_config.monitor_enabled = service.running
+        service.update_runtime_config(
+            check_interval=monitor_config.check_interval,
+            auto_notification=monitor_config.auto_notification,
+        )
         return SuccessResponse.success(
             data=MonitorConfigResponse(
                 success=True,
@@ -62,6 +73,16 @@ async def update_monitor_config(config: MonitorConfig):
         logger.info(f"更新监控配置: {config}")
         global monitor_config
         monitor_config = config
+        service = get_monitor_service()
+        service.update_runtime_config(
+            check_interval=config.check_interval,
+            auto_notification=config.auto_notification,
+        )
+        if config.monitor_enabled:
+            service.start_monitoring()
+        else:
+            service.stop_monitoring()
+        monitor_config.monitor_enabled = service.running
         return SuccessResponse.success(
             data=MonitorConfigResponse(
                 success=True,
@@ -97,7 +118,7 @@ async def get_monitored_stocks():
                 stop_loss=stock.get("stop_loss"),
                 current_price=stock.get("current_price"),
                 last_checked=str(stock.get("last_checked", "")) if stock.get("last_checked") else None,
-                check_interval=stock.get("check_interval", 30),
+                check_interval=stock.get("check_interval", 300),
                 notification_enabled=stock.get("notification_enabled", True),
                 trading_hours_only=stock.get("trading_hours_only", True),
                 quant_enabled=stock.get("quant_enabled", False),
@@ -165,7 +186,7 @@ async def add_monitored_stock(stock: MonitoredStockCreate):
                     stop_loss=stock_info.get("stop_loss"),
                     current_price=stock_info.get("current_price"),
                     last_checked=str(stock_info.get("last_checked", "")) if stock_info.get("last_checked") else None,
-                    check_interval=stock_info.get("check_interval", 30),
+                    check_interval=stock_info.get("check_interval", 300),
                     notification_enabled=stock_info.get("notification_enabled", True),
                     trading_hours_only=stock_info.get("trading_hours_only", True),
                     quant_enabled=stock_info.get("quant_enabled", False),
@@ -213,7 +234,7 @@ async def get_monitored_stock(stock_id: str):
                     stop_loss=stock_info.get("stop_loss"),
                     current_price=stock_info.get("current_price"),
                     last_checked=str(stock_info.get("last_checked", "")) if stock_info.get("last_checked") else None,
-                    check_interval=stock_info.get("check_interval", 30),
+                    check_interval=stock_info.get("check_interval", 300),
                     notification_enabled=stock_info.get("notification_enabled", True),
                     trading_hours_only=stock_info.get("trading_hours_only", True),
                     quant_enabled=stock_info.get("quant_enabled", False),
@@ -251,7 +272,7 @@ async def update_monitored_stock(stock_id: str, stock_update: MonitoredStockUpda
             entry_range=stock_update.entry_range.model_dump() if stock_update.entry_range else existing_stock.get("entry_range", {}),
             take_profit=stock_update.take_profit or existing_stock.get("take_profit"),
             stop_loss=stock_update.stop_loss or existing_stock.get("stop_loss"),
-            check_interval=stock_update.check_interval or existing_stock.get("check_interval", 30),
+            check_interval=stock_update.check_interval or existing_stock.get("check_interval", 300),
             notification_enabled=stock_update.notification_enabled if stock_update.notification_enabled is not None else existing_stock.get("notification_enabled", True),
             trading_hours_only=stock_update.trading_hours_only if stock_update.trading_hours_only is not None else existing_stock.get("trading_hours_only", True),
             quant_enabled=stock_update.quant_enabled if stock_update.quant_enabled is not None else existing_stock.get("quant_enabled", False),
@@ -278,7 +299,7 @@ async def update_monitored_stock(stock_id: str, stock_update: MonitoredStockUpda
                     stop_loss=stock_info.get("stop_loss"),
                     current_price=stock_info.get("current_price"),
                     last_checked=str(stock_info.get("last_checked", "")) if stock_info.get("last_checked") else None,
-                    check_interval=stock_info.get("check_interval", 30),
+                    check_interval=stock_info.get("check_interval", 300),
                     notification_enabled=stock_info.get("notification_enabled", True),
                     trading_hours_only=stock_info.get("trading_hours_only", True),
                     quant_enabled=stock_info.get("quant_enabled", False),

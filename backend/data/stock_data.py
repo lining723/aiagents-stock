@@ -8,6 +8,7 @@ import requests
 import json
 import pywencai
 from config.data_source_manager import data_source_manager
+from utils.redis_cache import cached_call
 class StockDataFetcher:
     """股票数据获取类"""
     
@@ -17,6 +18,11 @@ class StockDataFetcher:
         self.financial_data = None
         self.data_source_manager = data_source_manager
         
+    @cached_call(
+        "fundamental",
+        key_builder=lambda self, symbol: ("stock_info", str(symbol).split(".")[0]),
+        is_valid=lambda result: bool(result and not result.get("error")),
+    )
     def get_stock_info(self, symbol):
         """获取股票基本信息"""
         try:
@@ -32,6 +38,11 @@ class StockDataFetcher:
         except Exception as e:
             return {"error": f"获取股票信息失败: {str(e)}"}
     
+    @cached_call(
+        "kline",
+        key_builder=lambda self, symbol, period="1y", interval="1d": ("stock_data", str(symbol).split(".")[0], period, interval),
+        is_valid=lambda result: bool(result and not (isinstance(result, dict) and result.get("error"))),
+    )
     def get_stock_data(self, symbol, period="1y", interval="1d"):
         """获取股票历史数据"""
         try:

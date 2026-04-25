@@ -16,8 +16,10 @@ import {
   Statistic,
   Divider,
   List,
+  Checkbox,
 } from 'antd'
-import { BarChartOutlined, LineChartOutlined, FundOutlined, RobotOutlined } from '@ant-design/icons'
+import type { TabsProps } from 'antd'
+import { BarChartOutlined, LineChartOutlined, FundOutlined, RobotOutlined, SlidersOutlined } from '@ant-design/icons'
 import { useMutation } from '@tanstack/react-query'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -26,8 +28,10 @@ import { stockApi } from '@/services/stockApi'
 import type {
   ComprehensiveAnalysisRequest,
   ComprehensiveAnalysisResponse,
+  AnalysisDimension,
   TechnicalAnalysisResponse,
   FundamentalAnalysisResponse,
+  PricePredictionResponse,
   AIAnalysisRequest,
 } from '@/types/stock'
 
@@ -36,6 +40,12 @@ const { Title, Paragraph, Text } = Typography
 export default function StockAnalysis() {
   const [symbol, setSymbol] = useState<string>('000001')
   const [daysAgo, setDaysAgo] = useState<number>(60)
+  const [analysisDimensions, setAnalysisDimensions] = useState<AnalysisDimension[]>([
+    'technical',
+    'fundamental',
+    'price_prediction',
+  ])
+  const [enableAIAnalysis, setEnableAIAnalysis] = useState<boolean>(true)
 
   const mutation = useMutation({
     mutationFn: (request: ComprehensiveAnalysisRequest) =>
@@ -48,9 +58,23 @@ export default function StockAnalysis() {
   })
 
   const handleAnalyze = () => {
-    if (symbol.trim()) {
-      mutation.mutate({ symbol: symbol.trim(), days_ago: daysAgo })
-      aiMutation.mutate({ symbol: symbol.trim() })
+    const cleanSymbol = symbol.trim()
+    if (cleanSymbol && (analysisDimensions.length > 0 || enableAIAnalysis)) {
+      if (analysisDimensions.length > 0) {
+        mutation.mutate({
+          symbol: cleanSymbol,
+          days_ago: daysAgo,
+          analysis_dimensions: analysisDimensions,
+        })
+      } else {
+        mutation.reset()
+      }
+
+      if (enableAIAnalysis) {
+        aiMutation.mutate({ symbol: cleanSymbol })
+      } else {
+        aiMutation.reset()
+      }
     }
   }
 
@@ -295,6 +319,24 @@ export default function StockAnalysis() {
     )
   }
 
+  const renderPricePrediction = (data: PricePredictionResponse) => {
+    return (
+      <Card>
+        <pre
+          style={{
+            margin: 0,
+            whiteSpace: 'pre-wrap',
+            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+            fontSize: 16,
+            lineHeight: 1.9,
+          }}
+        >
+          {data.output_text}
+        </pre>
+      </Card>
+    )
+  }
+
   const renderComprehensiveAnalysis = (data: ComprehensiveAnalysisResponse) => {
     return (
       <Space direction="vertical" style={{ width: '100%' }}>
@@ -421,35 +463,69 @@ export default function StockAnalysis() {
 
   const analysisData = mutation.data
 
-  const tabItems = [
+  const selectedDimensionOptions = [
+    {
+      label: '技术分析',
+      value: 'technical',
+    },
+    {
+      label: '基本面分析',
+      value: 'fundamental',
+    },
+    {
+      label: '价格预测',
+      value: 'price_prediction',
+    },
+  ]
+
+  const tabItems: TabsProps['items'] = [
     {
       key: 'comprehensive',
       label: <span><BarChartOutlined />综合分析</span>,
-      children: analysisData && renderComprehensiveAnalysis(analysisData),
+      children: analysisData ? renderComprehensiveAnalysis(analysisData) : (
+        <Alert message="仅执行AI深度分析" description="当前未勾选结构化分析维度。" type="info" showIcon />
+      ),
     },
-    {
+  ]
+
+  if (analysisData?.technical_analysis) {
+    tabItems.push({
       key: 'technical',
       label: <span><LineChartOutlined />技术分析</span>,
-      children: analysisData?.technical_analysis && renderTechnicalAnalysis(analysisData.technical_analysis),
-    },
-    {
+      children: renderTechnicalAnalysis(analysisData.technical_analysis),
+    })
+  }
+
+  if (analysisData?.fundamental_analysis) {
+    tabItems.push({
       key: 'fundamental',
       label: <span><FundOutlined />基本面分析</span>,
-      children: analysisData?.fundamental_analysis && renderFundamentalAnalysis(analysisData.fundamental_analysis),
-    },
-    {
+      children: renderFundamentalAnalysis(analysisData.fundamental_analysis),
+    })
+  }
+
+  if (analysisData?.price_prediction) {
+    tabItems.push({
+      key: 'prediction',
+      label: <span><LineChartOutlined />价格预测</span>,
+      children: renderPricePrediction(analysisData.price_prediction),
+    })
+  }
+
+  if (enableAIAnalysis) {
+    tabItems.push({
       key: 'ai',
       label: <span><RobotOutlined />AI深度分析</span>,
       children: renderAIAnalysis(),
-    },
-  ]
+    })
+  }
 
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Card>
         <Title level={2}><BarChartOutlined /> 股票分析</Title>
         <Paragraph>
-          技术分析 + 基本面分析 + 多维度综合评估 — 为您提供专业的股票分析报告
+          按需组合技术面、基本面、价格预测和AI深度分析，减少无关数据请求
         </Paragraph>
       </Card>
 
@@ -478,10 +554,38 @@ export default function StockAnalysis() {
               />
             </Col>
           </Row>
+          <Divider style={{ margin: '8px 0' }} />
+          <Row gutter={[16, 12]} align="middle">
+            <Col xs={24} md={4}>
+              <Text strong><SlidersOutlined /> 分析维度</Text>
+            </Col>
+            <Col xs={24} md={20}>
+              <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                <Checkbox.Group
+                  options={selectedDimensionOptions}
+                  value={analysisDimensions}
+                  onChange={(values) => setAnalysisDimensions(values as AnalysisDimension[])}
+                />
+                <Checkbox
+                  checked={enableAIAnalysis}
+                  onChange={(event) => setEnableAIAnalysis(event.target.checked)}
+                >
+                  AI深度分析
+                </Checkbox>
+                <Text type="secondary">
+                  只会请求已勾选的维度；未勾选的模块不会拉取源数据，也不会出现在结果页。
+                </Text>
+              </Space>
+            </Col>
+          </Row>
+          {analysisDimensions.length === 0 && !enableAIAnalysis && (
+            <Alert message="请至少选择一个分析维度" type="warning" showIcon />
+          )}
           <Button
             type="primary"
             onClick={handleAnalyze}
             loading={mutation.isPending || aiMutation.isPending}
+            disabled={analysisDimensions.length === 0 && !enableAIAnalysis}
             size="large"
           >
             开始分析
@@ -498,8 +602,8 @@ export default function StockAnalysis() {
         />
       )}
 
-      {mutation.isSuccess && analysisData && (
-        <Card title={`分析结果 - ${analysisData.name || analysisData.symbol}`}>
+      {((mutation.isSuccess && analysisData) || enableAIAnalysis) && (mutation.isSuccess || aiMutation.isPending || aiMutation.isSuccess || aiMutation.isError) && (
+        <Card title={`分析结果 - ${analysisData?.name || analysisData?.symbol || symbol}`}>
           <Spin spinning={mutation.isPending}>
             <Tabs items={tabItems} defaultActiveKey="comprehensive" />
           </Spin>

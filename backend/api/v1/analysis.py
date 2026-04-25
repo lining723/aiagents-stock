@@ -4,6 +4,7 @@ import math
 from schemas.analysis import (
     TechnicalAnalysisRequest,
     FundamentalAnalysisRequest,
+    PricePredictionRequest,
     ComprehensiveAnalysisRequest,
     AIAnalysisRequest,
     AIAnalysisResponse,
@@ -11,6 +12,7 @@ from schemas.analysis import (
     BatchAIAnalysisResponse,
     TechnicalAnalysisResponse,
     FundamentalAnalysisResponse,
+    PricePredictionResponse,
     ComprehensiveAnalysisResponse,
     TechnicalIndicator,
     KlineData,
@@ -200,21 +202,118 @@ async def get_fundamental_analysis(request: FundamentalAnalysisRequest):
         raise HTTPException(status_code=500, detail=f"基本面分析失败: {str(e)}")
 
 
+@router.post("/price-prediction", response_model=SuccessResponse[PricePredictionResponse])
+async def get_price_prediction(request: PricePredictionRequest):
+    """
+    未来480分钟价格预测
+    """
+    try:
+        logger.info(f"价格预测请求: symbol={request.symbol}")
+
+        from services.stock_analyzer import StockAnalyzer
+
+        analyzer = StockAnalyzer()
+        success, data, message = analyzer.get_price_prediction(symbol=request.symbol)
+
+        if not success or data is None:
+            logger.warning(f"价格预测失败: {message}")
+            payload = data or {}
+            return SuccessResponse.success(
+                data=PricePredictionResponse(
+                    success=False,
+                    message=payload.get("message", message),
+                    symbol=payload.get("symbol", request.symbol),
+                    pressure_price=payload.get("pressure_price"),
+                    pressure_pct=payload.get("pressure_pct"),
+                    support_price=payload.get("support_price"),
+                    support_pct=payload.get("support_pct"),
+                    amplitude_pct=payload.get("amplitude_pct"),
+                    price_limit_pct=payload.get("price_limit_pct"),
+                    price_limit_days=payload.get("price_limit_days"),
+                    price_limit_unrestricted=payload.get("price_limit_unrestricted"),
+                    price_limit_rule=payload.get("price_limit_rule"),
+                    listing_date=payload.get("listing_date"),
+                    listing_trading_day=payload.get("listing_trading_day"),
+                    output_text=payload.get("output_text") or (
+                        "上涨预估价位：0.00 \n"
+                        "上涨预估幅度：+0.00% \n"
+                        "下跌预估价位：0.00\n"
+                        "下跌预估幅度：-0.00%\n"
+                        "未来480分钟预估振幅：0.00%"
+                    ),
+                ),
+                message=message,
+            )
+
+        response = PricePredictionResponse(
+            success=True,
+            message="价格预测完成",
+            symbol=data.get("symbol", request.symbol),
+            pressure_price=data.get("pressure_price"),
+            pressure_pct=data.get("pressure_pct"),
+            support_price=data.get("support_price"),
+            support_pct=data.get("support_pct"),
+            amplitude_pct=data.get("amplitude_pct"),
+            price_limit_pct=data.get("price_limit_pct"),
+            price_limit_days=data.get("price_limit_days"),
+            price_limit_unrestricted=data.get("price_limit_unrestricted"),
+            price_limit_rule=data.get("price_limit_rule"),
+            listing_date=data.get("listing_date"),
+            listing_trading_day=data.get("listing_trading_day"),
+            output_text=data.get("output_text", ""),
+        )
+
+        response_dict = response.model_dump()
+        response_dict = clean_nan_values(response_dict)
+        response = PricePredictionResponse(**response_dict)
+
+        logger.info(f"价格预测完成: {request.symbol}")
+
+        return SuccessResponse.success(
+            data=response,
+            message="价格预测完成",
+        )
+
+    except Exception as e:
+        logger.error(f"价格预测异常: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"价格预测失败: {str(e)}")
+
+
 @router.post("/comprehensive", response_model=SuccessResponse[ComprehensiveAnalysisResponse])
 async def get_comprehensive_analysis(request: ComprehensiveAnalysisRequest):
     """
     综合分析
     """
     try:
-        logger.info(f"综合分析请求: symbol={request.symbol}, days_ago={request.days_ago}")
-        
-        technical_response = (await get_technical_analysis(
-            TechnicalAnalysisRequest(symbol=request.symbol, days_ago=request.days_ago)
-        )).data
-        
-        fundamental_response = (await get_fundamental_analysis(
-            FundamentalAnalysisRequest(symbol=request.symbol)
-        )).data
+        allowed_dimensions = {"technical", "fundamental", "price_prediction"}
+        dimensions = request.analysis_dimensions if request.analysis_dimensions is not None else [
+            "technical",
+            "fundamental",
+            "price_prediction",
+        ]
+        dimensions = [dimension for dimension in dimensions if dimension in allowed_dimensions]
+
+        logger.info(
+            f"综合分析请求: symbol={request.symbol}, days_ago={request.days_ago}, dimensions={dimensions}"
+        )
+
+        technical_response = None
+        if "technical" in dimensions:
+            technical_response = (await get_technical_analysis(
+                TechnicalAnalysisRequest(symbol=request.symbol, days_ago=request.days_ago)
+            )).data
+
+        fundamental_response = None
+        if "fundamental" in dimensions:
+            fundamental_response = (await get_fundamental_analysis(
+                FundamentalAnalysisRequest(symbol=request.symbol)
+            )).data
+
+        price_prediction_response = None
+        if "price_prediction" in dimensions:
+            price_prediction_response = (await get_price_prediction(
+                PricePredictionRequest(symbol=request.symbol)
+            )).data
         
         technical_score = 0.0
         if technical_response and technical_response.success:
@@ -233,14 +332,26 @@ async def get_comprehensive_analysis(request: ComprehensiveAnalysisRequest):
             if total > 0:
                 fundamental_score = (excellent_count * 100 + good_count * 75 + average_count * 50 + poor_count * 25) / total
         
-        if technical_score == 0:
+        if technical_score == 0 and "technical" in dimensions:
             technical_score = 70
-        if fundamental_score == 0:
+        if fundamental_score == 0 and "fundamental" in dimensions:
             fundamental_score = 70
-        
-        overall_score = (technical_score * 0.4 + fundamental_score * 0.6)
-        
-        if overall_score >= 80:
+
+        score_items = []
+        if "technical" in dimensions:
+            score_items.append(("技术面", technical_score, 0.4))
+        if "fundamental" in dimensions:
+            score_items.append(("基本面", fundamental_score, 0.6))
+
+        total_weight = sum(weight for _, _, weight in score_items)
+        if total_weight > 0:
+            overall_score = sum(score * weight for _, score, weight in score_items) / total_weight
+        else:
+            overall_score = 0
+
+        if not score_items:
+            overall_rating = "仅预测"
+        elif overall_score >= 80:
             overall_rating = "强烈推荐"
         elif overall_score >= 70:
             overall_rating = "推荐"
@@ -252,8 +363,8 @@ async def get_comprehensive_analysis(request: ComprehensiveAnalysisRequest):
             overall_rating = "回避"
         
         scores = [
-            AnalysisScore(category="技术面", score=round(technical_score, 2), weight=0.4),
-            AnalysisScore(category="基本面", score=round(fundamental_score, 2), weight=0.6),
+            AnalysisScore(category=category, score=round(score, 2), weight=round(weight / total_weight, 2) if total_weight else 0)
+            for category, score, weight in score_items
         ]
         
         risks = [
@@ -269,7 +380,12 @@ async def get_comprehensive_analysis(request: ComprehensiveAnalysisRequest):
         ]
         
         recommendations = []
-        if overall_rating in ["强烈推荐", "推荐"]:
+        if overall_rating == "仅预测":
+            recommendations = [
+                "当前仅执行价格预测维度",
+                "建议结合技术面或基本面后再做交易决策",
+            ]
+        elif overall_rating in ["强烈推荐", "推荐"]:
             recommendations = [
                 "可逢低关注，分批建仓",
                 "设置合理止损位，控制风险",
@@ -299,6 +415,7 @@ async def get_comprehensive_analysis(request: ComprehensiveAnalysisRequest):
             scores=scores,
             technical_analysis=technical_response,
             fundamental_analysis=fundamental_response,
+            price_prediction=price_prediction_response,
             risks=risks,
             opportunities=opportunities,
             recommendations=recommendations,

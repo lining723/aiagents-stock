@@ -48,9 +48,9 @@ WEBHOOK_KEYWORD = os.getenv("WEBHOOK_KEYWORD", "")
 # 时区配置
 TZ = os.getenv("TZ", "Asia/Shanghai")
 
-# TDX股票数据API配置项目地址github.com/oficcejo/tdx-api
+# TDX股票数据API配置（源码已迁移至本项目 tdx-api/ 目录）
 TDX_ENABLED = os.getenv("TDX_ENABLED", "false").lower() == "true"
-TDX_BASE_URL = os.getenv("TDX_BASE_URL", "http://127.0.0.1:5000")
+TDX_BASE_URL = os.getenv("TDX_BASE_URL", "http://127.0.0.1:8080")
 
 TDX_CONFIG = {
     'enabled': TDX_ENABLED,

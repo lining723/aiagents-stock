@@ -9,6 +9,7 @@ import io
 import warnings
 from datetime import datetime, timedelta
 import akshare as ak
+from utils.redis_cache import cached_call
 
 warnings.filterwarnings('ignore')
 
@@ -39,6 +40,11 @@ class QStockNewsDataFetcher:
         self.available = True
         print("✓ 新闻数据获取器初始化成功（akshare数据源）")
     
+    @cached_call(
+        "news",
+        key_builder=lambda self, symbol: (str(symbol).split(".")[0], self.max_items),
+        is_valid=lambda result: bool(result and result.get("data_success")),
+    )
     def get_stock_news(self, symbol):
         """
         获取股票的新闻数据
@@ -303,4 +309,3 @@ if __name__ == "__main__":
             print(f"\n获取失败: {data.get('error', '未知错误')}")
         
         print("\n")
-

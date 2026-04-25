@@ -13,6 +13,7 @@ import {
   Tag,
   Spin,
   Modal,
+  message,
 } from 'antd'
 import { ThunderboltOutlined, RobotOutlined } from '@ant-design/icons'
 import { useMutation } from '@tanstack/react-query'
@@ -48,11 +49,11 @@ export default function MainForceStock() {
     onSuccess: (data) => {
       Modal.success({
         title: '批量分析完成',
-        content: `成功分析 ${data.success_count} 只股票，失败 ${data.failed_count} 只。分析报告已保存到历史记录中。`,
+        content: `成功分析 ${data?.success_count ?? 0} 只股票，失败 ${data?.failed_count ?? 0} 只。分析报告已保存到历史记录中。`,
         okText: '去查看',
         onOk: () => {
           navigate('/analysis/history')
-        }
+        },
       })
       setSelectedRowKeys([])
     },
@@ -82,14 +83,6 @@ export default function MainForceStock() {
   }
 
   const formatMarketCap = (val?: number) => {
-    if (!val) return '-'
-    if (val >= 100000000) {
-      return `${(val / 100000000).toFixed(2)}亿`
-    }
-    return `${(val / 10000).toFixed(2)}万`
-  }
-
-  const formatMoney = (val?: number) => {
     if (!val) return '-'
     if (val >= 100000000) {
       return `${(val / 100000000).toFixed(2)}亿`

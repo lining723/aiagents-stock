@@ -12,6 +12,7 @@ import {
   Tag,
   Spin,
   Modal,
+  message,
 } from 'antd'
 import { ExperimentOutlined, RobotOutlined } from '@ant-design/icons'
 import { useMutation } from '@tanstack/react-query'
@@ -45,11 +46,11 @@ export default function ValueStock() {
     onSuccess: (data) => {
       Modal.success({
         title: '批量分析完成',
-        content: `成功分析 ${data.success_count} 只股票，失败 ${data.failed_count} 只。分析报告已保存到历史记录中。`,
+        content: `成功分析 ${data?.success_count ?? 0} 只股票，失败 ${data?.failed_count ?? 0} 只。分析报告已保存到历史记录中。`,
         okText: '去查看',
         onOk: () => {
           navigate('/analysis/history')
-        }
+        },
       })
       setSelectedRowKeys([])
     },

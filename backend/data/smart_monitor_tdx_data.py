@@ -308,6 +308,7 @@ class SmartMonitorTDXDataFetcher:
                 boll_position = '中轨下方'
             
             return {
+                'indicator_close': current_price,
                 'ma5': ma5,
                 'ma20': ma20,
                 'ma60': ma60,
@@ -326,7 +327,8 @@ class SmartMonitorTDXDataFetcher:
                 'boll_lower': boll_lower,
                 'boll_position': boll_position,
                 'vol_ma5': float(latest['vol_ma5']),
-                'volume_ratio': float(latest['成交量']) / float(latest['vol_ma5']) if latest['vol_ma5'] > 0 else 1.0
+                'volume_ratio': float(latest['成交量']) / float(latest['vol_ma5']) if latest['vol_ma5'] > 0 else 1.0,
+                'data_source': 'tdx'
             }
             
         except Exception as e:
@@ -437,4 +439,3 @@ if __name__ == '__main__':
         print(f"  趋势: {data.get('trend')}")
     else:
         print("获取数据失败")
-

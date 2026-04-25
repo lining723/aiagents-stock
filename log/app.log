@@ -571,3 +571,793 @@ ModuleNotFoundError: No module named 'agents.deepseek_client'
 2026-03-31 15:34:32 | INFO     | backend.api.v1.analysis | AI分析请求: symbol=002240.SZ, days_ago=60
 2026-03-31 15:36:03 | INFO     | backend.api.v1.analysis | AI分析结果已保存到历史记录: 002240.SZ
 2026-03-31 15:36:03 | INFO     | backend.api.v1.analysis | AI分析完成: 002240.SZ
+2026-04-15 13:19:48 | ERROR    | aiagents_stock       | 2026-04-15 13:19:48 | INFO     | main                 | ================================================================================
+2026-04-15 13:19:48 | INFO     | main                 | ================================================================================
+2026-04-15 13:19:48 | ERROR    | aiagents_stock       | 2026-04-15 13:19:48 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-15 13:19:48 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-15 13:19:48 | ERROR    | aiagents_stock       | 2026-04-15 13:19:48 | INFO     | main                 | 版本: 1.0.0
+2026-04-15 13:19:48 | INFO     | main                 | 版本: 1.0.0
+2026-04-15 13:19:48 | ERROR    | aiagents_stock       | 2026-04-15 13:19:48 | INFO     | main                 | ================================================================================
+2026-04-15 13:19:48 | INFO     | main                 | ================================================================================
+2026-04-15 13:21:46 | ERROR    | aiagents_stock       | 2026-04-15 13:21:46 | INFO     | api.v1.stock         | 低估值选股请求: top_n=10
+2026-04-15 13:21:46 | INFO     | api.v1.stock         | 低估值选股请求: top_n=10
+2026-04-15 13:21:46 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-15 13:21:46 | INFO     | aiagents_stock       | 💎 低估值选股 - 数据获取中
+2026-04-15 13:21:46 | INFO     | aiagents_stock       | ============================================================
+2026-04-15 13:21:46 | INFO     | aiagents_stock       | 策略: PE≤20.0 + PB≤1.5 + 股息率≥1% + 资产负债率≤30%
+2026-04-15 13:21:46 | INFO     | aiagents_stock       | 排除: ST、科创板、创业板
+2026-04-15 13:21:46 | INFO     | aiagents_stock       | 排序: 按流通市值由小到大
+2026-04-15 13:21:46 | INFO     | aiagents_stock       | 目标: 筛选前10只股票
+2026-04-15 13:21:46 | INFO     | aiagents_stock       | 
+正在使用 akshare 获取A股行情数据...
+2026-04-15 13:21:51 | INFO     | aiagents_stock       | akshare获取失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 13:21:51 | INFO     | aiagents_stock       | 
+akshare获取失败，尝试pywencai...
+2026-04-15 13:21:51 | INFO     | aiagents_stock       | 
+查询语句: 市盈率小于等于20.0，市净率小于等于1.5，股息率大于等于1%，资产负债率小于等于30%，非st，非科创板，非创业板，按流通市值由小到大排名
+2026-04-15 13:21:51 | INFO     | aiagents_stock       | 正在调用问财接口...
+2026-04-15 13:21:51 | INFO     | aiagents_stock       | pywencai获取失败: 'NoneType' object has no attribute 'get'
+2026-04-15 13:21:51 | ERROR    | aiagents_stock       | 2026-04-15 13:21:51 | INFO     | api.v1.stock         | 低估值选股成功: 0 只股票
+2026-04-15 13:21:51 | INFO     | api.v1.stock         | 低估值选股成功: 0 只股票
+2026-04-15 13:21:59 | ERROR    | aiagents_stock       | 2026-04-15 13:21:59 | INFO     | api.v1.stock         | 主力选股请求: days_ago=5 min_market_cap=10.0 max_market_cap=500.0 max_range_change=20.0 top_n=10
+2026-04-15 13:21:59 | INFO     | api.v1.stock         | 主力选股请求: days_ago=5 min_market_cap=10.0 max_market_cap=500.0 max_range_change=20.0 top_n=10
+2026-04-15 13:21:59 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-15 13:21:59 | INFO     | aiagents_stock       | 🔍 主力选股 - 数据获取中
+2026-04-15 13:21:59 | INFO     | aiagents_stock       | ============================================================
+2026-04-15 13:21:59 | INFO     | aiagents_stock       | 开始日期: 2026年4月10日
+2026-04-15 13:21:59 | INFO     | aiagents_stock       | 目标: 获取主力资金净流入排名前100名股票
+2026-04-15 13:21:59 | INFO     | aiagents_stock       | 
+尝试方案 1/4...
+2026-04-15 13:21:59 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入排名，并计算区间涨跌幅，市值10.0-500.0亿之间，非科创非st，所属同花顺行业，总市值，净利润，营收，市盈率，市净率，股息率，资产负债率，盈利能力评分，成长...
+2026-04-15 13:21:59 | INFO     | aiagents_stock       |   ❌ 方案1失败: 'NoneType' object has no attribute 'get'
+2026-04-15 13:22:01 | INFO     | aiagents_stock       | 
+尝试方案 2/4...
+2026-04-15 13:22:01 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入，并计算区间涨跌幅，市值10.0-500.0亿，非科创非st，所属同花顺行业，总市值，净利润，营收，市盈率，市净率，股息率，资产负债率...
+2026-04-15 13:22:01 | INFO     | aiagents_stock       |   ❌ 方案2失败: 'NoneType' object has no attribute 'get'
+2026-04-15 13:22:03 | INFO     | aiagents_stock       | 
+尝试方案 3/4...
+2026-04-15 13:22:03 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入排名，并计算区间涨跌幅，市值10.0-500.0亿，非科创非st，所属行业，总市值，股息率，资产负债率...
+2026-04-15 13:22:03 | INFO     | aiagents_stock       |   ❌ 方案3失败: 'NoneType' object has no attribute 'get'
+2026-04-15 13:22:05 | INFO     | aiagents_stock       | 
+尝试方案 4/4...
+2026-04-15 13:22:05 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入前100名，并计算区间涨跌幅，市值10.0-500.0亿，非st非科创板，所属行业，总市值...
+2026-04-15 13:22:05 | INFO     | aiagents_stock       |   ❌ 方案4失败: 'NoneType' object has no attribute 'get'
+2026-04-15 13:22:07 | INFO     | aiagents_stock       | 
+❌ 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 13:22:07 | ERROR    | aiagents_stock       | 2026-04-15 13:22:07 | WARNING  | api.v1.stock         | 主力选股失败: 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 13:22:07 | WARNING  | api.v1.stock         | 主力选股失败: 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 13:24:21 | ERROR    | aiagents_stock       | 2026-04-15 13:24:21 | INFO     | main                 | AI Agents Stock API 关闭
+2026-04-15 13:24:21 | INFO     | main                 | AI Agents Stock API 关闭
+2026-04-15 13:24:22 | ERROR    | aiagents_stock       | 2026-04-15 13:24:22 | INFO     | main                 | ================================================================================
+2026-04-15 13:24:22 | INFO     | main                 | ================================================================================
+2026-04-15 13:24:22 | ERROR    | aiagents_stock       | 2026-04-15 13:24:22 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-15 13:24:22 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-15 13:24:22 | ERROR    | aiagents_stock       | 2026-04-15 13:24:22 | INFO     | main                 | 版本: 1.0.0
+2026-04-15 13:24:22 | INFO     | main                 | 版本: 1.0.0
+2026-04-15 13:24:22 | ERROR    | aiagents_stock       | 2026-04-15 13:24:22 | INFO     | main                 | ================================================================================
+2026-04-15 13:24:22 | INFO     | main                 | ================================================================================
+2026-04-15 13:25:37 | ERROR    | aiagents_stock       | 2026-04-15 13:25:37 | INFO     | api.v1.stock         | 主力选股请求: days_ago=5 min_market_cap=10.0 max_market_cap=500.0 max_range_change=20.0 top_n=10
+2026-04-15 13:25:37 | INFO     | api.v1.stock         | 主力选股请求: days_ago=5 min_market_cap=10.0 max_market_cap=500.0 max_range_change=20.0 top_n=10
+2026-04-15 13:25:37 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-15 13:25:37 | INFO     | aiagents_stock       | 🔍 主力选股 - 数据获取中
+2026-04-15 13:25:37 | INFO     | aiagents_stock       | ============================================================
+2026-04-15 13:25:37 | INFO     | aiagents_stock       | 开始日期: 2026年4月10日
+2026-04-15 13:25:37 | INFO     | aiagents_stock       | 目标: 获取主力资金净流入排名前100名股票
+2026-04-15 13:25:37 | INFO     | aiagents_stock       | 
+尝试方案 1/4...
+2026-04-15 13:25:37 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入排名，并计算区间涨跌幅，市值10.0-500.0亿之间，非科创非st，所属同花顺行业，总市值，净利润，营收，市盈率，市净率，股息率，资产负债率，盈利能力评分，成长...
+2026-04-15 13:25:37 | ERROR    | aiagents_stock       | 2026-04-15 13:25:37 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:37 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:37 | ERROR    | aiagents_stock       | 2026-04-15 13:25:37 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:37 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:38 | ERROR    | aiagents_stock       | 2026-04-15 13:25:38 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:38 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:39 | ERROR    | aiagents_stock       | 2026-04-15 13:25:39 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:39 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:40 | INFO     | aiagents_stock       |   ⚠️ 方案1返回None，尝试下一个方案
+2026-04-15 13:25:40 | INFO     | aiagents_stock       | 
+尝试方案 2/4...
+2026-04-15 13:25:40 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入，并计算区间涨跌幅，市值10.0-500.0亿，非科创非st，所属同花顺行业，总市值，净利润，营收，市盈率，市净率，股息率，资产负债率...
+2026-04-15 13:25:40 | ERROR    | aiagents_stock       | 2026-04-15 13:25:40 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:40 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:40 | ERROR    | aiagents_stock       | 2026-04-15 13:25:40 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:40 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:41 | ERROR    | aiagents_stock       | 2026-04-15 13:25:41 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:41 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:41 | ERROR    | aiagents_stock       | 2026-04-15 13:25:41 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:41 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:42 | INFO     | aiagents_stock       |   ⚠️ 方案2返回None，尝试下一个方案
+2026-04-15 13:25:42 | INFO     | aiagents_stock       | 
+尝试方案 3/4...
+2026-04-15 13:25:42 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入排名，并计算区间涨跌幅，市值10.0-500.0亿，非科创非st，所属行业，总市值，股息率，资产负债率...
+2026-04-15 13:25:42 | ERROR    | aiagents_stock       | 2026-04-15 13:25:42 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:42 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:42 | ERROR    | aiagents_stock       | 2026-04-15 13:25:42 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:42 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:43 | ERROR    | aiagents_stock       | 2026-04-15 13:25:43 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:43 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:43 | ERROR    | aiagents_stock       | 2026-04-15 13:25:43 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:43 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:44 | INFO     | aiagents_stock       |   ⚠️ 方案3返回None，尝试下一个方案
+2026-04-15 13:25:44 | INFO     | aiagents_stock       | 
+尝试方案 4/4...
+2026-04-15 13:25:44 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入前100名，并计算区间涨跌幅，市值10.0-500.0亿，非st非科创板，所属行业，总市值...
+2026-04-15 13:25:44 | ERROR    | aiagents_stock       | 2026-04-15 13:25:44 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:44 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:44 | ERROR    | aiagents_stock       | 2026-04-15 13:25:44 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:44 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:45 | ERROR    | aiagents_stock       | 2026-04-15 13:25:45 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:45 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:45 | ERROR    | aiagents_stock       | 2026-04-15 13:25:45 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:45 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:25:46 | INFO     | aiagents_stock       |   ⚠️ 方案4返回None，尝试下一个方案
+2026-04-15 13:25:46 | INFO     | aiagents_stock       | 
+问财全部失败，尝试使用 akshare 主力资金排行兜底...
+2026-04-15 13:25:46 | ERROR    | aiagents_stock       | 2026-04-15 13:25:46 | WARNING  | strategies.main_force_selector | akshare主力排行兜底失败: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 13:25:46 | WARNING  | strategies.main_force_selector | akshare主力排行兜底失败: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 13:25:46 | INFO     | aiagents_stock       | 
+❌ 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 13:25:46 | ERROR    | aiagents_stock       | 2026-04-15 13:25:46 | WARNING  | api.v1.stock         | 主力选股失败: 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 13:25:46 | WARNING  | api.v1.stock         | 主力选股失败: 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 13:25:46 | ERROR    | aiagents_stock       | 2026-04-15 13:25:46 | INFO     | api.v1.stock         | 低估值选股请求: top_n=10
+2026-04-15 13:25:46 | INFO     | api.v1.stock         | 低估值选股请求: top_n=10
+2026-04-15 13:25:46 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-15 13:25:46 | INFO     | aiagents_stock       | 💎 低估值选股 - 数据获取中
+2026-04-15 13:25:46 | INFO     | aiagents_stock       | ============================================================
+2026-04-15 13:25:46 | INFO     | aiagents_stock       | 策略: PE≤20.0 + PB≤1.5 + 股息率≥1% + 资产负债率≤30%
+2026-04-15 13:25:46 | INFO     | aiagents_stock       | 排除: ST、科创板、创业板
+2026-04-15 13:25:46 | INFO     | aiagents_stock       | 排序: 按流通市值由小到大
+2026-04-15 13:25:46 | INFO     | aiagents_stock       | 目标: 筛选前10只股票
+2026-04-15 13:25:46 | INFO     | aiagents_stock       | 
+正在使用 akshare 获取A股行情数据...
+2026-04-15 13:25:51 | INFO     | aiagents_stock       | akshare获取失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 13:25:51 | INFO     | aiagents_stock       | 
+akshare获取失败，尝试pywencai...
+2026-04-15 13:25:51 | INFO     | aiagents_stock       | 
+查询语句: 市盈率小于等于20.0，市净率小于等于1.5，股息率大于等于1%，资产负债率小于等于30%，非st，非科创板，非创业板，按流通市值由小到大排名
+2026-04-15 13:25:51 | INFO     | aiagents_stock       | 正在调用问财接口...
+2026-04-15 13:25:51 | ERROR    | aiagents_stock       | 2026-04-15 13:25:51 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=True error=NameError: name 'pywencai' is not defined
+2026-04-15 13:25:51 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=True error=NameError: name 'pywencai' is not defined
+2026-04-15 13:25:51 | ERROR    | aiagents_stock       | 2026-04-15 13:25:51 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=False error=NameError: name 'pywencai' is not defined
+2026-04-15 13:25:51 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=False error=NameError: name 'pywencai' is not defined
+2026-04-15 13:25:52 | ERROR    | aiagents_stock       | 2026-04-15 13:25:52 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=True error=NameError: name 'pywencai' is not defined
+2026-04-15 13:25:52 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=True error=NameError: name 'pywencai' is not defined
+2026-04-15 13:25:52 | ERROR    | aiagents_stock       | 2026-04-15 13:25:52 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=False error=NameError: name 'pywencai' is not defined
+2026-04-15 13:25:52 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=False error=NameError: name 'pywencai' is not defined
+2026-04-15 13:25:53 | ERROR    | aiagents_stock       | 2026-04-15 13:25:53 | INFO     | api.v1.stock         | 低估值选股成功: 0 只股票
+2026-04-15 13:25:53 | INFO     | api.v1.stock         | 低估值选股成功: 0 只股票
+2026-04-15 13:26:18 | ERROR    | aiagents_stock       | 2026-04-15 13:26:18 | INFO     | main                 | AI Agents Stock API 关闭
+2026-04-15 13:26:18 | INFO     | main                 | AI Agents Stock API 关闭
+2026-04-15 13:26:19 | ERROR    | aiagents_stock       | 2026-04-15 13:26:19 | INFO     | main                 | ================================================================================
+2026-04-15 13:26:19 | INFO     | main                 | ================================================================================
+2026-04-15 13:26:19 | ERROR    | aiagents_stock       | 2026-04-15 13:26:19 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-15 13:26:19 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-15 13:26:19 | ERROR    | aiagents_stock       | 2026-04-15 13:26:19 | INFO     | main                 | 版本: 1.0.0
+2026-04-15 13:26:19 | INFO     | main                 | 版本: 1.0.0
+2026-04-15 13:26:19 | ERROR    | aiagents_stock       | 2026-04-15 13:26:19 | INFO     | main                 | ================================================================================
+2026-04-15 13:26:19 | INFO     | main                 | ================================================================================
+2026-04-15 13:26:25 | ERROR    | aiagents_stock       | 2026-04-15 13:26:25 | INFO     | api.v1.stock         | 低估值选股请求: top_n=10
+2026-04-15 13:26:25 | INFO     | api.v1.stock         | 低估值选股请求: top_n=10
+2026-04-15 13:26:25 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-15 13:26:25 | INFO     | aiagents_stock       | 💎 低估值选股 - 数据获取中
+2026-04-15 13:26:25 | INFO     | aiagents_stock       | ============================================================
+2026-04-15 13:26:25 | INFO     | aiagents_stock       | 策略: PE≤20.0 + PB≤1.5 + 股息率≥1% + 资产负债率≤30%
+2026-04-15 13:26:25 | INFO     | aiagents_stock       | 排除: ST、科创板、创业板
+2026-04-15 13:26:25 | INFO     | aiagents_stock       | 排序: 按流通市值由小到大
+2026-04-15 13:26:25 | INFO     | aiagents_stock       | 目标: 筛选前10只股票
+2026-04-15 13:26:25 | INFO     | aiagents_stock       | 
+正在使用 akshare 获取A股行情数据...
+2026-04-15 13:26:30 | INFO     | aiagents_stock       | akshare获取失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 13:26:30 | INFO     | aiagents_stock       | 
+akshare获取失败，尝试pywencai...
+2026-04-15 13:26:30 | INFO     | aiagents_stock       | 
+查询语句: 市盈率小于等于20.0，市净率小于等于1.5，股息率大于等于1%，资产负债率小于等于30%，非st，非科创板，非创业板，按流通市值由小到大排名
+2026-04-15 13:26:30 | INFO     | aiagents_stock       | 正在调用问财接口...
+2026-04-15 13:26:31 | ERROR    | aiagents_stock       | 2026-04-15 13:26:31 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:31 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:31 | ERROR    | aiagents_stock       | 2026-04-15 13:26:31 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:31 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:32 | ERROR    | aiagents_stock       | 2026-04-15 13:26:32 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:32 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:32 | ERROR    | aiagents_stock       | 2026-04-15 13:26:32 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:32 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:33 | ERROR    | aiagents_stock       | 2026-04-15 13:26:33 | WARNING  | api.v1.stock         | 低估值选股失败: 未获取到符合条件的股票数据
+2026-04-15 13:26:33 | WARNING  | api.v1.stock         | 低估值选股失败: 未获取到符合条件的股票数据
+2026-04-15 13:26:33 | ERROR    | aiagents_stock       | 2026-04-15 13:26:33 | INFO     | api.v1.stock         | 主力选股请求: days_ago=5 min_market_cap=10.0 max_market_cap=500.0 max_range_change=20.0 top_n=10
+2026-04-15 13:26:33 | INFO     | api.v1.stock         | 主力选股请求: days_ago=5 min_market_cap=10.0 max_market_cap=500.0 max_range_change=20.0 top_n=10
+2026-04-15 13:26:33 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-15 13:26:33 | INFO     | aiagents_stock       | 🔍 主力选股 - 数据获取中
+2026-04-15 13:26:33 | INFO     | aiagents_stock       | ============================================================
+2026-04-15 13:26:33 | INFO     | aiagents_stock       | 开始日期: 2026年4月10日
+2026-04-15 13:26:33 | INFO     | aiagents_stock       | 目标: 获取主力资金净流入排名前100名股票
+2026-04-15 13:26:33 | INFO     | aiagents_stock       | 
+尝试方案 1/4...
+2026-04-15 13:26:33 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入排名，并计算区间涨跌幅，市值10.0-500.0亿之间，非科创非st，所属同花顺行业，总市值，净利润，营收，市盈率，市净率，股息率，资产负债率，盈利能力评分，成长...
+2026-04-15 13:26:33 | ERROR    | aiagents_stock       | 2026-04-15 13:26:33 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:33 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:33 | ERROR    | aiagents_stock       | 2026-04-15 13:26:33 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:33 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:34 | ERROR    | aiagents_stock       | 2026-04-15 13:26:34 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:34 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:34 | ERROR    | aiagents_stock       | 2026-04-15 13:26:34 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:34 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:35 | INFO     | aiagents_stock       |   ⚠️ 方案1返回None，尝试下一个方案
+2026-04-15 13:26:35 | INFO     | aiagents_stock       | 
+尝试方案 2/4...
+2026-04-15 13:26:35 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入，并计算区间涨跌幅，市值10.0-500.0亿，非科创非st，所属同花顺行业，总市值，净利润，营收，市盈率，市净率，股息率，资产负债率...
+2026-04-15 13:26:35 | ERROR    | aiagents_stock       | 2026-04-15 13:26:35 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:35 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:35 | ERROR    | aiagents_stock       | 2026-04-15 13:26:35 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:35 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:36 | ERROR    | aiagents_stock       | 2026-04-15 13:26:36 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:36 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:36 | ERROR    | aiagents_stock       | 2026-04-15 13:26:36 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:36 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:37 | INFO     | aiagents_stock       |   ⚠️ 方案2返回None，尝试下一个方案
+2026-04-15 13:26:37 | INFO     | aiagents_stock       | 
+尝试方案 3/4...
+2026-04-15 13:26:37 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入排名，并计算区间涨跌幅，市值10.0-500.0亿，非科创非st，所属行业，总市值，股息率，资产负债率...
+2026-04-15 13:26:37 | ERROR    | aiagents_stock       | 2026-04-15 13:26:37 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:37 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:37 | ERROR    | aiagents_stock       | 2026-04-15 13:26:37 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:37 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:38 | ERROR    | aiagents_stock       | 2026-04-15 13:26:38 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:38 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:38 | ERROR    | aiagents_stock       | 2026-04-15 13:26:38 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:38 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:39 | INFO     | aiagents_stock       |   ⚠️ 方案3返回None，尝试下一个方案
+2026-04-15 13:26:39 | INFO     | aiagents_stock       | 
+尝试方案 4/4...
+2026-04-15 13:26:39 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入前100名，并计算区间涨跌幅，市值10.0-500.0亿，非st非科创板，所属行业，总市值...
+2026-04-15 13:26:39 | ERROR    | aiagents_stock       | 2026-04-15 13:26:39 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:39 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:39 | ERROR    | aiagents_stock       | 2026-04-15 13:26:39 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:39 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:40 | ERROR    | aiagents_stock       | 2026-04-15 13:26:40 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:40 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:40 | ERROR    | aiagents_stock       | 2026-04-15 13:26:40 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:40 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:26:41 | INFO     | aiagents_stock       |   ⚠️ 方案4返回None，尝试下一个方案
+2026-04-15 13:26:41 | INFO     | aiagents_stock       | 
+问财全部失败，尝试使用 akshare 主力资金排行兜底...
+2026-04-15 13:26:41 | ERROR    | aiagents_stock       | 2026-04-15 13:26:41 | WARNING  | strategies.main_force_selector | akshare主力排行兜底失败: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 13:26:41 | WARNING  | strategies.main_force_selector | akshare主力排行兜底失败: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 13:26:41 | INFO     | aiagents_stock       | 
+❌ 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 13:26:41 | ERROR    | aiagents_stock       | 2026-04-15 13:26:41 | WARNING  | api.v1.stock         | 主力选股失败: 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 13:26:41 | WARNING  | api.v1.stock         | 主力选股失败: 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 13:27:31 | ERROR    | aiagents_stock       | 2026-04-15 13:27:31 | INFO     | api.v1.stock         | 主力选股请求: days_ago=5 min_market_cap=10.0 max_market_cap=500.0 max_range_change=20.0 top_n=10
+2026-04-15 13:27:31 | INFO     | api.v1.stock         | 主力选股请求: days_ago=5 min_market_cap=10.0 max_market_cap=500.0 max_range_change=20.0 top_n=10
+2026-04-15 13:27:31 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-15 13:27:31 | INFO     | aiagents_stock       | 🔍 主力选股 - 数据获取中
+2026-04-15 13:27:31 | INFO     | aiagents_stock       | ============================================================
+2026-04-15 13:27:31 | INFO     | aiagents_stock       | 开始日期: 2026年4月10日
+2026-04-15 13:27:31 | INFO     | aiagents_stock       | 目标: 获取主力资金净流入排名前100名股票
+2026-04-15 13:27:31 | INFO     | aiagents_stock       | 
+尝试方案 1/4...
+2026-04-15 13:27:31 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入排名，并计算区间涨跌幅，市值10.0-500.0亿之间，非科创非st，所属同花顺行业，总市值，净利润，营收，市盈率，市净率，股息率，资产负债率，盈利能力评分，成长...
+2026-04-15 13:27:31 | ERROR    | aiagents_stock       | 2026-04-15 13:27:31 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:31 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:31 | ERROR    | aiagents_stock       | 2026-04-15 13:27:31 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:31 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:33 | ERROR    | aiagents_stock       | 2026-04-15 13:27:33 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:33 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:33 | ERROR    | aiagents_stock       | 2026-04-15 13:27:33 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:33 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:34 | INFO     | aiagents_stock       |   ⚠️ 方案1返回None，尝试下一个方案
+2026-04-15 13:27:34 | INFO     | aiagents_stock       | 
+尝试方案 2/4...
+2026-04-15 13:27:34 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入，并计算区间涨跌幅，市值10.0-500.0亿，非科创非st，所属同花顺行业，总市值，净利润，营收，市盈率，市净率，股息率，资产负债率...
+2026-04-15 13:27:34 | ERROR    | aiagents_stock       | 2026-04-15 13:27:34 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:34 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:34 | ERROR    | aiagents_stock       | 2026-04-15 13:27:34 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:34 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:35 | ERROR    | aiagents_stock       | 2026-04-15 13:27:35 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:35 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:35 | ERROR    | aiagents_stock       | 2026-04-15 13:27:35 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:35 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:36 | INFO     | aiagents_stock       |   ⚠️ 方案2返回None，尝试下一个方案
+2026-04-15 13:27:36 | INFO     | aiagents_stock       | 
+尝试方案 3/4...
+2026-04-15 13:27:36 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入排名，并计算区间涨跌幅，市值10.0-500.0亿，非科创非st，所属行业，总市值，股息率，资产负债率...
+2026-04-15 13:27:36 | ERROR    | aiagents_stock       | 2026-04-15 13:27:36 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:36 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:36 | ERROR    | aiagents_stock       | 2026-04-15 13:27:36 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:36 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:37 | ERROR    | aiagents_stock       | 2026-04-15 13:27:37 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:37 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:37 | ERROR    | aiagents_stock       | 2026-04-15 13:27:37 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:37 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:38 | INFO     | aiagents_stock       |   ⚠️ 方案3返回None，尝试下一个方案
+2026-04-15 13:27:38 | INFO     | aiagents_stock       | 
+尝试方案 4/4...
+2026-04-15 13:27:38 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入前100名，并计算区间涨跌幅，市值10.0-500.0亿，非st非科创板，所属行业，总市值...
+2026-04-15 13:27:38 | ERROR    | aiagents_stock       | 2026-04-15 13:27:38 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:38 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:38 | ERROR    | aiagents_stock       | 2026-04-15 13:27:38 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:38 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:39 | ERROR    | aiagents_stock       | 2026-04-15 13:27:39 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:39 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:39 | ERROR    | aiagents_stock       | 2026-04-15 13:27:39 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:39 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 13:27:40 | INFO     | aiagents_stock       |   ⚠️ 方案4返回None，尝试下一个方案
+2026-04-15 13:27:40 | INFO     | aiagents_stock       | 
+问财全部失败，尝试使用 akshare 主力资金排行兜底...
+2026-04-15 13:27:40 | ERROR    | aiagents_stock       | 2026-04-15 13:27:40 | WARNING  | strategies.main_force_selector | akshare主力排行兜底失败: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 13:27:40 | WARNING  | strategies.main_force_selector | akshare主力排行兜底失败: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 13:27:40 | INFO     | aiagents_stock       | 
+❌ 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 13:27:40 | ERROR    | aiagents_stock       | 2026-04-15 13:27:40 | WARNING  | api.v1.stock         | 主力选股失败: 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 13:27:40 | WARNING  | api.v1.stock         | 主力选股失败: 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 14:14:15 | ERROR    | aiagents_stock       | 2026-04-15 14:14:15 | INFO     | api.v1.analysis      | AI分析请求: symbol=000001, days_ago=60
+2026-04-15 14:14:15 | INFO     | api.v1.analysis      | AI分析请求: symbol=000001, days_ago=60
+2026-04-15 14:14:15 | ERROR    | aiagents_stock       | 2026-04-15 14:14:15 | ERROR    | api.v1.analysis      | AI分析异常: No module named 'config.config'
+Traceback (most recent call last):
+  File "/app/api/v1/analysis.py", line 331, in get_ai_analysis
+    from agents.stock_agents import StockAgents
+  File "/app/agents/stock_agents.py", line 6, in <module>
+    from agents.deepseek_client import DeepSeekClient
+  File "/app/agents/deepseek_client.py", line 4, in <module>
+    import config.config as config
+ModuleNotFoundError: No module named 'config.config'
+2026-04-15 14:14:15 | ERROR    | api.v1.analysis      | AI分析异常: No module named 'config.config'
+Traceback (most recent call last):
+  File "/app/api/v1/analysis.py", line 331, in get_ai_analysis
+    from agents.stock_agents import StockAgents
+  File "/app/agents/stock_agents.py", line 6, in <module>
+    from agents.deepseek_client import DeepSeekClient
+  File "/app/agents/deepseek_client.py", line 4, in <module>
+    import config.config as config
+ModuleNotFoundError: No module named 'config.config'
+2026-04-15 14:14:15 | ERROR    | aiagents_stock       | 2026-04-15 14:14:15 | INFO     | api.v1.analysis      | 综合分析请求: symbol=000001, days_ago=60
+2026-04-15 14:14:15 | INFO     | api.v1.analysis      | 综合分析请求: symbol=000001, days_ago=60
+2026-04-15 14:14:15 | ERROR    | aiagents_stock       | 2026-04-15 14:14:15 | INFO     | api.v1.analysis      | 技术分析请求: symbol=000001, days_ago=60
+2026-04-15 14:14:15 | INFO     | api.v1.analysis      | 技术分析请求: symbol=000001, days_ago=60
+2026-04-15 14:14:15 | ERROR    | aiagents_stock       | 2026-04-15 14:14:15 | ERROR    | api.v1.analysis      | 技术分析异常: No module named 'data.smart_monitor_data'
+Traceback (most recent call last):
+  File "/app/api/v1/analysis.py", line 53, in get_technical_analysis
+    from services.stock_analyzer import StockAnalyzer
+  File "/app/services/stock_analyzer.py", line 14, in <module>
+    from data.smart_monitor_data import SmartMonitorDataFetcher
+ModuleNotFoundError: No module named 'data.smart_monitor_data'
+2026-04-15 14:14:15 | ERROR    | api.v1.analysis      | 技术分析异常: No module named 'data.smart_monitor_data'
+Traceback (most recent call last):
+  File "/app/api/v1/analysis.py", line 53, in get_technical_analysis
+    from services.stock_analyzer import StockAnalyzer
+  File "/app/services/stock_analyzer.py", line 14, in <module>
+    from data.smart_monitor_data import SmartMonitorDataFetcher
+ModuleNotFoundError: No module named 'data.smart_monitor_data'
+2026-04-15 14:14:15 | ERROR    | aiagents_stock       | 2026-04-15 14:14:15 | ERROR    | api.v1.analysis      | 综合分析异常: 500: 技术分析失败: No module named 'data.smart_monitor_data'
+Traceback (most recent call last):
+  File "/app/api/v1/analysis.py", line 53, in get_technical_analysis
+    from services.stock_analyzer import StockAnalyzer
+  File "/app/services/stock_analyzer.py", line 14, in <module>
+    from data.smart_monitor_data import SmartMonitorDataFetcher
+ModuleNotFoundError: No module named 'data.smart_monitor_data'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/api/v1/analysis.py", line 211, in get_comprehensive_analysis
+    technical_response = (await get_technical_analysis(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/api/v1/analysis.py", line 121, in get_technical_analysis
+    raise HTTPException(status_code=500, detail=f"技术分析失败: {str(e)}")
+fastapi.exceptions.HTTPException: 500: 技术分析失败: No module named 'data.smart_monitor_data'
+2026-04-15 14:14:15 | ERROR    | api.v1.analysis      | 综合分析异常: 500: 技术分析失败: No module named 'data.smart_monitor_data'
+Traceback (most recent call last):
+  File "/app/api/v1/analysis.py", line 53, in get_technical_analysis
+    from services.stock_analyzer import StockAnalyzer
+  File "/app/services/stock_analyzer.py", line 14, in <module>
+    from data.smart_monitor_data import SmartMonitorDataFetcher
+ModuleNotFoundError: No module named 'data.smart_monitor_data'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/api/v1/analysis.py", line 211, in get_comprehensive_analysis
+    technical_response = (await get_technical_analysis(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/api/v1/analysis.py", line 121, in get_technical_analysis
+    raise HTTPException(status_code=500, detail=f"技术分析失败: {str(e)}")
+fastapi.exceptions.HTTPException: 500: 技术分析失败: No module named 'data.smart_monitor_data'
+2026-04-15 14:35:51 | ERROR    | aiagents_stock       | 2026-04-15 14:35:51 | INFO     | main                 | AI Agents Stock API 关闭
+2026-04-15 14:35:51 | INFO     | main                 | AI Agents Stock API 关闭
+2026-04-15 14:35:53 | ERROR    | aiagents_stock       | 2026-04-15 14:35:53 | INFO     | main                 | ================================================================================
+2026-04-15 14:35:53 | INFO     | main                 | ================================================================================
+2026-04-15 14:35:53 | ERROR    | aiagents_stock       | 2026-04-15 14:35:53 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-15 14:35:53 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-15 14:35:53 | ERROR    | aiagents_stock       | 2026-04-15 14:35:53 | INFO     | main                 | 版本: 1.0.0
+2026-04-15 14:35:53 | INFO     | main                 | 版本: 1.0.0
+2026-04-15 14:35:53 | ERROR    | aiagents_stock       | 2026-04-15 14:35:53 | INFO     | main                 | ================================================================================
+2026-04-15 14:35:53 | INFO     | main                 | ================================================================================
+2026-04-15 14:36:01 | ERROR    | aiagents_stock       | 2026-04-15 14:36:01 | INFO     | api.v1.stock         | 低估值选股请求: top_n=10
+2026-04-15 14:36:01 | INFO     | api.v1.stock         | 低估值选股请求: top_n=10
+2026-04-15 14:36:01 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-15 14:36:01 | INFO     | aiagents_stock       | 💎 低估值选股 - 数据获取中
+2026-04-15 14:36:01 | INFO     | aiagents_stock       | ============================================================
+2026-04-15 14:36:01 | INFO     | aiagents_stock       | 策略: PE≤20.0 + PB≤1.5 + 股息率≥1% + 资产负债率≤30%
+2026-04-15 14:36:01 | INFO     | aiagents_stock       | 排除: ST、科创板、创业板
+2026-04-15 14:36:01 | INFO     | aiagents_stock       | 排序: 按流通市值由小到大
+2026-04-15 14:36:01 | INFO     | aiagents_stock       | 目标: 筛选前10只股票
+2026-04-15 14:36:01 | INFO     | aiagents_stock       | 
+正在使用东方财富接口获取A股行情数据...
+2026-04-15 14:36:02 | ERROR    | aiagents_stock       | 2026-04-15 14:36:02 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:36:02 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:36:02 | ERROR    | aiagents_stock       | 2026-04-15 14:36:02 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:36:02 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:36:02 | ERROR    | aiagents_stock       | 2026-04-15 14:36:02 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:36:02 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:36:02 | ERROR    | aiagents_stock       | 2026-04-15 14:36:02 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:36:02 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:36:02 | INFO     | aiagents_stock       | 
+正在使用 akshare 获取A股行情数据...
+2026-04-15 14:36:07 | INFO     | aiagents_stock       | akshare获取失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:36:07 | INFO     | aiagents_stock       | 
+akshare获取失败，尝试pywencai...
+2026-04-15 14:36:07 | INFO     | aiagents_stock       | 
+查询语句: 市盈率小于等于20.0，市净率小于等于1.5，股息率大于等于1%，资产负债率小于等于30%，非st，非科创板，非创业板，按流通市值由小到大排名
+2026-04-15 14:36:07 | INFO     | aiagents_stock       | 正在调用问财接口...
+2026-04-15 14:36:08 | ERROR    | aiagents_stock       | 2026-04-15 14:36:08 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:08 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:08 | ERROR    | aiagents_stock       | 2026-04-15 14:36:08 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:08 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:09 | ERROR    | aiagents_stock       | 2026-04-15 14:36:09 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:09 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:09 | ERROR    | aiagents_stock       | 2026-04-15 14:36:09 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:09 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:10 | ERROR    | aiagents_stock       | 2026-04-15 14:36:10 | WARNING  | api.v1.stock         | 低估值选股失败: 未获取到符合条件的股票数据
+2026-04-15 14:36:10 | WARNING  | api.v1.stock         | 低估值选股失败: 未获取到符合条件的股票数据
+2026-04-15 14:36:10 | ERROR    | aiagents_stock       | 2026-04-15 14:36:10 | INFO     | api.v1.stock         | 主力选股请求: days_ago=5 min_market_cap=10.0 max_market_cap=500.0 max_range_change=20.0 top_n=10
+2026-04-15 14:36:10 | INFO     | api.v1.stock         | 主力选股请求: days_ago=5 min_market_cap=10.0 max_market_cap=500.0 max_range_change=20.0 top_n=10
+2026-04-15 14:36:10 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-15 14:36:10 | INFO     | aiagents_stock       | 🔍 主力选股 - 数据获取中
+2026-04-15 14:36:10 | INFO     | aiagents_stock       | ============================================================
+2026-04-15 14:36:10 | INFO     | aiagents_stock       | 开始日期: 2026年4月10日
+2026-04-15 14:36:10 | INFO     | aiagents_stock       | 目标: 获取主力资金净流入排名前100名股票
+2026-04-15 14:36:10 | INFO     | aiagents_stock       | 
+尝试方案 1/4...
+2026-04-15 14:36:10 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入排名，并计算区间涨跌幅，市值10.0-500.0亿之间，非科创非st，所属同花顺行业，总市值，净利润，营收，市盈率，市净率，股息率，资产负债率，盈利能力评分，成长...
+2026-04-15 14:36:10 | ERROR    | aiagents_stock       | 2026-04-15 14:36:10 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:10 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:10 | ERROR    | aiagents_stock       | 2026-04-15 14:36:10 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:10 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:11 | ERROR    | aiagents_stock       | 2026-04-15 14:36:11 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:11 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:11 | ERROR    | aiagents_stock       | 2026-04-15 14:36:11 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:11 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:12 | INFO     | aiagents_stock       |   ⚠️ 方案1返回None，尝试下一个方案
+2026-04-15 14:36:12 | INFO     | aiagents_stock       | 
+尝试方案 2/4...
+2026-04-15 14:36:12 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入，并计算区间涨跌幅，市值10.0-500.0亿，非科创非st，所属同花顺行业，总市值，净利润，营收，市盈率，市净率，股息率，资产负债率...
+2026-04-15 14:36:12 | ERROR    | aiagents_stock       | 2026-04-15 14:36:12 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:12 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:12 | ERROR    | aiagents_stock       | 2026-04-15 14:36:12 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:12 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:13 | ERROR    | aiagents_stock       | 2026-04-15 14:36:13 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:13 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:13 | ERROR    | aiagents_stock       | 2026-04-15 14:36:13 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:13 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:14 | INFO     | aiagents_stock       |   ⚠️ 方案2返回None，尝试下一个方案
+2026-04-15 14:36:14 | INFO     | aiagents_stock       | 
+尝试方案 3/4...
+2026-04-15 14:36:14 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入排名，并计算区间涨跌幅，市值10.0-500.0亿，非科创非st，所属行业，总市值，股息率，资产负债率...
+2026-04-15 14:36:14 | ERROR    | aiagents_stock       | 2026-04-15 14:36:14 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:14 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:14 | ERROR    | aiagents_stock       | 2026-04-15 14:36:14 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:14 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:15 | ERROR    | aiagents_stock       | 2026-04-15 14:36:15 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:15 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:15 | ERROR    | aiagents_stock       | 2026-04-15 14:36:15 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:15 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:16 | INFO     | aiagents_stock       |   ⚠️ 方案3返回None，尝试下一个方案
+2026-04-15 14:36:16 | INFO     | aiagents_stock       | 
+尝试方案 4/4...
+2026-04-15 14:36:16 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入前100名，并计算区间涨跌幅，市值10.0-500.0亿，非st非科创板，所属行业，总市值...
+2026-04-15 14:36:16 | ERROR    | aiagents_stock       | 2026-04-15 14:36:16 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:16 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:16 | ERROR    | aiagents_stock       | 2026-04-15 14:36:16 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:16 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:17 | ERROR    | aiagents_stock       | 2026-04-15 14:36:17 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:17 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:17 | ERROR    | aiagents_stock       | 2026-04-15 14:36:17 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:17 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:36:18 | INFO     | aiagents_stock       |   ⚠️ 方案4返回None，尝试下一个方案
+2026-04-15 14:36:18 | INFO     | aiagents_stock       | 
+问财全部失败，尝试使用 akshare 主力资金排行兜底...
+2026-04-15 14:36:18 | ERROR    | aiagents_stock       | 2026-04-15 14:36:18 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:36:18 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:36:18 | ERROR    | aiagents_stock       | 2026-04-15 14:36:18 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:36:18 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:36:18 | ERROR    | aiagents_stock       | 2026-04-15 14:36:18 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:36:18 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:36:19 | ERROR    | aiagents_stock       | 2026-04-15 14:36:19 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:36:19 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:36:19 | ERROR    | aiagents_stock       | 2026-04-15 14:36:19 | WARNING  | strategies.main_force_selector | akshare主力排行兜底失败: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:36:19 | WARNING  | strategies.main_force_selector | akshare主力排行兜底失败: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:36:19 | INFO     | aiagents_stock       | 
+❌ 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 14:36:19 | ERROR    | aiagents_stock       | 2026-04-15 14:36:19 | WARNING  | api.v1.stock         | 主力选股失败: 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 14:36:19 | WARNING  | api.v1.stock         | 主力选股失败: 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 14:38:35 | ERROR    | aiagents_stock       | 2026-04-15 14:38:35 | INFO     | main                 | AI Agents Stock API 关闭
+2026-04-15 14:38:35 | INFO     | main                 | AI Agents Stock API 关闭
+2026-04-15 14:38:36 | ERROR    | aiagents_stock       | 2026-04-15 14:38:36 | INFO     | main                 | ================================================================================
+2026-04-15 14:38:36 | INFO     | main                 | ================================================================================
+2026-04-15 14:38:36 | ERROR    | aiagents_stock       | 2026-04-15 14:38:36 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-15 14:38:36 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-15 14:38:36 | ERROR    | aiagents_stock       | 2026-04-15 14:38:36 | INFO     | main                 | 版本: 1.0.0
+2026-04-15 14:38:36 | INFO     | main                 | 版本: 1.0.0
+2026-04-15 14:38:36 | ERROR    | aiagents_stock       | 2026-04-15 14:38:36 | INFO     | main                 | ================================================================================
+2026-04-15 14:38:36 | INFO     | main                 | ================================================================================
+2026-04-15 14:38:42 | ERROR    | aiagents_stock       | 2026-04-15 14:38:42 | INFO     | api.v1.stock         | 低估值选股请求: top_n=10
+2026-04-15 14:38:42 | INFO     | api.v1.stock         | 低估值选股请求: top_n=10
+2026-04-15 14:38:42 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-15 14:38:42 | INFO     | aiagents_stock       | 💎 低估值选股 - 数据获取中
+2026-04-15 14:38:42 | INFO     | aiagents_stock       | ============================================================
+2026-04-15 14:38:42 | INFO     | aiagents_stock       | 策略: PE≤20.0 + PB≤1.5 + 股息率≥1% + 资产负债率≤30%
+2026-04-15 14:38:42 | INFO     | aiagents_stock       | 排除: ST、科创板、创业板
+2026-04-15 14:38:42 | INFO     | aiagents_stock       | 排序: 按流通市值由小到大
+2026-04-15 14:38:42 | INFO     | aiagents_stock       | 目标: 筛选前10只股票
+2026-04-15 14:38:42 | INFO     | aiagents_stock       | 
+正在使用东方财富接口获取A股行情数据...
+2026-04-15 14:38:42 | ERROR    | aiagents_stock       | 2026-04-15 14:38:42 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:38:42 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:38:42 | ERROR    | aiagents_stock       | 2026-04-15 14:38:42 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:38:42 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:38:42 | ERROR    | aiagents_stock       | 2026-04-15 14:38:42 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:38:42 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:38:43 | ERROR    | aiagents_stock       | 2026-04-15 14:38:43 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:38:43 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:38:43 | INFO     | aiagents_stock       | 
+正在使用 akshare 获取A股行情数据...
+2026-04-15 14:38:49 | ERROR    | aiagents_stock       |   0%|          | 0/58 [00:00<?, ?it/s]
+2026-04-15 14:38:57 | INFO     | aiagents_stock       | akshare获取失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:38:57 | INFO     | aiagents_stock       | 
+akshare获取失败，尝试pywencai...
+2026-04-15 14:38:57 | INFO     | aiagents_stock       | 
+查询语句: 市盈率小于等于20.0，市净率小于等于1.5，股息率大于等于1%，资产负债率小于等于30%，非st，非科创板，非创业板，按流通市值由小到大排名
+2026-04-15 14:38:57 | INFO     | aiagents_stock       | 正在调用问财接口...
+2026-04-15 14:38:57 | ERROR    | aiagents_stock       | 2026-04-15 14:38:57 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:38:57 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:38:57 | ERROR    | aiagents_stock       | 2026-04-15 14:38:57 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:38:57 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:38:58 | ERROR    | aiagents_stock       | 2026-04-15 14:38:58 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:38:58 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:38:58 | ERROR    | aiagents_stock       | 2026-04-15 14:38:58 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:38:58 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:38:59 | ERROR    | aiagents_stock       | 2026-04-15 14:38:59 | WARNING  | api.v1.stock         | 低估值选股失败: 未获取到符合条件的股票数据
+2026-04-15 14:38:59 | WARNING  | api.v1.stock         | 低估值选股失败: 未获取到符合条件的股票数据
+2026-04-15 14:38:59 | ERROR    | aiagents_stock       | 2026-04-15 14:38:59 | INFO     | api.v1.stock         | 主力选股请求: days_ago=5 min_market_cap=10.0 max_market_cap=500.0 max_range_change=20.0 top_n=10
+2026-04-15 14:38:59 | INFO     | api.v1.stock         | 主力选股请求: days_ago=5 min_market_cap=10.0 max_market_cap=500.0 max_range_change=20.0 top_n=10
+2026-04-15 14:38:59 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-15 14:38:59 | INFO     | aiagents_stock       | 🔍 主力选股 - 数据获取中
+2026-04-15 14:38:59 | INFO     | aiagents_stock       | ============================================================
+2026-04-15 14:38:59 | INFO     | aiagents_stock       | 开始日期: 2026年4月10日
+2026-04-15 14:38:59 | INFO     | aiagents_stock       | 目标: 获取主力资金净流入排名前100名股票
+2026-04-15 14:38:59 | INFO     | aiagents_stock       | 
+尝试方案 1/4...
+2026-04-15 14:38:59 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入排名，并计算区间涨跌幅，市值10.0-500.0亿之间，非科创非st，所属同花顺行业，总市值，净利润，营收，市盈率，市净率，股息率，资产负债率，盈利能力评分，成长...
+2026-04-15 14:38:59 | ERROR    | aiagents_stock       | 2026-04-15 14:38:59 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:38:59 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:38:59 | ERROR    | aiagents_stock       | 2026-04-15 14:38:59 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:38:59 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:00 | ERROR    | aiagents_stock       | 2026-04-15 14:39:00 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:00 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:00 | ERROR    | aiagents_stock       | 2026-04-15 14:39:00 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:00 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:01 | INFO     | aiagents_stock       |   ⚠️ 方案1返回None，尝试下一个方案
+2026-04-15 14:39:01 | INFO     | aiagents_stock       | 
+尝试方案 2/4...
+2026-04-15 14:39:01 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入，并计算区间涨跌幅，市值10.0-500.0亿，非科创非st，所属同花顺行业，总市值，净利润，营收，市盈率，市净率，股息率，资产负债率...
+2026-04-15 14:39:01 | ERROR    | aiagents_stock       | 2026-04-15 14:39:01 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:01 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:01 | ERROR    | aiagents_stock       | 2026-04-15 14:39:01 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:01 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:02 | ERROR    | aiagents_stock       | 2026-04-15 14:39:02 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:02 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:02 | ERROR    | aiagents_stock       | 2026-04-15 14:39:02 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:02 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:03 | INFO     | aiagents_stock       |   ⚠️ 方案2返回None，尝试下一个方案
+2026-04-15 14:39:03 | INFO     | aiagents_stock       | 
+尝试方案 3/4...
+2026-04-15 14:39:03 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入排名，并计算区间涨跌幅，市值10.0-500.0亿，非科创非st，所属行业，总市值，股息率，资产负债率...
+2026-04-15 14:39:03 | ERROR    | aiagents_stock       | 2026-04-15 14:39:03 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:03 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:03 | ERROR    | aiagents_stock       | 2026-04-15 14:39:03 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:03 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:04 | ERROR    | aiagents_stock       | 2026-04-15 14:39:04 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:04 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:04 | ERROR    | aiagents_stock       | 2026-04-15 14:39:04 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:04 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:05 | INFO     | aiagents_stock       |   ⚠️ 方案3返回None，尝试下一个方案
+2026-04-15 14:39:05 | INFO     | aiagents_stock       | 
+尝试方案 4/4...
+2026-04-15 14:39:05 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入前100名，并计算区间涨跌幅，市值10.0-500.0亿，非st非科创板，所属行业，总市值...
+2026-04-15 14:39:05 | ERROR    | aiagents_stock       | 2026-04-15 14:39:05 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:05 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:05 | ERROR    | aiagents_stock       | 2026-04-15 14:39:05 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:05 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:06 | ERROR    | aiagents_stock       | 2026-04-15 14:39:06 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:06 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:06 | ERROR    | aiagents_stock       | 2026-04-15 14:39:06 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:06 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:39:07 | INFO     | aiagents_stock       |   ⚠️ 方案4返回None，尝试下一个方案
+2026-04-15 14:39:07 | INFO     | aiagents_stock       | 
+问财全部失败，尝试使用 akshare 主力资金排行兜底...
+2026-04-15 14:39:08 | ERROR    | aiagents_stock       | 2026-04-15 14:39:08 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:39:08 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:39:08 | ERROR    | aiagents_stock       | 2026-04-15 14:39:08 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:39:08 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:39:08 | ERROR    | aiagents_stock       | 2026-04-15 14:39:08 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:39:08 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:39:08 | ERROR    | aiagents_stock       | 2026-04-15 14:39:08 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:39:08 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:39:08 | ERROR    | aiagents_stock       | Traceback (most recent call last):
+2026-04-15 14:39:08 | ERROR    | aiagents_stock       |   File "<stdin>", line 3, in <module>
+2026-04-15 14:39:08 | ERROR    | aiagents_stock       | AttributeError
+2026-04-15 14:39:08 | ERROR    | aiagents_stock       | :
+2026-04-15 14:39:08 | ERROR    | aiagents_stock       | 'EastmoneyClient' object has no attribute '_proxy_base_url'
+2026-04-15 14:39:08 | ERROR    | aiagents_stock       | 2026-04-15 14:39:08 | WARNING  | strategies.main_force_selector | akshare主力排行兜底失败: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:39:08 | WARNING  | strategies.main_force_selector | akshare主力排行兜底失败: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:39:08 | INFO     | aiagents_stock       | 
+❌ 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 14:39:08 | ERROR    | aiagents_stock       | 2026-04-15 14:39:08 | WARNING  | api.v1.stock         | 主力选股失败: 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 14:39:08 | WARNING  | api.v1.stock         | 主力选股失败: 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 14:44:59 | ERROR    | aiagents_stock       | 2026-04-15 14:44:59 | INFO     | main                 | AI Agents Stock API 关闭
+2026-04-15 14:44:59 | INFO     | main                 | AI Agents Stock API 关闭
+2026-04-15 14:45:01 | ERROR    | aiagents_stock       | 2026-04-15 14:45:01 | INFO     | main                 | ================================================================================
+2026-04-15 14:45:01 | INFO     | main                 | ================================================================================
+2026-04-15 14:45:01 | ERROR    | aiagents_stock       | 2026-04-15 14:45:01 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-15 14:45:01 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-15 14:45:01 | ERROR    | aiagents_stock       | 2026-04-15 14:45:01 | INFO     | main                 | 版本: 1.0.0
+2026-04-15 14:45:01 | INFO     | main                 | 版本: 1.0.0
+2026-04-15 14:45:01 | ERROR    | aiagents_stock       | 2026-04-15 14:45:01 | INFO     | main                 | ================================================================================
+2026-04-15 14:45:01 | INFO     | main                 | ================================================================================
+2026-04-15 14:45:05 | ERROR    | aiagents_stock       | 2026-04-15 14:45:05 | INFO     | main                 | AI Agents Stock API 关闭
+2026-04-15 14:45:05 | INFO     | main                 | AI Agents Stock API 关闭
+2026-04-15 14:45:06 | ERROR    | aiagents_stock       | 2026-04-15 14:45:06 | INFO     | main                 | ================================================================================
+2026-04-15 14:45:06 | INFO     | main                 | ================================================================================
+2026-04-15 14:45:06 | ERROR    | aiagents_stock       | 2026-04-15 14:45:06 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-15 14:45:06 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-15 14:45:06 | ERROR    | aiagents_stock       | 2026-04-15 14:45:06 | INFO     | main                 | 版本: 1.0.0
+2026-04-15 14:45:06 | INFO     | main                 | 版本: 1.0.0
+2026-04-15 14:45:06 | ERROR    | aiagents_stock       | 2026-04-15 14:45:06 | INFO     | main                 | ================================================================================
+2026-04-15 14:45:06 | INFO     | main                 | ================================================================================
+2026-04-15 14:45:14 | ERROR    | aiagents_stock       | 2026-04-15 14:45:14 | INFO     | api.v1.stock         | 低估值选股请求: top_n=10
+2026-04-15 14:45:14 | INFO     | api.v1.stock         | 低估值选股请求: top_n=10
+2026-04-15 14:45:14 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-15 14:45:14 | INFO     | aiagents_stock       | 💎 低估值选股 - 数据获取中
+2026-04-15 14:45:14 | INFO     | aiagents_stock       | ============================================================
+2026-04-15 14:45:14 | INFO     | aiagents_stock       | 策略: PE≤20.0 + PB≤1.5 + 股息率≥1% + 资产负债率≤30%
+2026-04-15 14:45:14 | INFO     | aiagents_stock       | 排除: ST、科创板、创业板
+2026-04-15 14:45:14 | INFO     | aiagents_stock       | 排序: 按流通市值由小到大
+2026-04-15 14:45:14 | INFO     | aiagents_stock       | 目标: 筛选前10只股票
+2026-04-15 14:45:14 | INFO     | aiagents_stock       | 
+正在使用东方财富接口获取A股行情数据...
+2026-04-15 14:45:14 | ERROR    | aiagents_stock       | 2026-04-15 14:45:14 | WARNING  | utils.eastmoney_client | Eastmoney 宿主机代理请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=HTTPError: 502 Server Error: Bad Gateway for url: http://host.docker.internal:8899/fetch
+2026-04-15 14:45:14 | WARNING  | utils.eastmoney_client | Eastmoney 宿主机代理请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=HTTPError: 502 Server Error: Bad Gateway for url: http://host.docker.internal:8899/fetch
+2026-04-15 14:45:15 | ERROR    | aiagents_stock       | 2026-04-15 14:45:15 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:45:15 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:45:15 | ERROR    | aiagents_stock       | 2026-04-15 14:45:15 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:45:15 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:45:15 | ERROR    | aiagents_stock       | 2026-04-15 14:45:15 | WARNING  | utils.eastmoney_client | Eastmoney 宿主机代理请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=HTTPError: 502 Server Error: Bad Gateway for url: http://host.docker.internal:8899/fetch
+2026-04-15 14:45:15 | WARNING  | utils.eastmoney_client | Eastmoney 宿主机代理请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=HTTPError: 502 Server Error: Bad Gateway for url: http://host.docker.internal:8899/fetch
+2026-04-15 14:45:15 | ERROR    | aiagents_stock       | 2026-04-15 14:45:15 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:45:15 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:45:15 | ERROR    | aiagents_stock       | 2026-04-15 14:45:15 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:45:15 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:45:15 | INFO     | aiagents_stock       | 
+正在使用 akshare 获取A股行情数据...
+2026-04-15 14:45:21 | ERROR    | aiagents_stock       |   0%|          | 0/58 [00:00<?, ?it/s]
+2026-04-15 14:45:23 | ERROR    | aiagents_stock       |   2%|1         | 1/58 [00:01<01:46,  1.87s/it]
+2026-04-15 14:45:24 | ERROR    | aiagents_stock       |   3%|3         | 2/58 [00:02<01:17,  1.39s/it]
+2026-04-15 14:45:26 | ERROR    | aiagents_stock       |   5%|5         | 3/58 [00:04<01:22,  1.49s/it]
+2026-04-15 14:45:27 | ERROR    | aiagents_stock       |   7%|6         | 4/58 [00:06<01:21,  1.51s/it]
+2026-04-15 14:45:29 | ERROR    | aiagents_stock       |   9%|8         | 5/58 [00:07<01:24,  1.59s/it]
+2026-04-15 14:45:30 | ERROR    | aiagents_stock       |  10%|#         | 6/58 [00:09<01:20,  1.54s/it]
+2026-04-15 14:45:37 | INFO     | aiagents_stock       | akshare获取失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:45:37 | INFO     | aiagents_stock       | 
+akshare获取失败，尝试pywencai...
+2026-04-15 14:45:37 | INFO     | aiagents_stock       | 
+查询语句: 市盈率小于等于20.0，市净率小于等于1.5，股息率大于等于1%，资产负债率小于等于30%，非st，非科创板，非创业板，按流通市值由小到大排名
+2026-04-15 14:45:37 | INFO     | aiagents_stock       | 正在调用问财接口...
+2026-04-15 14:45:37 | ERROR    | aiagents_stock       | 2026-04-15 14:45:37 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:37 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:37 | ERROR    | aiagents_stock       | 2026-04-15 14:45:37 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:37 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:38 | ERROR    | aiagents_stock       | 2026-04-15 14:45:38 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:38 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:38 | ERROR    | aiagents_stock       | 2026-04-15 14:45:38 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:38 | WARNING  | strategies.value_stock_selector | 问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:39 | ERROR    | aiagents_stock       | 2026-04-15 14:45:39 | WARNING  | api.v1.stock         | 低估值选股失败: 未获取到符合条件的股票数据
+2026-04-15 14:45:39 | WARNING  | api.v1.stock         | 低估值选股失败: 未获取到符合条件的股票数据
+2026-04-15 14:45:39 | ERROR    | aiagents_stock       | 2026-04-15 14:45:39 | INFO     | api.v1.stock         | 主力选股请求: days_ago=5 min_market_cap=10.0 max_market_cap=500.0 max_range_change=20.0 top_n=10
+2026-04-15 14:45:39 | INFO     | api.v1.stock         | 主力选股请求: days_ago=5 min_market_cap=10.0 max_market_cap=500.0 max_range_change=20.0 top_n=10
+2026-04-15 14:45:39 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-15 14:45:39 | INFO     | aiagents_stock       | 🔍 主力选股 - 数据获取中
+2026-04-15 14:45:39 | INFO     | aiagents_stock       | ============================================================
+2026-04-15 14:45:39 | INFO     | aiagents_stock       | 开始日期: 2026年4月10日
+2026-04-15 14:45:39 | INFO     | aiagents_stock       | 目标: 获取主力资金净流入排名前100名股票
+2026-04-15 14:45:39 | INFO     | aiagents_stock       | 
+尝试方案 1/4...
+2026-04-15 14:45:39 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入排名，并计算区间涨跌幅，市值10.0-500.0亿之间，非科创非st，所属同花顺行业，总市值，净利润，营收，市盈率，市净率，股息率，资产负债率，盈利能力评分，成长...
+2026-04-15 14:45:39 | ERROR    | aiagents_stock       | 2026-04-15 14:45:39 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:39 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:39 | ERROR    | aiagents_stock       | 2026-04-15 14:45:39 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:39 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:40 | ERROR    | aiagents_stock       | 2026-04-15 14:45:40 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:40 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:40 | ERROR    | aiagents_stock       | 2026-04-15 14:45:40 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:40 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:41 | INFO     | aiagents_stock       |   ⚠️ 方案1返回None，尝试下一个方案
+2026-04-15 14:45:41 | INFO     | aiagents_stock       | 
+尝试方案 2/4...
+2026-04-15 14:45:41 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入，并计算区间涨跌幅，市值10.0-500.0亿，非科创非st，所属同花顺行业，总市值，净利润，营收，市盈率，市净率，股息率，资产负债率...
+2026-04-15 14:45:41 | ERROR    | aiagents_stock       | 2026-04-15 14:45:41 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:41 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:41 | ERROR    | aiagents_stock       | 2026-04-15 14:45:41 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:41 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:42 | ERROR    | aiagents_stock       | 2026-04-15 14:45:42 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:42 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:42 | ERROR    | aiagents_stock       | 2026-04-15 14:45:42 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:42 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:43 | INFO     | aiagents_stock       |   ⚠️ 方案2返回None，尝试下一个方案
+2026-04-15 14:45:43 | INFO     | aiagents_stock       | 
+尝试方案 3/4...
+2026-04-15 14:45:43 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入排名，并计算区间涨跌幅，市值10.0-500.0亿，非科创非st，所属行业，总市值，股息率，资产负债率...
+2026-04-15 14:45:43 | ERROR    | aiagents_stock       | 2026-04-15 14:45:43 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:43 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:43 | ERROR    | aiagents_stock       | 2026-04-15 14:45:43 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:43 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:44 | ERROR    | aiagents_stock       | 2026-04-15 14:45:44 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:44 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:44 | ERROR    | aiagents_stock       | 2026-04-15 14:45:44 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:44 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:45 | INFO     | aiagents_stock       |   ⚠️ 方案3返回None，尝试下一个方案
+2026-04-15 14:45:45 | INFO     | aiagents_stock       | 
+尝试方案 4/4...
+2026-04-15 14:45:45 | INFO     | aiagents_stock       | 查询语句: 2026年4月10日以来主力资金净流入前100名，并计算区间涨跌幅，市值10.0-500.0亿，非st非科创板，所属行业，总市值...
+2026-04-15 14:45:45 | ERROR    | aiagents_stock       | 2026-04-15 14:45:45 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:45 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:45 | ERROR    | aiagents_stock       | 2026-04-15 14:45:45 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:45 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=1 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:46 | ERROR    | aiagents_stock       | 2026-04-15 14:45:46 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:46 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=True error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:46 | ERROR    | aiagents_stock       | 2026-04-15 14:45:46 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:46 | WARNING  | strategies.main_force_selector | 主力选股问财调用失败: attempt=2 loop=False error=AttributeError: 'NoneType' object has no attribute 'get'
+2026-04-15 14:45:47 | INFO     | aiagents_stock       |   ⚠️ 方案4返回None，尝试下一个方案
+2026-04-15 14:45:47 | INFO     | aiagents_stock       | 
+问财全部失败，尝试使用 akshare 主力资金排行兜底...
+2026-04-15 14:45:48 | ERROR    | aiagents_stock       | 2026-04-15 14:45:48 | WARNING  | utils.eastmoney_client | Eastmoney 宿主机代理请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=HTTPError: 502 Server Error: Bad Gateway for url: http://host.docker.internal:8899/fetch
+2026-04-15 14:45:48 | WARNING  | utils.eastmoney_client | Eastmoney 宿主机代理请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=HTTPError: 502 Server Error: Bad Gateway for url: http://host.docker.internal:8899/fetch
+2026-04-15 14:45:48 | ERROR    | aiagents_stock       | 2026-04-15 14:45:48 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:45:48 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:45:48 | ERROR    | aiagents_stock       | 2026-04-15 14:45:48 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:45:48 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:45:48 | ERROR    | aiagents_stock       | 2026-04-15 14:45:48 | WARNING  | utils.eastmoney_client | Eastmoney 宿主机代理请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=HTTPError: 502 Server Error: Bad Gateway for url: http://host.docker.internal:8899/fetch
+2026-04-15 14:45:48 | WARNING  | utils.eastmoney_client | Eastmoney 宿主机代理请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=HTTPError: 502 Server Error: Bad Gateway for url: http://host.docker.internal:8899/fetch
+2026-04-15 14:45:48 | ERROR    | aiagents_stock       | 2026-04-15 14:45:48 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:45:48 | WARNING  | utils.eastmoney_client | Eastmoney curl 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=RuntimeError: curl: (56) OpenSSL SSL_read: OpenSSL/3.5.5: error:0A000126:SSL routines::unexpected eof while reading, errno 0
+2026-04-15 14:45:49 | ERROR    | aiagents_stock       | 2026-04-15 14:45:49 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:45:49 | WARNING  | utils.eastmoney_client | Eastmoney requests 请求失败: url=https://82.push2.eastmoney.com/api/qt/clist/get error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:45:49 | ERROR    | aiagents_stock       | 2026-04-15 14:45:49 | WARNING  | strategies.main_force_selector | akshare主力排行兜底失败: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:45:49 | WARNING  | strategies.main_force_selector | akshare主力排行兜底失败: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-15 14:45:49 | INFO     | aiagents_stock       | 
+❌ 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 14:45:49 | ERROR    | aiagents_stock       | 2026-04-15 14:45:49 | WARNING  | api.v1.stock         | 主力选股失败: 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 14:45:49 | WARNING  | api.v1.stock         | 主力选股失败: 所有查询方案都失败了，请检查网络或稍后重试
+2026-04-15 14:52:20 | ERROR    | aiagents_stock       | 2026-04-15 14:52:20 | INFO     | main                 | AI Agents Stock API 关闭
+2026-04-15 14:52:20 | INFO     | main                 | AI Agents Stock API 关闭

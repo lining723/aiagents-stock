@@ -4,7 +4,7 @@ export interface EntryRange {
 }
 
 export interface MonitoredStock {
-  id: number
+  id: string
   symbol: string
   name: string
   rating: string
@@ -62,8 +62,8 @@ export interface MonitoredStockResponse {
 }
 
 export interface NotificationInfo {
-  id: number
-  stock_id: number
+  id: string
+  stock_id: string
   symbol: string
   name: string
   type: string

@@ -10,6 +10,7 @@ import warnings
 from datetime import datetime, timedelta
 import akshare as ak
 from config.data_source_manager import data_source_manager
+from utils.redis_cache import cached_call
 warnings.filterwarnings('ignore')
 
 # 设置标准输出编码为UTF-8（仅在命令行环境，避免streamlit冲突）
@@ -39,6 +40,11 @@ class FundFlowAkshareDataFetcher:
         self.available = True
         print("[OK] 资金流向数据获取器初始化成功（akshare数据源）")
     
+    @cached_call(
+        "fund_flow",
+        key_builder=lambda self, symbol: (str(symbol).split(".")[0], self.days),
+        is_valid=lambda result: bool(result and result.get("data_success")),
+    )
     def get_fund_flow_data(self, symbol):
         """
         获取个股资金流向数据
@@ -340,4 +346,3 @@ if __name__ == "__main__":
             print(f"\n获取失败: {data.get('error', '未知错误')}")
         
         print("\n")
-

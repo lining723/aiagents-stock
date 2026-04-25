@@ -7,10 +7,16 @@
 
 from numpy.ma import minimum_fill_value
 import pandas as pd
+import akshare as ak
 import pywencai
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
 import time
+from utils.logger import get_logger
+from utils.eastmoney_client import EastmoneyClient
+
+
+logger = get_logger(__name__)
 
 class MainForceStockSelector:
     """主力选股类"""
@@ -18,6 +24,7 @@ class MainForceStockSelector:
     def __init__(self):
         self.raw_data = None
         self.filtered_stocks = None
+        self.eastmoney_client = EastmoneyClient()
     
     def get_main_force_stocks(self, start_date: str = None, days_ago: int = None,
                              min_market_cap: float = None, max_market_cap: float = None) -> Tuple[bool, pd.DataFrame, str]:
@@ -71,7 +78,7 @@ class MainForceStockSelector:
                 print(f"查询语句: {query[:100]}...")
                 
                 try:
-                    result = pywencai.get(query=query, loop=True)
+                    result = self._query_wencai(query)
                     
                     if result is None:
                         print(f"  ⚠️ 方案{i}返回None，尝试下一个方案")
@@ -101,6 +108,15 @@ class MainForceStockSelector:
                     print(f"  ❌ 方案{i}失败: {str(e)}")
                     time.sleep(2)  # 失败后等待2秒再试
                     continue
+
+            print("\n问财全部失败，尝试使用 akshare 主力资金排行兜底...")
+            fallback_df = self._get_main_force_stocks_akshare(
+                min_market_cap=min_market_cap,
+                max_market_cap=max_market_cap,
+            )
+            if fallback_df is not None and not fallback_df.empty:
+                self.raw_data = fallback_df
+                return True, fallback_df, f"问财失败，已从akshare兜底获取{len(fallback_df)}只股票数据"
             
             # 所有方案都失败
             error_msg = "所有查询方案都失败了，请检查网络或稍后重试"
@@ -111,7 +127,160 @@ class MainForceStockSelector:
             error_msg = f"获取主力选股数据失败: {str(e)}"
             print(f"\n❌ {error_msg}")
             return False, None, error_msg
-    
+
+    def _query_wencai(self, query: str, retries: int = 2):
+        """统一处理问财查询，兼容空响应和间歇性失败"""
+        for attempt in range(1, retries + 1):
+            for loop in (True, False):
+                try:
+                    result = pywencai.get(query=query, loop=loop)
+                    if self._has_valid_result(result):
+                        return result
+                    logger.warning(
+                        f"主力选股问财返回空结果: attempt={attempt} loop={loop} query={query[:80]}"
+                    )
+                except Exception as exc:
+                    logger.warning(
+                        f"主力选股问财调用失败: attempt={attempt} loop={loop} error={type(exc).__name__}: {exc}"
+                    )
+            time.sleep(1)
+
+        return None
+
+    def _has_valid_result(self, result) -> bool:
+        if result is None:
+            return False
+
+        if isinstance(result, pd.DataFrame):
+            return not result.empty
+
+        if isinstance(result, list):
+            return len(result) > 0
+
+        if isinstance(result, dict):
+            for key in ("tableV1", "data", "result"):
+                value = result.get(key)
+                if isinstance(value, pd.DataFrame) and not value.empty:
+                    return True
+                if isinstance(value, list) and len(value) > 0:
+                    return True
+                if isinstance(value, dict) and len(value) > 0:
+                    return True
+            return len(result) > 0
+
+        return False
+
+    def _get_main_force_stocks_akshare(self, min_market_cap: float = None, max_market_cap: float = None) -> pd.DataFrame:
+        """使用东方财富主力资金排行接口兜底，失败时再退回 akshare。"""
+        try:
+            df = self._get_main_force_stocks_eastmoney(min_market_cap, max_market_cap)
+            if df is not None and not df.empty:
+                return df
+        except Exception as exc:
+            logger.warning(f"eastmoney 主力排行兜底失败: {type(exc).__name__}: {exc}")
+
+        try:
+            try:
+                df = ak.stock_individual_fund_flow_rank(market="今日")
+            except TypeError:
+                df = ak.stock_individual_fund_flow_rank()
+
+            if df is None or df.empty:
+                return None
+
+            df = df.copy()
+            if '代码' in df.columns:
+                df['代码'] = df['代码'].astype(str).str.zfill(6)
+                df = df[~df['代码'].str.startswith('688')]
+                df = df[~df['代码'].str.startswith('300')]
+            if '名称' in df.columns:
+                df = df[~df['名称'].astype(str).str.contains('ST', case=False, na=False)]
+
+            market_cap_col = next((col for col in df.columns if '总市值' in col or '流通市值' in col), None)
+            if market_cap_col and min_market_cap is not None and max_market_cap is not None:
+                cap_series = pd.to_numeric(df[market_cap_col], errors='coerce')
+                if cap_series.max(skipna=True) and cap_series.max(skipna=True) > 100000:
+                    cap_series = cap_series / 100000000
+                df = df[(cap_series >= min_market_cap) & (cap_series <= max_market_cap)]
+
+            rename_map = {
+                '代码': '股票代码',
+                '名称': '股票简称',
+                '今日涨跌幅': '区间涨跌幅',
+                '最新涨跌幅': '区间涨跌幅',
+                '今日主力净流入-净额': '主力资金净流入',
+                '主力净流入-净额': '主力资金净流入',
+                '所属行业': '所属行业',
+            }
+            df = df.rename(columns={k: v for k, v in rename_map.items() if k in df.columns})
+            return df
+        except Exception as exc:
+            logger.warning(f"akshare主力排行兜底失败: {type(exc).__name__}: {exc}")
+            return None
+
+    def _get_main_force_stocks_eastmoney(
+        self,
+        min_market_cap: float = None,
+        max_market_cap: float = None,
+    ) -> pd.DataFrame:
+        urls = [
+            "https://push2.eastmoney.com/api/qt/clist/get",
+            "https://82.push2.eastmoney.com/api/qt/clist/get",
+        ]
+        params = {
+            "fid": "f62",
+            "po": "1",
+            "pz": "1000",
+            "pn": "1",
+            "np": "1",
+            "fltt": "2",
+            "invt": "2",
+            "ut": "b2884a393a59ad64002292a3e90d46a5",
+            "fs": "m:0+t:6+f:!2,m:0+t:13+f:!2,m:0+t:80+f:!2,m:1+t:2+f:!2,m:1+t:23+f:!2,m:0+t:7+f:!2,m:1+t:3+f:!2",
+            "fields": "f12,f14,f2,f3,f62,f184,f66,f69,f72,f75,f78,f81,f84,f87,f204,f205,f124",
+        }
+        data_json = self.eastmoney_client.get_json(
+            urls=urls,
+            params=params,
+            referer="https://data.eastmoney.com/zjlx/detail.html",
+        )
+        if not data_json or not data_json.get("data", {}).get("diff"):
+            return None
+
+        df = pd.DataFrame(data_json["data"]["diff"])
+        rename_map = {
+            "f12": "股票代码",
+            "f14": "股票简称",
+            "f2": "最新价",
+            "f3": "区间涨跌幅",
+            "f62": "主力资金净流入",
+            "f184": "主力资金净流入占比",
+            "f66": "超大单净流入",
+            "f69": "超大单净流入占比",
+            "f72": "大单净流入",
+            "f75": "大单净流入占比",
+            "f78": "中单净流入",
+            "f81": "中单净流入占比",
+            "f84": "小单净流入",
+            "f87": "小单净流入占比",
+        }
+        df = df.rename(columns=rename_map)
+        if "股票代码" not in df.columns or "股票简称" not in df.columns:
+            return None
+
+        df["股票代码"] = df["股票代码"].astype(str).str.zfill(6)
+        df["股票简称"] = df["股票简称"].astype(str)
+        df = df[~df["股票代码"].str.startswith("688")]
+        df = df[~df["股票代码"].str.startswith("300")]
+        df = df[~df["股票简称"].str.contains("ST", case=False, na=False)]
+
+        for col in ["最新价", "区间涨跌幅", "主力资金净流入", "主力资金净流入占比"]:
+            if col in df.columns:
+                df[col] = pd.to_numeric(df[col], errors="coerce")
+
+        # 该接口不直接返回市值，后续沿用现有 filter_stocks 行为；若无市值列则只做涨跌幅筛选。
+        return df
+
     def _convert_to_dataframe(self, result) -> pd.DataFrame:
         """转换问财返回结果为DataFrame"""
         try:
@@ -125,6 +294,10 @@ class MainForceStockSelector:
                         return table_data
                     elif isinstance(table_data, list):
                         return pd.DataFrame(table_data)
+                if 'data' in result and isinstance(result['data'], list):
+                    return pd.DataFrame(result['data'])
+                if 'result' in result and isinstance(result['result'], list):
+                    return pd.DataFrame(result['result'])
                 # 直接转换字典
                 return pd.DataFrame([result])
             elif isinstance(result, list):
@@ -387,4 +560,3 @@ class MainForceStockSelector:
 
 # 全局实例
 main_force_selector = MainForceStockSelector()
-

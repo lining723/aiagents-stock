@@ -10,6 +10,7 @@ import akshare as ak
 import pandas as pd
 from typing import Dict, Optional
 from datetime import datetime, timedelta
+from utils.redis_cache import cached_call
 
 
 class SmartMonitorDataFetcher:
@@ -63,6 +64,11 @@ class SmartMonitorDataFetcher:
         else:
             self.logger.info("未配置Tushare Token，仅使用AKShare数据源")
     
+    @cached_call(
+        "realtime",
+        key_builder=lambda self, stock_code, retry=1: (str(stock_code).split(".")[0],),
+        is_valid=lambda result: bool(result),
+    )
     def get_realtime_quote(self, stock_code: str, retry: int = 1) -> Optional[Dict]:
         """
         获取实时行情（带重试和降级机制）
@@ -180,6 +186,11 @@ class SmartMonitorDataFetcher:
             self.logger.error(f"AKShare失败且未配置Tushare，无法获取 {clean_code} 行情")
             return None
     
+    @cached_call(
+        "technical",
+        key_builder=lambda self, stock_code, period="daily", retry=1: ("v2", str(stock_code).split(".")[0], period),
+        is_valid=lambda result: bool(result),
+    )
     def get_technical_indicators(self, stock_code: str, period: str = 'daily', retry: int = 1) -> Optional[Dict]:
         """
         计算技术指标（带降级机制）
@@ -193,17 +204,38 @@ class SmartMonitorDataFetcher:
         Returns:
             技术指标数据
         """
+        return self._get_technical_indicators_uncached(stock_code, period, retry=retry, allow_tdx=True)
+
+    def _get_technical_indicators_uncached(
+        self,
+        stock_code: str,
+        period: str = 'daily',
+        retry: int = 1,
+        allow_tdx: bool = True
+    ) -> Optional[Dict]:
+        """计算技术指标，供缓存入口和口径异常降级重算复用。"""
         import time
         
         # 将带后缀的股票代码转为纯数字
         clean_code = stock_code.split('.')[0] if '.' in stock_code else stock_code
         
         # 方法1: 尝试使用TDX（如果启用）
-        if self.use_tdx and self.tdx_fetcher:
+        if allow_tdx and self.use_tdx and self.tdx_fetcher:
             try:
                 indicators = self.tdx_fetcher.get_technical_indicators(clean_code, period)
                 if indicators:
-                    return indicators
+                    indicators.setdefault('data_source', 'tdx')
+                    quote = self.tdx_fetcher.get_realtime_quote(clean_code)
+                    if quote and not self._indicators_match_quote_price(indicators, quote.get('current_price')):
+                        self.logger.warning(
+                            "TDX技术指标价格口径异常 %s: current_price=%s, indicator_close=%s, ma5=%s，尝试降级到AKShare",
+                            clean_code,
+                            quote.get('current_price'),
+                            indicators.get('indicator_close'),
+                            indicators.get('ma5'),
+                        )
+                    else:
+                        return indicators
                 else:
                     self.logger.warning(f"TDX计算技术指标失败 {clean_code}，尝试降级到AKShare")
             except Exception as e:
@@ -235,7 +267,10 @@ class SmartMonitorDataFetcher:
                         break
                 
                 # 数据充足，计算技术指标
-                return self._calculate_all_indicators(df, clean_code)
+                indicators = self._calculate_all_indicators(df, clean_code)
+                if indicators:
+                    indicators['data_source'] = 'akshare'
+                return indicators
                 
             except Exception as e:
                 if attempt < retry - 1:
@@ -321,6 +356,7 @@ class SmartMonitorDataFetcher:
                 boll_position = '中轨下方'
             
             return {
+                'indicator_close': current_price,
                 'ma5': ma5,
                 'ma20': ma20,
                 'ma60': ma60,
@@ -426,7 +462,10 @@ class SmartMonitorDataFetcher:
             self.logger.info(f"✅ Tushare成功获取 {stock_code} 历史数据，共{len(df)}条")
             
             # 使用统一的计算方法
-            return self._calculate_all_indicators(df, stock_code)
+            indicators = self._calculate_all_indicators(df, stock_code)
+            if indicators:
+                indicators['data_source'] = 'tushare'
+            return indicators
             
         except Exception as e:
             self.logger.error(f"Tushare获取历史数据失败 {stock_code}: {type(e).__name__}: {str(e)}")
@@ -434,6 +473,11 @@ class SmartMonitorDataFetcher:
             self.logger.debug(traceback.format_exc())
             return None
     
+    @cached_call(
+        "fund_flow",
+        key_builder=lambda self, stock_code, retry=2: (str(stock_code).split(".")[0],),
+        is_valid=lambda result: bool(result),
+    )
     def get_main_force_flow(self, stock_code: str, retry: int = 2) -> Optional[Dict]:
         """
         获取主力资金流向（带重试机制）
@@ -510,6 +554,11 @@ class SmartMonitorDataFetcher:
             self.logger.error(f"AKShare失败且未配置Tushare，无法获取 {stock_code} 资金流向")
             return None
     
+    @cached_call(
+        "technical",
+        key_builder=lambda self, stock_code: ("v2", "comprehensive", str(stock_code).split(".")[0]),
+        is_valid=lambda result: bool(result),
+    )
     def get_comprehensive_data(self, stock_code: str) -> Dict:
         """
         获取综合数据（实时行情+技术指标）
@@ -530,6 +579,28 @@ class SmartMonitorDataFetcher:
         
         # 技术指标
         indicators = self.get_technical_indicators(stock_code)
+        current_price = result.get('current_price')
+        if indicators and current_price and not self._indicators_match_quote_price(indicators, current_price):
+            clean_code = stock_code.split('.')[0] if '.' in stock_code else stock_code
+            self.logger.warning(
+                "技术指标价格口径异常 %s: current_price=%.4f, indicator_close=%s, ma5=%s, ma20=%s, source=%s，降级重算",
+                clean_code,
+                float(current_price),
+                indicators.get('indicator_close'),
+                indicators.get('ma5'),
+                indicators.get('ma20'),
+                indicators.get('data_source'),
+            )
+            fallback_indicators = self._get_technical_indicators_uncached(
+                clean_code,
+                allow_tdx=False,
+            )
+            if fallback_indicators and self._indicators_match_quote_price(fallback_indicators, current_price):
+                indicators = fallback_indicators
+            else:
+                self.logger.warning(f"股票 {clean_code} 降级技术指标仍未通过价格口径校验，保留原始实时行情")
+                indicators = None
+
         if indicators:
             result.update(indicators)
         
@@ -539,6 +610,34 @@ class SmartMonitorDataFetcher:
         #     result['main_force'] = main_force
         
         return result
+
+    def _indicators_match_quote_price(self, indicators: Dict, current_price: float) -> bool:
+        """校验技术指标价格口径是否与实时行情一致。"""
+        try:
+            quote_price = float(current_price)
+            if quote_price <= 0 or not indicators:
+                return True
+
+            indicator_close = indicators.get('indicator_close')
+            if indicator_close is not None:
+                close_price = float(indicator_close)
+                if close_price <= 0:
+                    return False
+                return 0.65 <= close_price / quote_price <= 1.35
+
+            anchors = [
+                indicators.get('ma5'),
+                indicators.get('ma20'),
+                indicators.get('boll_mid'),
+            ]
+            anchors = [float(value) for value in anchors if value not in (None, '') and float(value) > 0]
+            if not anchors:
+                return True
+
+            median_anchor = sorted(anchors)[len(anchors) // 2]
+            return 0.35 <= median_anchor / quote_price <= 2.5
+        except (TypeError, ValueError):
+            return True
     
     # ========== 技术指标计算方法 ==========
     
@@ -830,4 +929,3 @@ if __name__ == '__main__':
             print("\n主力资金:")
             print(f"  主力净额: {data['main_force']['main_net']:.2f}万")
             print(f"  主力动向: {data['main_force']['trend']}")
-

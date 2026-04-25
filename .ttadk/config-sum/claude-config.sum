@@ -18,6 +18,13 @@
       "branch": "master",
       "commit": "0ef6b7d5418d5946ce96048a186e395df4e1f6bc",
       "updated_at": "2026-04-01T06:27:06.771Z"
+    },
+    {
+      "name": "ttadk/common-kit",
+      "git_repo": "git@code.byted.org:tiktok/ttadk_plugin_market.git",
+      "branch": "master",
+      "commit": "55310d0bde9da1a5454086acc49292393ba1c37c",
+      "updated_at": "2026-04-01T07:09:42.456Z"
     }
   ]
 }

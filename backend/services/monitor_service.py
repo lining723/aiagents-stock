@@ -1,9 +1,7 @@
 import time
 import threading
-import schedule
 from datetime import datetime, timedelta
 from typing import Dict, List
-import streamlit as st
 import logging
 import os
 from utils.logger import get_logger
@@ -44,23 +42,36 @@ class StockMonitorService:
         
         self.running = False
         self.thread = None
+        self.global_check_interval = 300
+        self.auto_notification_enabled = True
     
     def start_monitoring(self):
         """启动监测服务"""
         if self.running:
-            return
+            return False
         
         self.running = True
         self.thread = threading.Thread(target=self._monitor_loop, daemon=True)
         self.thread.start()
-        st.success("✅ 监测服务已启动")
+        logger.info("监测服务已启动")
+        return True
     
     def stop_monitoring(self):
         """停止监测服务"""
+        if not self.running:
+            return False
         self.running = False
         if self.thread:
             self.thread.join(timeout=5)
-        st.info("⏹️ 监测服务已停止")
+        logger.info("监测服务已停止")
+        return True
+
+    def update_runtime_config(self, check_interval: int = None, auto_notification: bool = None):
+        """更新运行时配置。check_interval 单位为秒。"""
+        if check_interval is not None:
+            self.global_check_interval = max(int(check_interval), 10)
+        if auto_notification is not None:
+            self.auto_notification_enabled = bool(auto_notification)
     
     def _monitor_loop(self):
         """监测循环"""
@@ -68,11 +79,23 @@ class StockMonitorService:
         while self.running:
             try:
                 self._check_all_stocks()
-                # 根据最小监测间隔决定循环间隔，最少5分钟检查一次
-                time.sleep(300)  # 每5分钟检查一次
+                time.sleep(self._next_loop_sleep_seconds())
             except Exception as e:
                 print(f"监测服务错误: {e}")
                 time.sleep(60)  # 错误后等待1分钟再重试
+
+    def _next_loop_sleep_seconds(self) -> int:
+        """根据全局和个股间隔计算下一次轮询等待时间。"""
+        try:
+            stocks = monitor_db.get_monitored_stocks()
+            intervals = [
+                int(stock.get('check_interval') or self.global_check_interval)
+                for stock in stocks
+            ]
+            intervals.append(self.global_check_interval)
+            return max(10, min(intervals))
+        except Exception:
+            return max(10, int(self.global_check_interval))
     
     def _check_all_stocks(self):
         """检查所有监测股票"""
@@ -81,17 +104,21 @@ class StockMonitorService:
         
         updated_count = 0
         for stock in stocks:
+            if stock.get('trading_hours_only', True) and not self._is_trading_time(current_time):
+                print(f"股票 {stock['symbol']} 设置为仅交易时段监测，当前非交易时段，跳过")
+                continue
+
             # 检查是否需要更新价格
             last_checked = stock.get('last_checked')
-            check_interval = stock.get('check_interval', 30)
+            check_interval = stock.get('check_interval', self.global_check_interval)
             
             if last_checked:
-                last_checked_dt = datetime.fromisoformat(last_checked)
-                next_check = last_checked_dt + timedelta(minutes=check_interval)
+                last_checked_dt = self._parse_checked_time(last_checked)
+                next_check = last_checked_dt + timedelta(seconds=check_interval)
                 if current_time < next_check:
                     # 显示距离下次检查的时间
-                    time_left = (next_check - current_time).total_seconds() / 60
-                    print(f"股票 {stock['symbol']} 距离下次检查还有 {time_left:.1f} 分钟")
+                    time_left = (next_check - current_time).total_seconds()
+                    print(f"股票 {stock['symbol']} 距离下次检查还有 {time_left:.0f} 秒")
                     continue
             
             try:
@@ -108,6 +135,19 @@ class StockMonitorService:
         
         if updated_count > 0:
             print(f"✅ 本轮共更新了 {updated_count} 只股票")
+
+    def _parse_checked_time(self, value) -> datetime:
+        if isinstance(value, datetime):
+            return value
+        return datetime.fromisoformat(str(value))
+
+    def _is_trading_time(self, current_time: datetime = None) -> bool:
+        """A股交易时段：周一至周五 09:30-11:30、13:00-15:00。"""
+        current_time = current_time or datetime.now()
+        if current_time.weekday() >= 5:
+            return False
+        minutes = current_time.hour * 60 + current_time.minute
+        return (9 * 60 + 30 <= minutes <= 11 * 60 + 30) or (13 * 60 <= minutes <= 15 * 60)
     
     def _update_stock_price(self, stock: Dict):
         """更新股票价格并检查条件"""
@@ -194,7 +234,8 @@ class StockMonitorService:
                     monitor_db.add_notification(stock['id'], 'entry', message)
                     
                     # 立即发送通知（包括邮件）
-                    notification_service.send_notifications()
+                    if self.auto_notification_enabled:
+                        notification_service.send_notifications()
                 
                 # 如果启用量化交易，执行自动交易
                 if stock.get('quant_enabled', False):
@@ -208,7 +249,8 @@ class StockMonitorService:
                 monitor_db.add_notification(stock['id'], 'take_profit', message)
                 
                 # 立即发送通知（包括邮件）
-                notification_service.send_notifications()
+                if self.auto_notification_enabled:
+                    notification_service.send_notifications()
             
             # 如果启用量化交易，执行自动交易
             if stock.get('quant_enabled', False):
@@ -222,7 +264,8 @@ class StockMonitorService:
                 monitor_db.add_notification(stock['id'], 'stop_loss', message)
                 
                 # 立即发送通知（包括邮件）
-                notification_service.send_notifications()
+                if self.auto_notification_enabled:
+                    notification_service.send_notifications()
             
             # 如果启用量化交易，执行自动交易
             if stock.get('quant_enabled', False):
@@ -266,7 +309,8 @@ class StockMonitorService:
                     f"量化交易执行: {msg}"
                 )
                 # 立即发送通知（包括邮件）
-                notification_service.send_notifications()
+                if self.auto_notification_enabled:
+                    notification_service.send_notifications()
             else:
                 print(f"❌ 量化交易失败: {stock['symbol']} - {msg}")
                 
@@ -281,14 +325,14 @@ class StockMonitorService:
         
         for stock in stocks:
             last_checked = stock.get('last_checked')
-            check_interval = stock.get('check_interval', 30)
+            check_interval = stock.get('check_interval', self.global_check_interval)
             
             if not last_checked:
                 need_update.append(stock)
                 continue
             
-            last_checked_dt = datetime.fromisoformat(last_checked)
-            next_check = last_checked_dt + timedelta(minutes=check_interval)
+            last_checked_dt = self._parse_checked_time(last_checked)
+            next_check = last_checked_dt + timedelta(seconds=check_interval)
             if current_time >= next_check:
                 need_update.append(stock)
         

@@ -9,6 +9,8 @@ import type {
   TechnicalAnalysisResponse,
   FundamentalAnalysisRequest,
   FundamentalAnalysisResponse,
+  PricePredictionRequest,
+  PricePredictionResponse,
   ComprehensiveAnalysisRequest,
   ComprehensiveAnalysisResponse,
   AIAnalysisRequest,
@@ -40,6 +42,11 @@ export const stockApi = {
 
   getFundamentalAnalysis: async (request: FundamentalAnalysisRequest) => {
     const response = await apiPost<FundamentalAnalysisResponse>('/analysis/fundamental', request)
+    return response.data.data
+  },
+
+  getPricePrediction: async (request: PricePredictionRequest) => {
+    const response = await apiPost<PricePredictionResponse>('/analysis/price-prediction', request)
     return response.data.data
   },
 

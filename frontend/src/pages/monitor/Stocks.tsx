@@ -47,7 +47,7 @@ export default function MonitorStocks() {
   })
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, values }: { id: number; values: MonitoredStockUpdate }) =>
+    mutationFn: ({ id, values }: { id: string; values: MonitoredStockUpdate }) =>
       monitorApi.updateStock(id, values),
     onSuccess: () => {
       message.success('更新成功')
@@ -60,7 +60,7 @@ export default function MonitorStocks() {
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => monitorApi.deleteStock(id),
+    mutationFn: (id: string) => monitorApi.deleteStock(id),
     onSuccess: () => {
       message.success('删除成功')
       queryClient.invalidateQueries({ queryKey: ['monitoredStocks'] })
@@ -93,7 +93,7 @@ export default function MonitorStocks() {
     setIsModalVisible(true)
   }
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     deleteMutation.mutate(id)
   }
 

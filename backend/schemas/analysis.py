@@ -12,9 +12,17 @@ class FundamentalAnalysisRequest(BaseModel):
     symbol: str = Field(..., description="股票代码")
 
 
+class PricePredictionRequest(BaseModel):
+    symbol: str = Field(..., description="股票代码")
+
+
 class ComprehensiveAnalysisRequest(BaseModel):
     symbol: str = Field(..., description="股票代码")
     days_ago: int = Field(default=60, description="分析天数", ge=30, le=365)
+    analysis_dimensions: Optional[List[str]] = Field(
+        None,
+        description="分析维度: technical/fundamental/price_prediction；为空时默认全部执行",
+    )
 
 
 class TechnicalIndicator(BaseModel):
@@ -74,6 +82,25 @@ class FundamentalAnalysisResponse(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.now, description="时间戳")
 
 
+class PricePredictionResponse(BaseModel):
+    success: bool = Field(..., description="是否成功")
+    message: str = Field(..., description="消息")
+    symbol: str = Field(..., description="股票代码")
+    pressure_price: Optional[float] = Field(None, description="预估压力位")
+    pressure_pct: Optional[float] = Field(None, description="预估上涨幅度")
+    support_price: Optional[float] = Field(None, description="预估支撑位")
+    support_pct: Optional[float] = Field(None, description="预估下跌幅度")
+    amplitude_pct: Optional[float] = Field(None, description="未来480分钟预估振幅")
+    price_limit_pct: Optional[float] = Field(None, description="单日涨跌幅限制百分比")
+    price_limit_days: Optional[int] = Field(None, description="涨跌幅限制折算交易日数")
+    price_limit_unrestricted: Optional[bool] = Field(None, description="是否处于新股无涨跌幅限制阶段")
+    price_limit_rule: Optional[str] = Field(None, description="涨跌幅限制规则说明")
+    listing_date: Optional[str] = Field(None, description="上市日期")
+    listing_trading_day: Optional[int] = Field(None, description="上市后第几个交易日")
+    output_text: str = Field(default="", description="严格五行预测文本")
+    timestamp: datetime = Field(default_factory=datetime.now, description="时间戳")
+
+
 class AnalysisScore(BaseModel):
     category: str = Field(..., description="评分类别")
     score: float = Field(..., description="得分 0-100")
@@ -90,6 +117,7 @@ class ComprehensiveAnalysisResponse(BaseModel):
     scores: List[AnalysisScore] = Field(default_factory=list, description="各维度评分")
     technical_analysis: Optional[TechnicalAnalysisResponse] = Field(None, description="技术分析")
     fundamental_analysis: Optional[FundamentalAnalysisResponse] = Field(None, description="基本面分析")
+    price_prediction: Optional[PricePredictionResponse] = Field(None, description="价格预测")
     risks: List[str] = Field(default_factory=list, description="风险提示")
     opportunities: List[str] = Field(default_factory=list, description="投资机会")
     recommendations: List[str] = Field(default_factory=list, description="操作建议")

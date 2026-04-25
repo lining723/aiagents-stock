@@ -89,8 +89,8 @@ async def get_value_stocks(request: ValueStockRequest):
             top_n=request.top_n
         )
         
-        # 如果 df 只有一列（表示没有匹配数据）或者是字符串（错误信息）
-        if isinstance(df, str) or (isinstance(df, pd.DataFrame) and df.empty):
+        # 统一尊重 selector 返回的 success 状态，避免将“失败但无数据”误报为成功 0 只
+        if (not success) or df is None or isinstance(df, str) or (isinstance(df, pd.DataFrame) and df.empty):
             logger.warning(f"低估值选股失败: {message}")
             return SuccessResponse.success(
                 data=StockListResponse(

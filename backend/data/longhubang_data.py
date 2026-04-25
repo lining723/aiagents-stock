@@ -3,11 +3,13 @@
 使用StockAPI获取龙虎榜数据
 """
 
+import logging
 import requests
 import pandas as pd
 from datetime import datetime, timedelta
 import time
 import warnings
+from utils.redis_cache import redis_cache
 
 warnings.filterwarnings('ignore')
 
@@ -23,13 +25,15 @@ class LonghubangDataFetcher:
             api_key: StockAPI的API密钥（可选，普通请求每日免费1000次）
         """
         print("[智瞰龙虎] 龙虎榜数据获取器初始化...")
-        # self.base_url = "https://api-lhb.zhongdu.net"
-        self.base_url = "http://lhb-api.ws4.cn/v1"
-       # self.base_url = "https://www.stockapi.com.cn/v1"
+        self.base_urls = [
+            "http://lhb-api.ws4.cn/v1",
+            "https://api-lhb.zhongdu.net",
+        ]
         self.api_key = api_key
         self.max_retries = 3  # 最大重试次数
         self.retry_delay = 2  # 重试延迟（秒）
         self.request_delay = 0.025  # 请求间隔（秒），40次/秒 = 0.025秒/次
+        self.logger = logging.getLogger(__name__)
     
     def _safe_request(self, url, params=None):
         """
@@ -79,20 +83,37 @@ class LonghubangDataFetcher:
         Returns:
             dict: 龙虎榜数据
         """
+        cache_result = redis_cache.get_or_set(
+            "longhubang",
+            ("date", date),
+            lambda: self._fetch_longhubang_data_uncached(date),
+            is_valid=lambda result: bool(result and result.get("data")),
+        )
+        if cache_result.hit:
+            status = "过期缓存兜底" if cache_result.stale else "缓存命中"
+            print(f"[智瞰龙虎] {date} 龙虎榜数据{status}: {len(cache_result.value.get('data', []))} 条")
+        return cache_result.value
+
+    def _fetch_longhubang_data_uncached(self, date):
+        """从外部源获取指定日期的龙虎榜数据。"""
         print(f"[智瞰龙虎] 获取 {date} 的龙虎榜数据...")
         
-        # url = f"{self.base_url}"
-        url = f"{self.base_url}/youzi/all"
         params = {'date': date}
-        
-        result = self._safe_request(url, params)
-        
-        if result and result.get('data'):
-            print(f"    ✓ 成功获取 {len(result['data'])} 条龙虎榜记录")
-            return result
-        else:
-            print(f"    ✗ 未获取到数据")
-            return None
+
+        for base_url in self.base_urls:
+            url = f"{base_url}/youzi/all"
+            result = self._safe_request(url, params)
+            if result and result.get('data'):
+                print(f"    ✓ 成功获取 {len(result['data'])} 条龙虎榜记录")
+                return result
+
+        fallback = self._get_longhubang_data_akshare(date)
+        if fallback and fallback.get('data'):
+            print(f"    ✓ 使用 AkShare 兜底获取 {len(fallback['data'])} 条龙虎榜记录")
+            return fallback
+
+        print(f"    ✗ 未获取到数据")
+        return None
     
     def get_longhubang_data_range(self, start_date, end_date):
         """
@@ -138,13 +159,183 @@ class LonghubangDataFetcher:
         Returns:
             list: 龙虎榜数据列表
         """
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=days * 2)  # 乘以2以确保包含足够的交易日
-        
-        return self.get_longhubang_data_range(
-            start_date.strftime('%Y-%m-%d'),
-            end_date.strftime('%Y-%m-%d')
-        )
+        all_data = []
+        current_date = datetime.now()
+        collected_days = 0
+        checked_days = 0
+        max_lookback_days = max(days * 5, 10)
+
+        while collected_days < days and checked_days < max_lookback_days:
+            if current_date.weekday() < 5:
+                result = self.get_longhubang_data(current_date.strftime('%Y-%m-%d'))
+                if result and result.get('data'):
+                    all_data.extend(result['data'])
+                    collected_days += 1
+            current_date -= timedelta(days=1)
+            checked_days += 1
+
+        print(f"[智瞰龙虎] ✓ 共获取 {len(all_data)} 条记录")
+        return all_data
+
+    def _get_longhubang_data_akshare(self, date):
+        """
+        使用 AkShare 作为兜底源获取龙虎榜数据。
+        优先取东方财富席位级明细，失败后退化到日度汇总。
+        """
+        date_compact = date.replace('-', '')
+
+        try:
+            import akshare as ak
+
+            detail_df = ak.stock_lhb_detail_em(start_date=date_compact, end_date=date_compact)
+            records = self._convert_em_detail_to_records(detail_df, date)
+            if records:
+                return {
+                    'code': 20000,
+                    'msg': 'ok',
+                    'data': records,
+                    'source': 'akshare_eastmoney',
+                }
+        except Exception as e:
+            self.logger.warning(f"AkShare 东方财富龙虎榜详情兜底失败 {date}: {type(e).__name__}: {e}")
+
+        try:
+            import akshare as ak
+
+            daily_df = ak.stock_lhb_detail_daily_sina(date=date_compact)
+            records = self._convert_sina_daily_to_records(daily_df, date)
+            if records:
+                return {
+                    'code': 20000,
+                    'msg': 'ok',
+                    'data': records,
+                    'source': 'akshare_sina',
+                }
+        except Exception as e:
+            self.logger.warning(f"AkShare 新浪龙虎榜兜底失败 {date}: {type(e).__name__}: {e}")
+
+        return None
+
+    def _convert_em_detail_to_records(self, detail_df, date):
+        """将东方财富龙虎榜详情转换为当前系统兼容的记录结构。"""
+        if detail_df is None or detail_df.empty:
+            return []
+
+        records = []
+        trade_date = pd.to_datetime(date).date()
+        filtered_df = detail_df.copy()
+        if '上榜日' in filtered_df.columns:
+            filtered_df = filtered_df[filtered_df['上榜日'] == trade_date]
+
+        if filtered_df.empty:
+            return []
+
+        try:
+            import akshare as ak
+        except Exception:
+            ak = None
+
+        for _, row in filtered_df.iterrows():
+            stock_code = str(row.get('代码', '')).zfill(6)
+            stock_name = row.get('名称', '')
+            reason = row.get('上榜原因') or row.get('解读') or ''
+            trade_date_compact = pd.to_datetime(row.get('上榜日', trade_date)).strftime('%Y%m%d')
+
+            detail_frames = []
+            if ak is not None:
+                for flag in ('买入', '卖出'):
+                    try:
+                        seat_df = ak.stock_lhb_stock_detail_em(
+                            symbol=stock_code,
+                            date=trade_date_compact,
+                            flag=flag,
+                        )
+                        if seat_df is not None and not seat_df.empty:
+                            detail_frames.append(seat_df)
+                    except Exception as e:
+                        self.logger.warning(
+                            f"AkShare 个股席位详情失败 {stock_code} {trade_date_compact} {flag}: "
+                            f"{type(e).__name__}: {e}"
+                        )
+
+            if detail_frames:
+                seat_df = pd.concat(detail_frames, ignore_index=True)
+                seat_df['交易营业部名称'] = seat_df['交易营业部名称'].fillna('未知营业部')
+                seat_df['类型'] = seat_df['类型'].fillna('')
+                for col in ('买入金额', '卖出金额', '净额'):
+                    seat_df[col] = pd.to_numeric(seat_df[col], errors='coerce').fillna(0.0)
+
+                grouped = seat_df.groupby('交易营业部名称', as_index=False).agg({
+                    '买入金额': 'sum',
+                    '卖出金额': 'sum',
+                    '净额': 'sum',
+                    '类型': 'first',
+                })
+
+                for _, seat in grouped.iterrows():
+                    yyb = str(seat.get('交易营业部名称', '')).strip() or '未知营业部'
+                    seat_type = str(seat.get('类型', '')).strip()
+                    yzmc = f"{yyb}({seat_type})" if seat_type else yyb
+                    records.append({
+                        'rq': date,
+                        'gpdm': stock_code,
+                        'gpmc': stock_name,
+                        'yzmc': yzmc,
+                        'yyb': yyb,
+                        'sblx': reason,
+                        'mrje': float(seat.get('买入金额', 0) or 0),
+                        'mcje': float(seat.get('卖出金额', 0) or 0),
+                        'jlrje': float(seat.get('净额', 0) or 0),
+                        'gl': reason,
+                    })
+                continue
+
+            # 如果席位明细也拿不到，至少保留股票级汇总，避免整天数据直接为空
+            buy_amount = float(row.get('龙虎榜买入额', 0) or 0)
+            sell_amount = float(row.get('龙虎榜卖出额', 0) or 0)
+            net_inflow = float(row.get('龙虎榜净买额', 0) or 0)
+            records.append({
+                'rq': date,
+                'gpdm': stock_code,
+                'gpmc': stock_name,
+                'yzmc': '龙虎榜汇总',
+                'yyb': '龙虎榜汇总',
+                'sblx': reason,
+                'mrje': buy_amount,
+                'mcje': sell_amount,
+                'jlrje': net_inflow,
+                'gl': reason,
+            })
+
+        return records
+
+    def _convert_sina_daily_to_records(self, daily_df, date):
+        """将新浪龙虎榜日度详情退化映射到兼容结构。"""
+        if daily_df is None or daily_df.empty:
+            return []
+
+        records = []
+        for _, row in daily_df.iterrows():
+            stock_code = str(row.get('股票代码', '')).zfill(6)
+            stock_name = row.get('股票名称', '')
+            indicator = row.get('指标', '') or ''
+            amount = pd.to_numeric(row.get('成交额', 0), errors='coerce')
+            amount = 0.0 if pd.isna(amount) else float(amount)
+
+            records.append({
+                'rq': date,
+                'gpdm': stock_code,
+                'gpmc': stock_name,
+                'yzmc': '新浪龙虎榜汇总',
+                'yyb': '新浪龙虎榜汇总',
+                'sblx': indicator,
+                'mrje': amount,
+                'mcje': 0.0,
+                'jlrje': amount,
+                'gl': indicator,
+            })
+
+        return records
     
     def parse_to_dataframe(self, data_list):
         """
@@ -332,4 +523,3 @@ if __name__ == "__main__":
         print(f"\n... (总长度: {len(formatted_text)} 字符)")
     else:
         print("\n数据采集失败")
-

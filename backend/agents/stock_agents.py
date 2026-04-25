@@ -5,7 +5,9 @@
 
 from agents.deepseek_client import DeepSeekClient
 from typing import Dict, Any, Optional
+from datetime import datetime
 import time
+import re
 import config.config as config
 
 
@@ -67,6 +69,36 @@ class StockAgents:
 
         return text
 
+    def _current_report_date(self) -> str:
+        """返回报告使用的当前本地日期。"""
+        now = datetime.now()
+        return f"{now.year}年{now.month}月{now.day}日"
+
+    def _normalize_report_metadata(self, analysis: str, report_date: str, analyst_name: str) -> str:
+        """规范AI报告日期和署名，避免模型输出旧日期或占位符。"""
+        if not analysis:
+            return analysis
+
+        normalized = analysis.replace("2024年5月21日", report_date)
+        normalized = normalized.replace("[分析师姓名]", analyst_name)
+
+        date_pattern = r"(?m)^(\s*(?:[-*]\s*)?(?:\*\*)?报告日期(?:\*\*)?\s*[：:]\s*).*$"
+        analyst_pattern = r"(?m)^(\s*(?:[-*]\s*)?(?:\*\*)?分析师署名(?:\*\*)?\s*[：:]\s*).*$"
+
+        normalized, date_count = re.subn(date_pattern, rf"\g<1>{report_date}", normalized)
+        normalized, analyst_count = re.subn(analyst_pattern, rf"\g<1>{analyst_name}", normalized)
+
+        metadata_lines = []
+        if date_count == 0:
+            metadata_lines.append(f"报告日期：{report_date}")
+        if analyst_count == 0:
+            metadata_lines.append(f"分析师署名：{analyst_name}")
+
+        if metadata_lines:
+            normalized = "\n".join(metadata_lines) + "\n\n" + normalized.lstrip()
+
+        return normalized
+
     def comprehensive_stock_analyst(
         self,
         symbol: str,
@@ -89,16 +121,26 @@ class StockAgents:
 
         tech_text = self._format_technical_data(tech_data) if tech_data else "暂无技术面数据"
         fund_text = self._format_fundamental_data(fund_data) if fund_data else "暂无基本面数据"
+        report_date = self._current_report_date()
+        analyst_name = "AI Agents Stock 智能分析系统"
 
         prompt = f"""你是一名资深的股票投资分析师，拥有15年以上的A股市场投资研究经验。请基于以下提供的股票数据，进行专业、全面、深入的分析。
 
 股票代码: {symbol}
+报告日期: {report_date}
+分析师署名: {analyst_name}
 
 {tech_text}
 
 {fund_text}
 
 请基于以上数据，按照以下结构撰写一份专业的股票分析报告：
+
+报告开头必须包含以下两行元信息，且必须逐字使用给定值：
+报告日期：{report_date}
+分析师署名：{analyst_name}
+
+严禁输出任何旧日期、示例日期或占位符，例如“2024年5月21日”或“[分析师姓名]”。
 
 ## 一、股票概况与最新走势
 - 简要介绍股票基本情况
@@ -146,6 +188,7 @@ class StockAgents:
 
         try:
             analysis = self.deepseek_client.call_api(messages, max_tokens=6000)
+            analysis = self._normalize_report_metadata(analysis, report_date, analyst_name)
             print("  ✓ 综合股票分析师分析完成")
 
             return {

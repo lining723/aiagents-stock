@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactECharts from 'echarts-for-react'
 import type { KlineData } from '@/types/stock'
 

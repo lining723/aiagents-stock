@@ -97,6 +97,10 @@ export interface FundamentalAnalysisRequest {
   symbol: string
 }
 
+export interface PricePredictionRequest {
+  symbol: string
+}
+
 export interface FundamentalAnalysisResponse {
   success: boolean
   message: string
@@ -111,6 +115,25 @@ export interface FundamentalAnalysisResponse {
   dividend_rate?: number
   metrics: FundamentalMetric[]
   summary?: string
+  timestamp: string
+}
+
+export interface PricePredictionResponse {
+  success: boolean
+  message: string
+  symbol: string
+  pressure_price?: number
+  pressure_pct?: number
+  support_price?: number
+  support_pct?: number
+  amplitude_pct?: number
+  price_limit_pct?: number
+  price_limit_days?: number
+  price_limit_unrestricted?: boolean
+  price_limit_rule?: string
+  listing_date?: string
+  listing_trading_day?: number
+  output_text: string
   timestamp: string
 }
 
@@ -133,9 +156,12 @@ export interface AIAnalysisResponse {
   timestamp: string
 }
 
+export type AnalysisDimension = 'technical' | 'fundamental' | 'price_prediction'
+
 export interface ComprehensiveAnalysisRequest {
   symbol: string
   days_ago: number
+  analysis_dimensions?: AnalysisDimension[]
 }
 
 export interface ComprehensiveAnalysisResponse {
@@ -148,6 +174,7 @@ export interface ComprehensiveAnalysisResponse {
   scores: AnalysisScore[]
   technical_analysis?: TechnicalAnalysisResponse
   fundamental_analysis?: FundamentalAnalysisResponse
+  price_prediction?: PricePredictionResponse
   risks: string[]
   opportunities: string[]
   recommendations: string[]

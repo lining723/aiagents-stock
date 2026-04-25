@@ -9,6 +9,7 @@ import io
 import warnings
 from datetime import datetime
 import akshare as ak
+from utils.redis_cache import cached_call
 
 warnings.filterwarnings('ignore')
 
@@ -39,6 +40,11 @@ class QuarterlyReportDataFetcher:
         self.available = True
         print("✓ 季报数据获取器初始化成功（akshare数据源）")
     
+    @cached_call(
+        "fundamental",
+        key_builder=lambda self, symbol: ("quarterly", str(symbol).split(".")[0], self.periods),
+        is_valid=lambda result: bool(result and result.get("data_success")),
+    )
     def get_quarterly_reports(self, symbol):
         """
         获取股票的季报数据
@@ -423,4 +429,3 @@ if __name__ == "__main__":
             print(f"\n获取失败: {data.get('error', '未知错误')}")
         
         print("\n")
-
