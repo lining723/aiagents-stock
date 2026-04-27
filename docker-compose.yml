@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
+      args:
+        PIP_INDEX_URL: "${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}"
     container_name: ai-agents-stock-backend
     restart: unless-stopped
     ports:
@@ -21,9 +23,6 @@ services:
       TDX_BASE_URL: "${DOCKER_TDX_BASE_URL:-http://tdx-api:8080}"
     volumes:
       - ./.env:/app/.env:ro
-      - ./data:/app/data
-      - ./db:/app/db
-      - ./config:/app/config
       - ./log:/app/log
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -34,10 +33,8 @@ services:
         condition: service_healthy
       mongo:
         condition: service_healthy
-      tdx-api:
-        condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8000/health >/dev/null || exit 1"]
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=5).read()\" || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -57,7 +54,7 @@ services:
     networks:
       - ai-agents-stock-network
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost/ || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/ || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -124,9 +121,9 @@ services:
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/health"]
       interval: 30s
-      timeout: 3s
-      retries: 3
-      start_period: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 120s
 
 networks:
   ai-agents-stock-network:

@@ -2838,3 +2838,490 @@ SUMMARY
 2026-04-25 22:38:51 | INFO     | backend.main         | 版本: 1.0.0
 2026-04-25 22:38:51 | ERROR    | aiagents_stock       | 2026-04-25 22:38:51 | INFO     | backend.main         | ================================================================================
 2026-04-25 22:38:51 | INFO     | backend.main         | ================================================================================
+2026-04-26 22:37:42 | ERROR    | aiagents_stock       | 2026-04-26 22:37:42 | INFO     | backend.main         | AI Agents Stock API 关闭
+2026-04-26 22:37:42 | INFO     | backend.main         | AI Agents Stock API 关闭
+2026-04-27 17:39:37 | ERROR    | aiagents_stock       | 2026-04-27 17:39:37 | INFO     | main                 | ================================================================================
+2026-04-27 17:39:37 | INFO     | main                 | ================================================================================
+2026-04-27 17:39:37 | ERROR    | aiagents_stock       | 2026-04-27 17:39:37 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-27 17:39:37 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-27 17:39:37 | ERROR    | aiagents_stock       | 2026-04-27 17:39:37 | INFO     | main                 | 版本: 1.0.0
+2026-04-27 17:39:37 | INFO     | main                 | 版本: 1.0.0
+2026-04-27 17:39:37 | ERROR    | aiagents_stock       | 2026-04-27 17:39:37 | INFO     | main                 | ================================================================================
+2026-04-27 17:39:37 | INFO     | main                 | ================================================================================
+2026-04-27 17:39:37 | ERROR    | aiagents_stock       | 2026-04-27 17:39:37 | INFO     | main                 | AI Agents Stock API 关闭
+2026-04-27 17:39:37 | INFO     | main                 | AI Agents Stock API 关闭
+2026-04-27 17:39:54 | ERROR    | aiagents_stock       | 2026-04-27 17:39:54 | INFO     | main                 | ================================================================================
+2026-04-27 17:39:54 | INFO     | main                 | ================================================================================
+2026-04-27 17:39:54 | ERROR    | aiagents_stock       | 2026-04-27 17:39:54 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-27 17:39:54 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-27 17:39:54 | ERROR    | aiagents_stock       | 2026-04-27 17:39:54 | INFO     | main                 | 版本: 1.0.0
+2026-04-27 17:39:54 | INFO     | main                 | 版本: 1.0.0
+2026-04-27 17:39:54 | ERROR    | aiagents_stock       | 2026-04-27 17:39:54 | INFO     | main                 | ================================================================================
+2026-04-27 17:39:54 | INFO     | main                 | ================================================================================
+2026-04-27 17:42:42 | ERROR    | aiagents_stock       | 2026-04-27 17:42:42 | INFO     | main                 | AI Agents Stock API 关闭
+2026-04-27 17:42:42 | INFO     | main                 | AI Agents Stock API 关闭
+2026-04-27 17:42:55 | ERROR    | aiagents_stock       | 2026-04-27 17:42:55 | INFO     | main                 | ================================================================================
+2026-04-27 17:42:55 | INFO     | main                 | ================================================================================
+2026-04-27 17:42:55 | ERROR    | aiagents_stock       | 2026-04-27 17:42:55 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-27 17:42:55 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-27 17:42:55 | ERROR    | aiagents_stock       | 2026-04-27 17:42:55 | INFO     | main                 | 版本: 1.0.0
+2026-04-27 17:42:55 | INFO     | main                 | 版本: 1.0.0
+2026-04-27 17:42:55 | ERROR    | aiagents_stock       | 2026-04-27 17:42:55 | INFO     | main                 | ================================================================================
+2026-04-27 17:42:55 | INFO     | main                 | ================================================================================
+2026-04-27 17:44:18 | ERROR    | aiagents_stock       | 2026-04-27 17:44:18 | INFO     | api.v1.stock         | 低估值选股请求: top_n=10
+2026-04-27 17:44:18 | INFO     | api.v1.stock         | 低估值选股请求: top_n=10
+2026-04-27 17:44:21 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-27 17:44:21 | INFO     | aiagents_stock       | 💎 低估值选股 - 数据获取中
+2026-04-27 17:44:21 | INFO     | aiagents_stock       | ============================================================
+2026-04-27 17:44:21 | INFO     | aiagents_stock       | 策略: PE≤20.0 + PB≤1.5 + 股息率≥1% + 资产负债率≤30%
+2026-04-27 17:44:21 | INFO     | aiagents_stock       | 排除: ST、科创板、创业板
+2026-04-27 17:44:21 | INFO     | aiagents_stock       | 排序: 按流通市值由小到大
+2026-04-27 17:44:21 | INFO     | aiagents_stock       | 目标: 筛选前10只股票
+2026-04-27 17:44:21 | INFO     | aiagents_stock       | 
+正在使用东方财富接口获取A股行情数据...
+2026-04-27 17:44:22 | INFO     | aiagents_stock       | 
+正在使用 akshare 获取A股行情数据...
+2026-04-27 17:44:28 | INFO     | aiagents_stock       | akshare获取失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-27 17:44:28 | INFO     | aiagents_stock       | 
+东方财富/akshare获取失败，尝试Tushare...
+2026-04-27 17:44:37 | INFO     | aiagents_stock       | 腾讯行情筛选后剩余 301 只股票
+2026-04-27 17:44:37 | INFO     | aiagents_stock       | ✅ 成功获取 301 只股票
+2026-04-27 17:44:37 | INFO     | aiagents_stock       | 
+从 301 只股票中选出前 10 只
+2026-04-27 17:44:37 | INFO     | aiagents_stock       | ============================================================
+2026-04-27 17:44:37 | ERROR    | aiagents_stock       | 2026-04-27 17:44:37 | INFO     | api.v1.stock         | 低估值选股成功: 10 只股票
+2026-04-27 17:44:37 | INFO     | api.v1.stock         | 低估值选股成功: 10 只股票
+2026-04-27 17:46:16 | ERROR    | aiagents_stock       | 2026-04-27 17:46:16 | INFO     | main                 | AI Agents Stock API 关闭
+2026-04-27 17:46:16 | INFO     | main                 | AI Agents Stock API 关闭
+2026-04-27 17:46:30 | ERROR    | aiagents_stock       | 2026-04-27 17:46:30 | INFO     | main                 | ================================================================================
+2026-04-27 17:46:30 | INFO     | main                 | ================================================================================
+2026-04-27 17:46:30 | ERROR    | aiagents_stock       | 2026-04-27 17:46:30 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-27 17:46:30 | INFO     | main                 | AI Agents Stock API 启动
+2026-04-27 17:46:30 | ERROR    | aiagents_stock       | 2026-04-27 17:46:30 | INFO     | main                 | 版本: 1.0.0
+2026-04-27 17:46:30 | INFO     | main                 | 版本: 1.0.0
+2026-04-27 17:46:30 | ERROR    | aiagents_stock       | 2026-04-27 17:46:30 | INFO     | main                 | ================================================================================
+2026-04-27 17:46:30 | INFO     | main                 | ================================================================================
+2026-04-27 17:47:31 | ERROR    | aiagents_stock       | 2026-04-27 17:47:31 | INFO     | api.v1.stock         | 低估值选股请求: top_n=10
+2026-04-27 17:47:31 | INFO     | api.v1.stock         | 低估值选股请求: top_n=10
+2026-04-27 17:47:32 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-27 17:47:32 | INFO     | aiagents_stock       | 💎 低估值选股 - 数据获取中
+2026-04-27 17:47:32 | INFO     | aiagents_stock       | ============================================================
+2026-04-27 17:47:32 | INFO     | aiagents_stock       | 策略: PE≤20.0 + PB≤1.5 + 股息率≥1% + 资产负债率≤30%
+2026-04-27 17:47:32 | INFO     | aiagents_stock       | 排除: ST、科创板、创业板
+2026-04-27 17:47:32 | INFO     | aiagents_stock       | 排序: 按流通市值由小到大
+2026-04-27 17:47:32 | INFO     | aiagents_stock       | 目标: 筛选前10只股票
+2026-04-27 17:47:32 | INFO     | aiagents_stock       | 
+正在使用东方财富接口获取A股行情数据...
+2026-04-27 17:47:33 | INFO     | aiagents_stock       | 
+正在使用 akshare 获取A股行情数据...
+2026-04-27 17:47:38 | INFO     | aiagents_stock       | akshare获取失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-27 17:47:38 | INFO     | aiagents_stock       | 
+东方财富/akshare获取失败，尝试Tushare...
+2026-04-27 17:47:52 | INFO     | aiagents_stock       | 腾讯行情筛选后剩余 300 只股票
+2026-04-27 17:47:52 | INFO     | aiagents_stock       | ✅ 成功获取 300 只股票
+2026-04-27 17:47:52 | INFO     | aiagents_stock       | 
+从 300 只股票中选出前 10 只
+2026-04-27 17:47:52 | INFO     | aiagents_stock       | ============================================================
+2026-04-27 17:47:52 | ERROR    | aiagents_stock       | 2026-04-27 17:47:52 | INFO     | api.v1.stock         | 低估值选股成功: 10 只股票
+2026-04-27 17:47:52 | INFO     | api.v1.stock         | 低估值选股成功: 10 只股票
+2026-04-27 17:48:29 | ERROR    | aiagents_stock       | 2026-04-27 17:48:29 | INFO     | api.v1.analysis      | 综合分析请求: symbol=000001, days_ago=60, dimensions=['technical', 'fundamental', 'price_prediction']
+2026-04-27 17:48:29 | INFO     | api.v1.analysis      | 综合分析请求: symbol=000001, days_ago=60, dimensions=['technical', 'fundamental', 'price_prediction']
+2026-04-27 17:48:29 | ERROR    | aiagents_stock       | 2026-04-27 17:48:29 | INFO     | api.v1.analysis      | 技术分析请求: symbol=000001, days_ago=60
+2026-04-27 17:48:29 | INFO     | api.v1.analysis      | 技术分析请求: symbol=000001, days_ago=60
+2026-04-27 17:48:30 | INFO     | aiagents_stock       | ✅ Tushare数据源初始化成功
+2026-04-27 17:48:32 | INFO     | aiagents_stock       | ✅ 成功连接到 MongoDB: aiagents_stock
+2026-04-27 17:48:32 | INFO     | aiagents_stock       | ✅ MongoDB main_force_batch_db 索引初始化成功
+2026-04-27 17:48:32 | INFO     | aiagents_stock       | ✅ MongoDB monitor_db 索引初始化成功
+2026-04-27 17:48:32 | ERROR    | aiagents_stock       | 2026-04-27 17:48:32 | INFO     | db.news_flow_db      | ✅ 新闻流量数据库初始化完成 (MongoDB)
+2026-04-27 17:48:32 | INFO     | db.news_flow_db      | ✅ 新闻流量数据库初始化完成 (MongoDB)
+2026-04-27 17:48:32 | INFO     | aiagents_stock       | [OK] MongoDB portfolio_db 索引初始化成功
+2026-04-27 17:48:33 | ERROR    | aiagents_stock       | WARNING:utils.redis_cache:Redis cache unavailable, bypassing cache: ConnectionError: Error 61 connecting to 127.0.0.1:6379. Connection refused.
+2026-04-27 17:48:33 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-27 17:48:33 | INFO     | aiagents_stock       | 📈 技术分析 - 数据获取中
+2026-04-27 17:48:33 | INFO     | aiagents_stock       | ============================================================
+2026-04-27 17:48:33 | INFO     | aiagents_stock       | 股票代码: 000001
+2026-04-27 17:48:33 | INFO     | aiagents_stock       | 分析天数: 60天
+2026-04-27 17:48:33 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://localhost:8080
+2026-04-27 17:48:33 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:TDX数据源已启用: http://localhost:8080
+2026-04-27 17:48:33 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:Tushare备用数据源初始化成功
+2026-04-27 17:48:33 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:48:33 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 K线数据，共200条
+2026-04-27 17:48:33 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:48:33 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:TDX技术指标价格口径异常 000001: current_price=11.38, indicator_close=-2.72, ma5=-2.7279999999999998，尝试降级到AKShare
+2026-04-27 17:48:34 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:AKShare获取历史数据失败 000001（已重试1次），尝试降级到Tushare
+2026-04-27 17:48:34 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:降级到Tushare获取 000001 历史数据...
+2026-04-27 17:48:34 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:✅ Tushare成功获取 000001 历史数据，共266条
+2026-04-27 17:48:34 | INFO     | aiagents_stock       | ✅ DataFetcher 技术数据获取成功
+2026-04-27 17:48:34 | INFO     | aiagents_stock       | 获取实时行情与准确技术指标 (DataFetcher)...
+2026-04-27 17:48:34 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://localhost:8080
+2026-04-27 17:48:34 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:TDX数据源已启用: http://localhost:8080
+2026-04-27 17:48:34 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:Tushare备用数据源初始化成功
+2026-04-27 17:48:34 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:48:35 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 K线数据，共200条
+2026-04-27 17:48:35 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:48:35 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:TDX技术指标价格口径异常 000001: current_price=11.38, indicator_close=-2.72, ma5=-2.7279999999999998，尝试降级到AKShare
+2026-04-27 17:48:35 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:AKShare获取历史数据失败 000001（已重试1次），尝试降级到Tushare
+2026-04-27 17:48:35 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:降级到Tushare获取 000001 历史数据...
+2026-04-27 17:48:35 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:✅ Tushare成功获取 000001 历史数据，共266条
+2026-04-27 17:48:35 | INFO     | aiagents_stock       | 获取到实时行情与技术指标数据: True
+2026-04-27 17:48:35 | INFO     | aiagents_stock       | ✅ 已成功注入 SmartMonitorDataFetcher 实时技术指标
+2026-04-27 17:48:35 | INFO     | aiagents_stock       | 获取K线历史数据...
+2026-04-27 17:48:38 | ERROR    | aiagents_stock       | 2026-04-27 17:48:38 | INFO     | api.v1.analysis      | 技术分析完成: 000001
+2026-04-27 17:48:38 | INFO     | api.v1.analysis      | 技术分析完成: 000001
+2026-04-27 17:48:38 | ERROR    | aiagents_stock       | 2026-04-27 17:48:38 | INFO     | api.v1.analysis      | 基本面分析请求: symbol=000001
+2026-04-27 17:48:38 | INFO     | api.v1.analysis      | 基本面分析请求: symbol=000001
+2026-04-27 17:48:38 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-27 17:48:38 | INFO     | aiagents_stock       | 📈 基本面分析 - 数据获取中
+2026-04-27 17:48:38 | INFO     | aiagents_stock       | ============================================================
+2026-04-27 17:48:38 | INFO     | aiagents_stock       | 股票代码: 000001
+2026-04-27 17:48:38 | INFO     | aiagents_stock       | 
+尝试方案 1/3...
+2026-04-27 17:48:40 | INFO     | aiagents_stock       | 问财返回基本面数据，开始解析
+2026-04-27 17:48:40 | INFO     | aiagents_stock       | ✅ 方案1成功！
+2026-04-27 17:48:42 | ERROR    | aiagents_stock       | 2026-04-27 17:48:42 | INFO     | api.v1.analysis      | 基本面分析完成: 000001
+2026-04-27 17:48:42 | INFO     | api.v1.analysis      | 基本面分析完成: 000001
+2026-04-27 17:48:42 | ERROR    | aiagents_stock       | 2026-04-27 17:48:42 | INFO     | api.v1.analysis      | 价格预测请求: symbol=000001
+2026-04-27 17:48:42 | INFO     | api.v1.analysis      | 价格预测请求: symbol=000001
+2026-04-27 17:48:42 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://127.0.0.1:8080
+2026-04-27 17:48:42 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:48:42 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://127.0.0.1:8080
+2026-04-27 17:48:43 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 K线数据，共120条
+2026-04-27 17:48:43 | INFO     | aiagents_stock       | TDX预测日K价格或日期口径异常，继续降级: symbol=000001 quote=11.38 latest={'date': '1991-09-04 00:00:00', 'close': -2.95}
+2026-04-27 17:48:43 | INFO     | aiagents_stock       | Error fetching kline for 000001 via akshare: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-27 17:48:43 | INFO     | aiagents_stock       | AkShare预测日K价格或日期口径异常，继续降级: symbol=000001 quote=11.38 latest={}
+2026-04-27 17:48:43 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://127.0.0.1:8080
+2026-04-27 17:48:43 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:48:43 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://127.0.0.1:8080
+2026-04-27 17:48:46 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 K线数据，共1条
+2026-04-27 17:48:46 | INFO     | aiagents_stock       | 预测5分钟K当前价口径异常，使用其他价格源: symbol=000001 quote=11.38 latest={'date': '2024-04-09 00:00:00', 'close': 10.44}
+2026-04-27 17:48:46 | INFO     | aiagents_stock       | AkShare上市日期获取失败，继续降级: symbol=000001 error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-27 17:48:46 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://127.0.0.1:8080
+2026-04-27 17:48:46 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:48:46 | ERROR    | aiagents_stock       | 2026-04-27 17:48:46 | INFO     | api.v1.analysis      | 价格预测完成: 000001
+2026-04-27 17:48:46 | INFO     | api.v1.analysis      | 价格预测完成: 000001
+2026-04-27 17:48:46 | ERROR    | aiagents_stock       | 2026-04-27 17:48:46 | INFO     | api.v1.analysis      | 综合分析完成: 000001
+2026-04-27 17:48:46 | INFO     | api.v1.analysis      | 综合分析完成: 000001
+2026-04-27 17:48:46 | ERROR    | aiagents_stock       | 2026-04-27 17:48:46 | INFO     | api.v1.analysis      | AI分析请求: symbol=000001, days_ago=60
+2026-04-27 17:48:46 | INFO     | api.v1.analysis      | AI分析请求: symbol=000001, days_ago=60
+2026-04-27 17:48:50 | INFO     | aiagents_stock       | [股票分析] AI分析师系统初始化 (模型: deepseek-v4-pro)
+2026-04-27 17:48:50 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-27 17:48:50 | INFO     | aiagents_stock       | 📈 技术分析 - 数据获取中
+2026-04-27 17:48:50 | INFO     | aiagents_stock       | ============================================================
+2026-04-27 17:48:50 | INFO     | aiagents_stock       | 股票代码: 000001
+2026-04-27 17:48:50 | INFO     | aiagents_stock       | 分析天数: 60天
+2026-04-27 17:48:50 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://localhost:8080
+2026-04-27 17:48:50 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:TDX数据源已启用: http://localhost:8080
+2026-04-27 17:48:50 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:Tushare备用数据源初始化成功
+2026-04-27 17:48:50 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:48:51 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 K线数据，共200条
+2026-04-27 17:48:51 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:48:51 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:TDX技术指标价格口径异常 000001: current_price=11.38, indicator_close=-2.72, ma5=-2.7279999999999998，尝试降级到AKShare
+2026-04-27 17:48:51 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:AKShare获取历史数据失败 000001（已重试1次），尝试降级到Tushare
+2026-04-27 17:48:51 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:降级到Tushare获取 000001 历史数据...
+2026-04-27 17:48:52 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:✅ Tushare成功获取 000001 历史数据，共266条
+2026-04-27 17:48:52 | INFO     | aiagents_stock       | ✅ DataFetcher 技术数据获取成功
+2026-04-27 17:48:52 | INFO     | aiagents_stock       | 获取实时行情与准确技术指标 (DataFetcher)...
+2026-04-27 17:48:52 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://localhost:8080
+2026-04-27 17:48:52 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:TDX数据源已启用: http://localhost:8080
+2026-04-27 17:48:52 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:Tushare备用数据源初始化成功
+2026-04-27 17:48:52 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:48:52 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 K线数据，共200条
+2026-04-27 17:48:52 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:48:52 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:TDX技术指标价格口径异常 000001: current_price=11.38, indicator_close=-2.72, ma5=-2.7279999999999998，尝试降级到AKShare
+2026-04-27 17:48:52 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:AKShare获取历史数据失败 000001（已重试1次），尝试降级到Tushare
+2026-04-27 17:48:52 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:降级到Tushare获取 000001 历史数据...
+2026-04-27 17:48:52 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:✅ Tushare成功获取 000001 历史数据，共266条
+2026-04-27 17:48:52 | INFO     | aiagents_stock       | 获取到实时行情与技术指标数据: True
+2026-04-27 17:48:52 | INFO     | aiagents_stock       | ✅ 已成功注入 SmartMonitorDataFetcher 实时技术指标
+2026-04-27 17:48:52 | INFO     | aiagents_stock       | 获取K线历史数据...
+2026-04-27 17:48:53 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-27 17:48:53 | INFO     | aiagents_stock       | 📈 基本面分析 - 数据获取中
+2026-04-27 17:48:53 | INFO     | aiagents_stock       | ============================================================
+2026-04-27 17:48:53 | INFO     | aiagents_stock       | 股票代码: 000001
+2026-04-27 17:48:53 | INFO     | aiagents_stock       | 
+尝试方案 1/3...
+2026-04-27 17:48:55 | INFO     | aiagents_stock       | 问财返回基本面数据，开始解析
+2026-04-27 17:48:55 | INFO     | aiagents_stock       | ✅ 方案1成功！
+2026-04-27 17:48:57 | INFO     | aiagents_stock       | 🤖 综合股票分析师正在分析...
+2026-04-27 17:49:00 | ERROR    | aiagents_stock       | INFO:httpx:HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-27 17:50:18 | INFO     | aiagents_stock       |   ✓ 综合股票分析师分析完成
+2026-04-27 17:50:18 | ERROR    | aiagents_stock       | 2026-04-27 17:50:18 | INFO     | api.v1.analysis      | AI分析结果已保存到历史记录: 000001
+2026-04-27 17:50:18 | INFO     | api.v1.analysis      | AI分析结果已保存到历史记录: 000001
+2026-04-27 17:50:18 | ERROR    | aiagents_stock       | 2026-04-27 17:50:18 | INFO     | api.v1.analysis      | AI分析完成: 000001
+2026-04-27 17:50:18 | INFO     | api.v1.analysis      | AI分析完成: 000001
+2026-04-27 17:50:18 | ERROR    | aiagents_stock       | 2026-04-27 17:50:18 | INFO     | api.v1.analysis      | 综合分析请求: symbol=000001, days_ago=60, dimensions=['technical', 'fundamental', 'price_prediction']
+2026-04-27 17:50:18 | INFO     | api.v1.analysis      | 综合分析请求: symbol=000001, days_ago=60, dimensions=['technical', 'fundamental', 'price_prediction']
+2026-04-27 17:50:18 | ERROR    | aiagents_stock       | 2026-04-27 17:50:18 | INFO     | api.v1.analysis      | 技术分析请求: symbol=000001, days_ago=60
+2026-04-27 17:50:18 | INFO     | api.v1.analysis      | 技术分析请求: symbol=000001, days_ago=60
+2026-04-27 17:50:18 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-27 17:50:18 | INFO     | aiagents_stock       | 📈 技术分析 - 数据获取中
+2026-04-27 17:50:18 | INFO     | aiagents_stock       | ============================================================
+2026-04-27 17:50:18 | INFO     | aiagents_stock       | 股票代码: 000001
+2026-04-27 17:50:18 | INFO     | aiagents_stock       | 分析天数: 60天
+2026-04-27 17:50:18 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://localhost:8080
+2026-04-27 17:50:18 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:TDX数据源已启用: http://localhost:8080
+2026-04-27 17:50:18 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:Tushare备用数据源初始化成功
+2026-04-27 17:50:18 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:50:19 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 K线数据，共200条
+2026-04-27 17:50:19 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:50:19 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:TDX技术指标价格口径异常 000001: current_price=11.38, indicator_close=-2.72, ma5=-2.7279999999999998，尝试降级到AKShare
+2026-04-27 17:50:19 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:AKShare获取历史数据失败 000001（已重试1次），尝试降级到Tushare
+2026-04-27 17:50:19 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:降级到Tushare获取 000001 历史数据...
+2026-04-27 17:50:19 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:✅ Tushare成功获取 000001 历史数据，共266条
+2026-04-27 17:50:19 | INFO     | aiagents_stock       | ✅ DataFetcher 技术数据获取成功
+2026-04-27 17:50:19 | INFO     | aiagents_stock       | 获取实时行情与准确技术指标 (DataFetcher)...
+2026-04-27 17:50:19 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://localhost:8080
+2026-04-27 17:50:19 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:TDX数据源已启用: http://localhost:8080
+2026-04-27 17:50:19 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:Tushare备用数据源初始化成功
+2026-04-27 17:50:19 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:50:20 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 K线数据，共200条
+2026-04-27 17:50:20 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:50:20 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:TDX技术指标价格口径异常 000001: current_price=11.38, indicator_close=-2.72, ma5=-2.7279999999999998，尝试降级到AKShare
+2026-04-27 17:50:20 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:AKShare获取历史数据失败 000001（已重试1次），尝试降级到Tushare
+2026-04-27 17:50:20 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:降级到Tushare获取 000001 历史数据...
+2026-04-27 17:50:20 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:✅ Tushare成功获取 000001 历史数据，共266条
+2026-04-27 17:50:20 | INFO     | aiagents_stock       | 获取到实时行情与技术指标数据: True
+2026-04-27 17:50:20 | INFO     | aiagents_stock       | ✅ 已成功注入 SmartMonitorDataFetcher 实时技术指标
+2026-04-27 17:50:20 | INFO     | aiagents_stock       | 获取K线历史数据...
+2026-04-27 17:50:21 | ERROR    | aiagents_stock       | 2026-04-27 17:50:21 | INFO     | api.v1.analysis      | 技术分析完成: 000001
+2026-04-27 17:50:21 | INFO     | api.v1.analysis      | 技术分析完成: 000001
+2026-04-27 17:50:21 | ERROR    | aiagents_stock       | 2026-04-27 17:50:21 | INFO     | api.v1.analysis      | 基本面分析请求: symbol=000001
+2026-04-27 17:50:21 | INFO     | api.v1.analysis      | 基本面分析请求: symbol=000001
+2026-04-27 17:50:21 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-27 17:50:21 | INFO     | aiagents_stock       | 📈 基本面分析 - 数据获取中
+2026-04-27 17:50:21 | INFO     | aiagents_stock       | ============================================================
+2026-04-27 17:50:21 | INFO     | aiagents_stock       | 股票代码: 000001
+2026-04-27 17:50:21 | INFO     | aiagents_stock       | 
+尝试方案 1/3...
+2026-04-27 17:50:22 | INFO     | aiagents_stock       | 问财返回基本面数据，开始解析
+2026-04-27 17:50:22 | INFO     | aiagents_stock       | ✅ 方案1成功！
+2026-04-27 17:50:23 | ERROR    | aiagents_stock       | 2026-04-27 17:50:23 | INFO     | api.v1.analysis      | 基本面分析完成: 000001
+2026-04-27 17:50:23 | INFO     | api.v1.analysis      | 基本面分析完成: 000001
+2026-04-27 17:50:23 | ERROR    | aiagents_stock       | 2026-04-27 17:50:23 | INFO     | api.v1.analysis      | 价格预测请求: symbol=000001
+2026-04-27 17:50:23 | INFO     | api.v1.analysis      | 价格预测请求: symbol=000001
+2026-04-27 17:50:23 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://127.0.0.1:8080
+2026-04-27 17:50:23 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:50:23 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://127.0.0.1:8080
+2026-04-27 17:50:24 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 K线数据，共120条
+2026-04-27 17:50:24 | INFO     | aiagents_stock       | TDX预测日K价格或日期口径异常，继续降级: symbol=000001 quote=11.38 latest={'date': '1991-09-04 00:00:00', 'close': -2.95}
+2026-04-27 17:50:24 | INFO     | aiagents_stock       | Error fetching kline for 000001 via akshare: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-27 17:50:24 | INFO     | aiagents_stock       | AkShare预测日K价格或日期口径异常，继续降级: symbol=000001 quote=11.38 latest={}
+2026-04-27 17:50:24 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://127.0.0.1:8080
+2026-04-27 17:50:24 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:50:24 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://127.0.0.1:8080
+2026-04-27 17:50:27 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 K线数据，共1条
+2026-04-27 17:50:27 | INFO     | aiagents_stock       | 预测5分钟K当前价口径异常，使用其他价格源: symbol=000001 quote=11.38 latest={'date': '2024-04-09 00:00:00', 'close': 10.44}
+2026-04-27 17:50:27 | INFO     | aiagents_stock       | AkShare上市日期获取失败，继续降级: symbol=000001 error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-27 17:50:27 | INFO     | aiagents_stock       | Tushare上市日期获取失败，使用默认涨跌幅规则: symbol=000001 error=Exception: 抱歉，您访问接口(stock_basic)频率超限(1次/小时)，具体频次详情：https://tushare.pro/document/1?doc_id=108。
+2026-04-27 17:50:27 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://127.0.0.1:8080
+2026-04-27 17:50:27 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:50:27 | ERROR    | aiagents_stock       | 2026-04-27 17:50:27 | INFO     | api.v1.analysis      | 价格预测完成: 000001
+2026-04-27 17:50:27 | INFO     | api.v1.analysis      | 价格预测完成: 000001
+2026-04-27 17:50:27 | ERROR    | aiagents_stock       | 2026-04-27 17:50:27 | INFO     | api.v1.analysis      | 综合分析完成: 000001
+2026-04-27 17:50:27 | INFO     | api.v1.analysis      | 综合分析完成: 000001
+2026-04-27 17:50:27 | ERROR    | aiagents_stock       | 2026-04-27 17:50:27 | INFO     | api.v1.analysis      | AI分析请求: symbol=000001, days_ago=60
+2026-04-27 17:50:27 | INFO     | api.v1.analysis      | AI分析请求: symbol=000001, days_ago=60
+2026-04-27 17:50:27 | INFO     | aiagents_stock       | [股票分析] AI分析师系统初始化 (模型: deepseek-v4-pro)
+2026-04-27 17:50:27 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-27 17:50:27 | INFO     | aiagents_stock       | 📈 技术分析 - 数据获取中
+2026-04-27 17:50:27 | INFO     | aiagents_stock       | ============================================================
+2026-04-27 17:50:27 | INFO     | aiagents_stock       | 股票代码: 000001
+2026-04-27 17:50:27 | INFO     | aiagents_stock       | 分析天数: 60天
+2026-04-27 17:50:27 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://localhost:8080
+2026-04-27 17:50:27 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:TDX数据源已启用: http://localhost:8080
+2026-04-27 17:50:27 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:Tushare备用数据源初始化成功
+2026-04-27 17:50:28 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:50:28 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 K线数据，共200条
+2026-04-27 17:50:28 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:50:28 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:TDX技术指标价格口径异常 000001: current_price=11.38, indicator_close=-2.72, ma5=-2.7279999999999998，尝试降级到AKShare
+2026-04-27 17:50:28 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:AKShare获取历史数据失败 000001（已重试1次），尝试降级到Tushare
+2026-04-27 17:50:28 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:降级到Tushare获取 000001 历史数据...
+2026-04-27 17:50:28 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:✅ Tushare成功获取 000001 历史数据，共266条
+2026-04-27 17:50:28 | INFO     | aiagents_stock       | ✅ DataFetcher 技术数据获取成功
+2026-04-27 17:50:28 | INFO     | aiagents_stock       | 获取实时行情与准确技术指标 (DataFetcher)...
+2026-04-27 17:50:28 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://localhost:8080
+2026-04-27 17:50:28 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:TDX数据源已启用: http://localhost:8080
+2026-04-27 17:50:28 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:Tushare备用数据源初始化成功
+2026-04-27 17:50:28 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:50:29 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 K线数据，共200条
+2026-04-27 17:50:29 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 000001 (平安银行) 实时行情
+2026-04-27 17:50:29 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:TDX技术指标价格口径异常 000001: current_price=11.38, indicator_close=-2.72, ma5=-2.7279999999999998，尝试降级到AKShare
+2026-04-27 17:50:29 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:AKShare获取历史数据失败 000001（已重试1次），尝试降级到Tushare
+2026-04-27 17:50:29 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:降级到Tushare获取 000001 历史数据...
+2026-04-27 17:50:29 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:✅ Tushare成功获取 000001 历史数据，共266条
+2026-04-27 17:50:29 | INFO     | aiagents_stock       | 获取到实时行情与技术指标数据: True
+2026-04-27 17:50:29 | INFO     | aiagents_stock       | ✅ 已成功注入 SmartMonitorDataFetcher 实时技术指标
+2026-04-27 17:50:29 | INFO     | aiagents_stock       | 获取K线历史数据...
+2026-04-27 17:50:30 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-27 17:50:30 | INFO     | aiagents_stock       | 📈 基本面分析 - 数据获取中
+2026-04-27 17:50:30 | INFO     | aiagents_stock       | ============================================================
+2026-04-27 17:50:30 | INFO     | aiagents_stock       | 股票代码: 000001
+2026-04-27 17:50:30 | INFO     | aiagents_stock       | 
+尝试方案 1/3...
+2026-04-27 17:50:32 | INFO     | aiagents_stock       | 问财返回基本面数据，开始解析
+2026-04-27 17:50:32 | INFO     | aiagents_stock       | ✅ 方案1成功！
+2026-04-27 17:50:33 | INFO     | aiagents_stock       | 🤖 综合股票分析师正在分析...
+2026-04-27 17:50:34 | ERROR    | aiagents_stock       | INFO:httpx:HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-27 17:51:48 | INFO     | aiagents_stock       |   ✓ 综合股票分析师分析完成
+2026-04-27 17:51:48 | ERROR    | aiagents_stock       | 2026-04-27 17:51:48 | INFO     | api.v1.analysis      | AI分析结果已保存到历史记录: 000001
+2026-04-27 17:51:48 | INFO     | api.v1.analysis      | AI分析结果已保存到历史记录: 000001
+2026-04-27 17:51:48 | ERROR    | aiagents_stock       | 2026-04-27 17:51:48 | INFO     | api.v1.analysis      | AI分析完成: 000001
+2026-04-27 17:51:48 | INFO     | api.v1.analysis      | AI分析完成: 000001
+2026-04-27 17:51:48 | ERROR    | aiagents_stock       | 2026-04-27 17:51:48 | INFO     | api.v1.longhubang    | 获取智瞰龙虎历史报告列表
+2026-04-27 17:51:48 | INFO     | api.v1.longhubang    | 获取智瞰龙虎历史报告列表
+2026-04-27 17:51:48 | ERROR    | aiagents_stock       | 2026-04-27 17:51:48 | INFO     | db.longhubang_db     | [智瞰龙虎] MongoDB 索引初始化完成
+2026-04-27 17:51:48 | INFO     | db.longhubang_db     | [智瞰龙虎] MongoDB 索引初始化完成
+2026-04-27 17:51:48 | ERROR    | aiagents_stock       | 2026-04-27 17:51:48 | INFO     | api.v1.longhubang    | 获取到 4 个历史报告
+2026-04-27 17:51:48 | INFO     | api.v1.longhubang    | 获取到 4 个历史报告
+2026-04-27 17:51:48 | ERROR    | aiagents_stock       | 2026-04-27 17:51:48 | INFO     | api.v1.longhubang    | 获取智瞰龙虎数据统计
+2026-04-27 17:51:48 | INFO     | api.v1.longhubang    | 获取智瞰龙虎数据统计
+2026-04-27 17:51:48 | ERROR    | aiagents_stock       | 2026-04-27 17:51:48 | INFO     | db.longhubang_db     | [智瞰龙虎] MongoDB 索引初始化完成
+2026-04-27 17:51:48 | INFO     | db.longhubang_db     | [智瞰龙虎] MongoDB 索引初始化完成
+2026-04-27 17:51:48 | ERROR    | aiagents_stock       | 2026-04-27 17:51:48 | INFO     | api.v1.longhubang    | 获取数据统计成功
+2026-04-27 17:51:48 | INFO     | api.v1.longhubang    | 获取数据统计成功
+2026-04-27 17:51:48 | ERROR    | aiagents_stock       | 2026-04-27 17:51:48 | INFO     | api.v1.monitor       | 获取监控配置
+2026-04-27 17:51:48 | INFO     | api.v1.monitor       | 获取监控配置
+2026-04-27 17:51:51 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://localhost:8080
+2026-04-27 17:51:51 | ERROR    | aiagents_stock       | INFO:root:✅ TDX数据源已启用: http://localhost:8080
+2026-04-27 17:51:51 | ERROR    | aiagents_stock       | 2026-04-27 17:51:51 | INFO     | api.v1.monitor       | 获取监测股票列表
+2026-04-27 17:51:51 | INFO     | api.v1.monitor       | 获取监测股票列表
+2026-04-27 17:51:51 | INFO     | aiagents_stock       | ✅ MongoDB monitor_db 索引初始化成功
+2026-04-27 17:51:51 | ERROR    | aiagents_stock       | 2026-04-27 17:51:51 | INFO     | api.v1.monitor       | 获取到 0 只监测股票
+2026-04-27 17:51:51 | INFO     | api.v1.monitor       | 获取到 0 只监测股票
+2026-04-27 17:51:51 | ERROR    | aiagents_stock       | 2026-04-27 17:51:51 | INFO     | api.v1.monitor       | 获取通知列表: limit=50
+2026-04-27 17:51:51 | INFO     | api.v1.monitor       | 获取通知列表: limit=50
+2026-04-27 17:51:51 | INFO     | aiagents_stock       | ✅ MongoDB monitor_db 索引初始化成功
+2026-04-27 17:51:51 | ERROR    | aiagents_stock       | 2026-04-27 17:51:51 | INFO     | api.v1.monitor       | 获取到 0 条通知
+2026-04-27 17:51:51 | INFO     | api.v1.monitor       | 获取到 0 条通知
+2026-04-27 17:51:51 | ERROR    | aiagents_stock       | 2026-04-27 17:51:51 | INFO     | api.v1.analysis      | 综合分析请求: symbol=002714, days_ago=60, dimensions=['technical', 'fundamental', 'price_prediction']
+2026-04-27 17:51:51 | INFO     | api.v1.analysis      | 综合分析请求: symbol=002714, days_ago=60, dimensions=['technical', 'fundamental', 'price_prediction']
+2026-04-27 17:51:51 | ERROR    | aiagents_stock       | 2026-04-27 17:51:51 | INFO     | api.v1.analysis      | 技术分析请求: symbol=002714, days_ago=60
+2026-04-27 17:51:51 | INFO     | api.v1.analysis      | 技术分析请求: symbol=002714, days_ago=60
+2026-04-27 17:51:51 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-27 17:51:51 | INFO     | aiagents_stock       | 📈 技术分析 - 数据获取中
+2026-04-27 17:51:51 | INFO     | aiagents_stock       | ============================================================
+2026-04-27 17:51:51 | INFO     | aiagents_stock       | 股票代码: 002714
+2026-04-27 17:51:51 | INFO     | aiagents_stock       | 分析天数: 60天
+2026-04-27 17:51:51 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://localhost:8080
+2026-04-27 17:51:51 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:TDX数据源已启用: http://localhost:8080
+2026-04-27 17:51:51 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:Tushare备用数据源初始化成功
+2026-04-27 17:51:51 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 002714 (牧原股份) 实时行情
+2026-04-27 17:51:51 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 002714 K线数据，共200条
+2026-04-27 17:51:51 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 002714 (牧原股份) 实时行情
+2026-04-27 17:51:51 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:TDX技术指标价格口径异常 002714: current_price=42.26, indicator_close=-2.98, ma5=-3.09，尝试降级到AKShare
+2026-04-27 17:51:51 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:AKShare获取历史数据失败 002714（已重试1次），尝试降级到Tushare
+2026-04-27 17:51:51 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:降级到Tushare获取 002714 历史数据...
+2026-04-27 17:51:52 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:✅ Tushare成功获取 002714 历史数据，共266条
+2026-04-27 17:51:52 | INFO     | aiagents_stock       | ✅ DataFetcher 技术数据获取成功
+2026-04-27 17:51:52 | INFO     | aiagents_stock       | 获取实时行情与准确技术指标 (DataFetcher)...
+2026-04-27 17:51:52 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://localhost:8080
+2026-04-27 17:51:52 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:TDX数据源已启用: http://localhost:8080
+2026-04-27 17:51:52 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:Tushare备用数据源初始化成功
+2026-04-27 17:51:52 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 002714 (牧原股份) 实时行情
+2026-04-27 17:51:52 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 002714 K线数据，共200条
+2026-04-27 17:51:52 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 002714 (牧原股份) 实时行情
+2026-04-27 17:51:52 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:TDX技术指标价格口径异常 002714: current_price=42.26, indicator_close=-2.98, ma5=-3.09，尝试降级到AKShare
+2026-04-27 17:51:53 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:AKShare获取历史数据失败 002714（已重试1次），尝试降级到Tushare
+2026-04-27 17:51:53 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:降级到Tushare获取 002714 历史数据...
+2026-04-27 17:51:53 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:✅ Tushare成功获取 002714 历史数据，共266条
+2026-04-27 17:51:53 | INFO     | aiagents_stock       | 获取到实时行情与技术指标数据: True
+2026-04-27 17:51:53 | INFO     | aiagents_stock       | ✅ 已成功注入 SmartMonitorDataFetcher 实时技术指标
+2026-04-27 17:51:53 | INFO     | aiagents_stock       | 获取K线历史数据...
+2026-04-27 17:51:54 | ERROR    | aiagents_stock       | 2026-04-27 17:51:54 | INFO     | api.v1.analysis      | 技术分析完成: 002714
+2026-04-27 17:51:54 | INFO     | api.v1.analysis      | 技术分析完成: 002714
+2026-04-27 17:51:54 | ERROR    | aiagents_stock       | 2026-04-27 17:51:54 | INFO     | api.v1.analysis      | 基本面分析请求: symbol=002714
+2026-04-27 17:51:54 | INFO     | api.v1.analysis      | 基本面分析请求: symbol=002714
+2026-04-27 17:51:54 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-27 17:51:54 | INFO     | aiagents_stock       | 📈 基本面分析 - 数据获取中
+2026-04-27 17:51:54 | INFO     | aiagents_stock       | ============================================================
+2026-04-27 17:51:54 | INFO     | aiagents_stock       | 股票代码: 002714
+2026-04-27 17:51:54 | INFO     | aiagents_stock       | 
+尝试方案 1/3...
+2026-04-27 17:51:56 | INFO     | aiagents_stock       | 问财返回基本面数据，开始解析
+2026-04-27 17:51:56 | INFO     | aiagents_stock       | ✅ 方案1成功！
+2026-04-27 17:51:58 | ERROR    | aiagents_stock       | 2026-04-27 17:51:58 | INFO     | api.v1.analysis      | 基本面分析完成: 002714
+2026-04-27 17:51:58 | INFO     | api.v1.analysis      | 基本面分析完成: 002714
+2026-04-27 17:51:58 | ERROR    | aiagents_stock       | 2026-04-27 17:51:58 | INFO     | api.v1.analysis      | 价格预测请求: symbol=002714
+2026-04-27 17:51:58 | INFO     | api.v1.analysis      | 价格预测请求: symbol=002714
+2026-04-27 17:51:58 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://127.0.0.1:8080
+2026-04-27 17:51:58 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 002714 (牧原股份) 实时行情
+2026-04-27 17:51:58 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://127.0.0.1:8080
+2026-04-27 17:51:58 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 002714 K线数据，共120条
+2026-04-27 17:51:58 | INFO     | aiagents_stock       | TDX预测日K价格或日期口径异常，继续降级: symbol=002714 quote=42.26 latest={'date': '2014-07-25 00:00:00', 'close': -2.17}
+2026-04-27 17:51:58 | INFO     | aiagents_stock       | Error fetching kline for 002714 via akshare: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-27 17:51:58 | INFO     | aiagents_stock       | AkShare预测日K价格或日期口径异常，继续降级: symbol=002714 quote=42.26 latest={}
+2026-04-27 17:51:58 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://127.0.0.1:8080
+2026-04-27 17:51:59 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 002714 (牧原股份) 实时行情
+2026-04-27 17:51:59 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://127.0.0.1:8080
+2026-04-27 17:52:01 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 002714 K线数据，共1条
+2026-04-27 17:52:01 | INFO     | aiagents_stock       | 预测5分钟K当前价口径异常，使用其他价格源: symbol=002714 quote=42.26 latest={'date': '2024-04-09 00:00:00', 'close': 44.41}
+2026-04-27 17:52:02 | INFO     | aiagents_stock       | AkShare上市日期获取失败，继续降级: symbol=002714 error=ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-27 17:52:02 | INFO     | aiagents_stock       | Tushare上市日期获取失败，使用默认涨跌幅规则: symbol=002714 error=Exception: 抱歉，您访问接口(stock_basic)频率超限(1次/小时)，具体频次详情：https://tushare.pro/document/1?doc_id=108。
+2026-04-27 17:52:02 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://127.0.0.1:8080
+2026-04-27 17:52:02 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 002714 (牧原股份) 实时行情
+2026-04-27 17:52:02 | ERROR    | aiagents_stock       | 2026-04-27 17:52:02 | INFO     | api.v1.analysis      | 价格预测完成: 002714
+2026-04-27 17:52:02 | INFO     | api.v1.analysis      | 价格预测完成: 002714
+2026-04-27 17:52:02 | ERROR    | aiagents_stock       | 2026-04-27 17:52:02 | INFO     | api.v1.analysis      | 综合分析完成: 002714
+2026-04-27 17:52:02 | INFO     | api.v1.analysis      | 综合分析完成: 002714
+2026-04-27 17:52:02 | ERROR    | aiagents_stock       | 2026-04-27 17:52:02 | INFO     | api.v1.analysis      | AI分析请求: symbol=002714, days_ago=60
+2026-04-27 17:52:02 | INFO     | api.v1.analysis      | AI分析请求: symbol=002714, days_ago=60
+2026-04-27 17:52:02 | INFO     | aiagents_stock       | [股票分析] AI分析师系统初始化 (模型: deepseek-v4-pro)
+2026-04-27 17:52:02 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-27 17:52:02 | INFO     | aiagents_stock       | 📈 技术分析 - 数据获取中
+2026-04-27 17:52:02 | INFO     | aiagents_stock       | ============================================================
+2026-04-27 17:52:02 | INFO     | aiagents_stock       | 股票代码: 002714
+2026-04-27 17:52:02 | INFO     | aiagents_stock       | 分析天数: 60天
+2026-04-27 17:52:02 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://localhost:8080
+2026-04-27 17:52:02 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:TDX数据源已启用: http://localhost:8080
+2026-04-27 17:52:02 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:Tushare备用数据源初始化成功
+2026-04-27 17:52:02 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 002714 (牧原股份) 实时行情
+2026-04-27 17:52:03 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 002714 K线数据，共200条
+2026-04-27 17:52:03 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 002714 (牧原股份) 实时行情
+2026-04-27 17:52:03 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:TDX技术指标价格口径异常 002714: current_price=42.26, indicator_close=-2.98, ma5=-3.09，尝试降级到AKShare
+2026-04-27 17:52:03 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:AKShare获取历史数据失败 002714（已重试1次），尝试降级到Tushare
+2026-04-27 17:52:03 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:降级到Tushare获取 002714 历史数据...
+2026-04-27 17:52:03 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:✅ Tushare成功获取 002714 历史数据，共266条
+2026-04-27 17:52:03 | INFO     | aiagents_stock       | ✅ DataFetcher 技术数据获取成功
+2026-04-27 17:52:03 | INFO     | aiagents_stock       | 获取实时行情与准确技术指标 (DataFetcher)...
+2026-04-27 17:52:03 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:TDX数据源初始化成功，接口地址: http://localhost:8080
+2026-04-27 17:52:03 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:TDX数据源已启用: http://localhost:8080
+2026-04-27 17:52:03 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:Tushare备用数据源初始化成功
+2026-04-27 17:52:03 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 002714 (牧原股份) 实时行情
+2026-04-27 17:52:03 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 002714 K线数据，共200条
+2026-04-27 17:52:03 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_tdx_data:✅ TDX成功获取 002714 (牧原股份) 实时行情
+2026-04-27 17:52:03 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:TDX技术指标价格口径异常 002714: current_price=42.26, indicator_close=-2.98, ma5=-3.09，尝试降级到AKShare
+2026-04-27 17:52:04 | ERROR    | aiagents_stock       | WARNING:data.smart_monitor_data:AKShare获取历史数据失败 002714（已重试1次），尝试降级到Tushare
+2026-04-27 17:52:04 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:降级到Tushare获取 002714 历史数据...
+2026-04-27 17:52:04 | ERROR    | aiagents_stock       | INFO:data.smart_monitor_data:✅ Tushare成功获取 002714 历史数据，共266条
+2026-04-27 17:52:04 | INFO     | aiagents_stock       | 获取到实时行情与技术指标数据: True
+2026-04-27 17:52:04 | INFO     | aiagents_stock       | ✅ 已成功注入 SmartMonitorDataFetcher 实时技术指标
+2026-04-27 17:52:04 | INFO     | aiagents_stock       | 获取K线历史数据...
+2026-04-27 17:52:05 | INFO     | aiagents_stock       | 
+============================================================
+2026-04-27 17:52:05 | INFO     | aiagents_stock       | 📈 基本面分析 - 数据获取中
+2026-04-27 17:52:05 | INFO     | aiagents_stock       | ============================================================
+2026-04-27 17:52:05 | INFO     | aiagents_stock       | 股票代码: 002714
+2026-04-27 17:52:05 | INFO     | aiagents_stock       | 
+尝试方案 1/3...
+2026-04-27 17:52:07 | INFO     | aiagents_stock       | 问财返回基本面数据，开始解析
+2026-04-27 17:52:07 | INFO     | aiagents_stock       | ✅ 方案1成功！
+2026-04-27 17:52:08 | INFO     | aiagents_stock       | 🤖 综合股票分析师正在分析...
+2026-04-27 17:52:10 | ERROR    | aiagents_stock       | INFO:httpx:HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-27 17:53:33 | INFO     | aiagents_stock       |   ✓ 综合股票分析师分析完成
+2026-04-27 17:53:33 | ERROR    | aiagents_stock       | 2026-04-27 17:53:33 | INFO     | api.v1.analysis      | AI分析结果已保存到历史记录: 002714
+2026-04-27 17:53:33 | INFO     | api.v1.analysis      | AI分析结果已保存到历史记录: 002714
+2026-04-27 17:53:33 | ERROR    | aiagents_stock       | 2026-04-27 17:53:33 | INFO     | api.v1.analysis      | AI分析完成: 002714
+2026-04-27 17:53:33 | INFO     | api.v1.analysis      | AI分析完成: 002714

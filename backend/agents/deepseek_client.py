@@ -23,12 +23,22 @@ class DeepSeekClient:
             max_tokens = 8000  # reasoner 模型需要更多 tokens 来输出推理过程
         
         try:
-            response = self.client.chat.completions.create(
-                model=model_to_use,
-                messages=messages,
-                temperature=temperature,
-                max_tokens=max_tokens
-            )
+            request_kwargs = {
+                "model": model_to_use,
+                "messages": messages,
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+            }
+            if config.DEEPSEEK_THINKING_ENABLED:
+                if config.DEEPSEEK_REASONING_EFFORT:
+                    request_kwargs["reasoning_effort"] = config.DEEPSEEK_REASONING_EFFORT
+                request_kwargs["extra_body"] = {
+                    "thinking": {
+                        "type": config.DEEPSEEK_THINKING_TYPE or "enabled"
+                    }
+                }
+
+            response = self.client.chat.completions.create(**request_kwargs)
             
             # 处理 reasoner 模型的响应
             message = response.choices[0].message

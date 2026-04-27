@@ -8,9 +8,11 @@
 import pandas as pd
 import akshare as ak
 import pywencai
-from datetime import datetime
+from datetime import datetime, timedelta
+import os
 from typing import Tuple, Optional
 import time
+import requests
 from utils.logger import get_logger
 from utils.eastmoney_client import EastmoneyClient
 
@@ -61,8 +63,16 @@ class ValueStockSelector:
             df_result = self._get_value_stocks_akshare(pe_max, pb_max, top_n)
 
             if df_result is None or df_result.empty:
+                print(f"\n东方财富/akshare获取失败，尝试Tushare...")
+                df_result = self._get_value_stocks_tencent(pe_max, pb_max)
+
+            if df_result is None or df_result.empty:
+                print(f"\n腾讯行情兜底失败，尝试Tushare...")
+                df_result = self._get_value_stocks_tushare(pe_max, pb_max)
+
+            if df_result is None or df_result.empty:
                 # 尝试使用 pywencai 作为备用
-                print(f"\nakshare获取失败，尝试pywencai...")
+                print(f"\nTushare获取失败，尝试pywencai...")
                 df_result = self._get_value_stocks_wencai(pe_max, pb_max, top_n)
 
             if df_result is None or df_result.empty:
@@ -213,6 +223,229 @@ class ValueStockSelector:
         df = df[df["市净率"] <= pb_max]
         df = df.sort_values(by="流通市值", ascending=True)
         return df
+
+    def _get_value_stocks_tencent(self, pe_max: float, pb_max: float) -> Optional[pd.DataFrame]:
+        """使用腾讯行情批量接口兜底获取 PE/PB/市值。"""
+        try:
+            basic_df = self._get_tencent_stock_universe()
+            if basic_df is None or basic_df.empty:
+                logger.warning("腾讯兜底股票代码列表为空")
+                return None
+
+            basic_df["symbol"] = basic_df["symbol"].astype(str).str.zfill(6)
+            basic_df["name"] = basic_df["name"].astype(str)
+            if "exchange" not in basic_df.columns:
+                basic_df["exchange"] = ""
+            basic_df["exchange"] = basic_df["exchange"].astype(str).str.lower()
+            basic_df = basic_df[~basic_df["name"].str.contains("ST", case=False, na=False)]
+            basic_df = basic_df[~basic_df["symbol"].str.startswith("688")]
+            basic_df = basic_df[~basic_df["symbol"].str.startswith("300")]
+
+            quote_symbols = []
+            for _, row in basic_df.iterrows():
+                quote_symbol = self._to_tencent_symbol(
+                    str(row.get("ts_code", "")),
+                    row["symbol"],
+                    str(row.get("exchange", "")),
+                )
+                if quote_symbol:
+                    quote_symbols.append(quote_symbol)
+
+            if not quote_symbols:
+                return None
+
+            records = []
+            headers = {
+                "User-Agent": EastmoneyClient.DEFAULT_HEADERS["User-Agent"],
+                "Referer": "https://gu.qq.com/",
+                "Accept": "*/*",
+            }
+            batch_size = 200
+            for start in range(0, len(quote_symbols), batch_size):
+                batch = quote_symbols[start:start + batch_size]
+                url = "https://qt.gtimg.cn/q=" + ",".join(batch)
+                try:
+                    response = requests.get(url, headers=headers, timeout=12)
+                    response.raise_for_status()
+                    text = response.content.decode("gbk", errors="ignore")
+                    records.extend(self._parse_tencent_quotes(text))
+                except Exception as exc:
+                    logger.warning(f"腾讯行情批量请求失败: start={start} size={len(batch)} error={type(exc).__name__}: {exc}")
+
+            if not records:
+                return None
+
+            df = pd.DataFrame(records)
+            df = df[~df["股票简称"].str.contains("ST", case=False, na=False)]
+            df = df[~df["股票代码"].str.startswith("688")]
+            df = df[~df["股票代码"].str.startswith("300")]
+            df = df[df["市盈率"] > 0]
+            df = df[df["市盈率"] <= pe_max]
+            df = df[df["市净率"] > 0]
+            df = df[df["市净率"] <= pb_max]
+            df = df.sort_values(by="流通市值", ascending=True)
+            print(f"腾讯行情筛选后剩余 {len(df)} 只股票")
+            return df
+
+        except Exception as e:
+            logger.warning(f"腾讯行情低估值选股兜底失败: {type(e).__name__}: {e}")
+            return None
+
+    def _get_tencent_stock_universe(self) -> Optional[pd.DataFrame]:
+        tdx_base_url = os.getenv("TDX_BASE_URL", "http://127.0.0.1:8080").rstrip("/")
+        try:
+            response = requests.get(f"{tdx_base_url}/api/codes", timeout=10)
+            response.raise_for_status()
+            payload = response.json()
+            codes = payload.get("data", {}).get("codes", [])
+            if codes:
+                df = pd.DataFrame(codes)
+                df = df.rename(columns={"code": "symbol"})
+                return df[["symbol", "name", "exchange"]]
+        except Exception as exc:
+            logger.warning(f"从 tdx-api 获取股票代码列表失败: {type(exc).__name__}: {exc}")
+
+        token = os.getenv("TUSHARE_TOKEN")
+        if not token:
+            return None
+
+        try:
+            import tushare as ts
+
+            pro = ts.pro_api(token)
+            df = pro.stock_basic(
+                exchange="",
+                list_status="L",
+                fields="ts_code,symbol,name,market,list_date",
+            )
+            if df is None or df.empty:
+                return None
+            df["exchange"] = df["ts_code"].astype(str).str.split(".").str[-1].str.lower()
+            return df[["ts_code", "symbol", "name", "exchange"]]
+        except Exception as exc:
+            logger.warning(f"从 Tushare 获取股票代码列表失败: {type(exc).__name__}: {exc}")
+            return None
+
+    def _to_tencent_symbol(self, ts_code: str, symbol: str, exchange: str = "") -> Optional[str]:
+        exchange = exchange.lower()
+        if exchange in {"sh", "sz", "bj"}:
+            return f"{exchange}{symbol}"
+
+        suffix = ts_code.split(".")[-1].upper() if "." in ts_code else ""
+        if suffix == "SH" or symbol.startswith("6"):
+            return f"sh{symbol}"
+        if suffix == "SZ" or symbol.startswith(("0", "2", "3")):
+            return f"sz{symbol}"
+        if suffix == "BJ" or symbol.startswith(("4", "8", "9")):
+            return f"bj{symbol}"
+        return None
+
+    def _parse_tencent_quotes(self, text: str):
+        def to_float(value, default=None):
+            try:
+                if value in (None, "", "--"):
+                    return default
+                return float(value)
+            except (TypeError, ValueError):
+                return default
+
+        records = []
+        for line in text.split(";"):
+            if '="' not in line:
+                continue
+            raw = line.split('="', 1)[1].rstrip('"')
+            parts = raw.split("~")
+            if len(parts) < 47 or not parts[2]:
+                continue
+
+            pe = to_float(parts[39])
+            pb = to_float(parts[46])
+            total_mv_yi = to_float(parts[44])
+            circ_mv_yi = to_float(parts[45])
+            if pe is None or pb is None or total_mv_yi is None or circ_mv_yi is None:
+                continue
+
+            records.append({
+                "股票代码": parts[2].zfill(6),
+                "股票简称": parts[1],
+                "最新价": to_float(parts[3], 0),
+                "涨跌幅": to_float(parts[32], 0),
+                "市盈率": pe,
+                "市净率": pb,
+                "总市值": total_mv_yi * 100000000,
+                "流通市值": circ_mv_yi * 100000000,
+                "数据来源": "tencent",
+            })
+        return records
+
+    def _get_value_stocks_tushare(self, pe_max: float, pb_max: float) -> Optional[pd.DataFrame]:
+        """使用 Tushare daily_basic 作为东方财富不可用时的兜底数据源。"""
+        token = os.getenv("TUSHARE_TOKEN")
+        if not token:
+            logger.warning("Tushare Token 未配置，跳过低估值选股兜底")
+            return None
+
+        try:
+            import tushare as ts
+
+            pro = ts.pro_api(token)
+            daily_fields = "ts_code,trade_date,close,pe,pe_ttm,pb,total_mv,circ_mv"
+            daily_df = None
+            used_trade_date = None
+
+            for offset in range(20):
+                trade_date = (datetime.now() - timedelta(days=offset)).strftime("%Y%m%d")
+                candidate = pro.daily_basic(trade_date=trade_date, fields=daily_fields)
+                if candidate is not None and not candidate.empty:
+                    daily_df = candidate
+                    used_trade_date = trade_date
+                    break
+
+            if daily_df is None or daily_df.empty:
+                logger.warning("Tushare daily_basic 未获取到最近交易日数据")
+                return None
+
+            basic_df = pro.stock_basic(
+                exchange="",
+                list_status="L",
+                fields="ts_code,symbol,name,market,list_date",
+            )
+            if basic_df is None or basic_df.empty:
+                logger.warning("Tushare stock_basic 返回为空")
+                return None
+
+            df = daily_df.merge(basic_df, on="ts_code", how="left")
+            for col in ["close", "pe", "pe_ttm", "pb", "total_mv", "circ_mv"]:
+                if col in df.columns:
+                    df[col] = pd.to_numeric(df[col], errors="coerce")
+
+            df["股票代码"] = df["symbol"].astype(str).str.zfill(6)
+            df["股票简称"] = df["name"].astype(str)
+            df["最新价"] = df["close"]
+            df["市盈率"] = df["pe_ttm"].where(df["pe_ttm"].gt(0), df["pe"])
+            df["市净率"] = df["pb"]
+            df["总市值"] = df["total_mv"] * 10000
+            df["流通市值"] = df["circ_mv"] * 10000
+            df["涨跌幅"] = None
+            df["数据来源"] = f"tushare:{used_trade_date}"
+
+            df = df[~df["股票简称"].str.contains("ST", case=False, na=False)]
+            df = df[~df["股票代码"].str.startswith("688")]
+            df = df[~df["股票代码"].str.startswith("300")]
+            df = df[df["市盈率"] > 0]
+            df = df[df["市盈率"] <= pe_max]
+            df = df[df["市净率"] > 0]
+            df = df[df["市净率"] <= pb_max]
+            df = df.sort_values(by="流通市值", ascending=True)
+
+            columns = ["股票代码", "股票简称", "最新价", "涨跌幅", "市盈率", "市净率", "总市值", "流通市值", "数据来源"]
+            df = df[[col for col in columns if col in df.columns]]
+            print(f"Tushare({used_trade_date})筛选后剩余 {len(df)} 只股票")
+            return df
+
+        except Exception as e:
+            logger.warning(f"Tushare低估值选股兜底失败: {type(e).__name__}: {e}")
+            return None
 
     def _get_value_stocks_wencai(self, pe_max: float, pb_max: float, top_n: int) -> Optional[pd.DataFrame]:
         """使用 pywencai 获取低估值股票（备用）"""

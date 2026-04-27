@@ -1,8 +1,14 @@
 import os
 from dotenv import load_dotenv
 
-# 加载环境变量（override=True 强制覆盖已存在的环境变量）
-load_dotenv(override=True)
+
+def _env_bool(name: str, default: str = "false") -> bool:
+    return os.getenv(name, default).strip().lower() in {"1", "true", "yes", "on"}
+
+
+# 加载环境变量；运行时显式注入的环境变量优先级更高，尤其是 Docker Compose
+# 中针对容器网络覆盖的地址配置。
+load_dotenv(override=False)
 
 # DeepSeek API配置
 DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY", "")
@@ -10,6 +16,11 @@ DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com/v1"
 
 # 默认AI模型名称（支持任何OpenAI兼容的模型）
 DEFAULT_MODEL_NAME = os.getenv("DEFAULT_MODEL_NAME", "deepseek-chat")
+
+# DeepSeek 思考模式配置
+DEEPSEEK_THINKING_ENABLED = _env_bool("DEEPSEEK_THINKING_ENABLED", "false")
+DEEPSEEK_REASONING_EFFORT = os.getenv("DEEPSEEK_REASONING_EFFORT", "high").strip()
+DEEPSEEK_THINKING_TYPE = os.getenv("DEEPSEEK_THINKING_TYPE", "enabled").strip()
 
 # 其他配置
 TUSHARE_TOKEN = os.getenv("TUSHARE_TOKEN", "")

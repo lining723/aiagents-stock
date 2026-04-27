@@ -13,7 +13,6 @@ import pywencai
 from typing import Tuple, Optional, List, Dict, Any
 from datetime import datetime, timedelta
 import time
-import logging
 from data.smart_monitor_data import SmartMonitorDataFetcher
 from utils.redis_cache import cached_call
 
@@ -26,7 +25,7 @@ class StockAnalyzer:
 
     @cached_call(
         "technical",
-        key_builder=lambda self, symbol, days_ago=60: ("v2", self._clean_symbol(symbol), days_ago),
+        key_builder=lambda self, symbol, days_ago=60: ("v4", self._clean_symbol(symbol), days_ago),
         is_valid=lambda result: bool(result and result[0] and result[1]),
     )
     def get_technical_analysis(self, symbol: str, days_ago: int = 60) -> Tuple[bool, Optional[Dict], str]:
@@ -47,29 +46,32 @@ class StockAnalyzer:
             print(f"股票代码: {symbol}")
             print(f"分析天数: {days_ago}天")
 
-            queries = [
-                f"{symbol}的MACD、RSI、KDJ、布林带、MA5、MA10、MA20、MA60，以及近{days_ago}天的涨跌幅和收盘价",
-                f"{symbol}的技术指标及近期走势",
-                f"{symbol}的K线形态和技术面分析",
-            ]
+            data = self._build_technical_data_from_fetcher(symbol)
+            if data:
+                print("✅ DataFetcher 技术数据获取成功")
+            else:
+                print("DataFetcher 未返回有效技术数据，尝试问财兜底...")
+                queries = [
+                    f"{symbol}的MACD、RSI、KDJ、布林带、MA5、MA10、MA20、MA60，以及近{days_ago}天的涨跌幅和收盘价",
+                    f"{symbol}的技术指标及近期走势",
+                    f"{symbol}的K线形态和技术面分析",
+                ]
 
-            data = None
-            for i, query in enumerate(queries, 1):
-                print(f"\n尝试方案 {i}/{len(queries)}...")
-                try:
-                    result = pywencai.get(query=query, loop=True)
-                    if result is not None:
-                        logging.info(f"问财查询返回技术指标: {str(result)}")
-                        df = self._convert_to_dataframe(result)
-                        if df is not None and not df.empty:
-                            print(f"✅ 方案{i}成功！")
-                            data = self._parse_technical_data(df, symbol)
-                            logging.info(f"解析后的数据: {data}")
-                            break
-                except Exception as e:
-                    print(f"  ❌ 方案{i}失败: {str(e)}")
-                    time.sleep(1)
-                    continue
+                for i, query in enumerate(queries, 1):
+                    print(f"\n尝试问财方案 {i}/{len(queries)}...")
+                    try:
+                        result = self._query_wencai(query, retries=1)
+                        if result is not None:
+                            print("问财返回技术指标数据，开始解析")
+                            df = self._convert_to_dataframe(result)
+                            if df is not None and not df.empty:
+                                print(f"✅ 问财方案{i}成功！")
+                                data = self._parse_technical_data(df, symbol)
+                                break
+                    except Exception as e:
+                        print(f"  问财方案{i}失败，继续降级: {str(e)}")
+                        time.sleep(1)
+                        continue
 
             if not data:
                 return False, None, "技术分析数据获取失败"
@@ -83,7 +85,7 @@ class StockAnalyzer:
                 # 转换代码，DataFetcher 里大多使用不带后缀的 6 位数字代码
                 clean_symbol = symbol.split('.')[0] if '.' in symbol else symbol
                 comp_data = fetcher.get_comprehensive_data(clean_symbol)
-                logging.info(f"获取到的实时行情数据: {str(comp_data)}")
+                print(f"获取到实时行情与技术指标数据: {bool(comp_data)}")
                 
                 if comp_data:
                     # 覆盖当前价格和涨跌幅
@@ -222,15 +224,14 @@ class StockAnalyzer:
                 print(f"\n尝试方案 {i}/{len(queries)}...")
                 try:
                     result = self._query_wencai(query)
-                    logging.info(f"问财查询返回-基本面分析: {str(result)}")
                     if result is not None:
+                        print("问财返回基本面数据，开始解析")
                         df = self._convert_to_dataframe(result)
                         if df is not None and not df.empty:
                             print(f"✅ 方案{i}成功！")
                             data = self._parse_fundamental_data(df, symbol)
                             data = self._enrich_fundamental_data(symbol, data)
                             data = self._clean_nan(data)
-                            logging.info(f"解析后基本面分析的数据: {data}")
                             return True, data, "基本面分析数据获取成功"
                 except Exception as e:
                     print(f"  ❌ 方案{i}失败: {str(e)}")
@@ -392,22 +393,19 @@ class StockAnalyzer:
 
     def _query_wencai(self, query: str, retries: int = 2):
         """统一处理问财查询，避免空响应触发 pywencai 内部异常后中断。"""
+        last_error = None
         for attempt in range(1, retries + 1):
             for loop in (True, False):
                 try:
                     result = pywencai.get(query=query, loop=loop)
                     if self._has_valid_result(result):
                         return result
-                    logging.warning("问财返回空结果: attempt=%s loop=%s query=%s", attempt, loop, query[:80])
+                    last_error = "空结果"
                 except Exception as exc:
-                    logging.warning(
-                        "问财调用失败: attempt=%s loop=%s error=%s: %s",
-                        attempt,
-                        loop,
-                        type(exc).__name__,
-                        exc,
-                    )
+                    last_error = f"{type(exc).__name__}: {exc}"
             time.sleep(1)
+        if last_error:
+            print(f"问财未返回有效数据，已使用其他数据源降级: {last_error}")
         return None
 
     def _has_valid_result(self, result) -> bool:
@@ -428,6 +426,107 @@ class StockAnalyzer:
                     return True
             return len(result) > 0
         return False
+
+    def _build_technical_data_from_fetcher(self, symbol: str) -> Optional[Dict]:
+        """使用 SmartMonitorDataFetcher 构建技术分析兜底数据。"""
+        try:
+            clean_symbol = self._clean_symbol(symbol)
+            fetcher = SmartMonitorDataFetcher()
+            comp_data = fetcher.get_comprehensive_data(clean_symbol)
+            if not comp_data:
+                return None
+
+            current_price = self._safe_float(
+                comp_data.get("current_price") or comp_data.get("indicator_close")
+            )
+            if current_price <= 0:
+                return None
+
+            indicators = []
+            ma_fields = (
+                ("MA5", "ma5", "5日均线"),
+                ("MA20", "ma20", "20日均线"),
+                ("MA60", "ma60", "60日均线"),
+            )
+            for name, key, label in ma_fields:
+                value = self._safe_float(comp_data.get(key))
+                if value > 0:
+                    indicators.append({
+                        "name": name,
+                        "value": value,
+                        "signal": self._get_ma_signal(value, current_price),
+                        "description": f"{label}: {value:.2f}",
+                    })
+
+            macd = self._safe_float(comp_data.get("macd"))
+            if macd or comp_data.get("macd") is not None:
+                indicators.append({
+                    "name": "MACD",
+                    "value": macd,
+                    "signal": self._get_macd_signal(macd),
+                    "description": (
+                        f"MACD值: {macd:.4f}, "
+                        f"DIF: {self._safe_float(comp_data.get('macd_dif')):.4f}, "
+                        f"DEA: {self._safe_float(comp_data.get('macd_dea')):.4f}"
+                    ),
+                })
+
+            rsi6 = self._safe_float(comp_data.get("rsi6"))
+            if rsi6 > 0:
+                indicators.append({
+                    "name": "RSI(6)",
+                    "value": rsi6,
+                    "signal": self._get_rsi_signal(rsi6),
+                    "description": f"RSI(6): {rsi6:.2f}, RSI(12): {self._safe_float(comp_data.get('rsi12')):.2f}",
+                })
+
+            kdj_j = self._safe_float(comp_data.get("kdj_j"))
+            if kdj_j or comp_data.get("kdj_j") is not None:
+                indicators.append({
+                    "name": "KDJ",
+                    "value": kdj_j,
+                    "signal": self._get_kdj_signal(kdj_j),
+                    "description": (
+                        f"K: {self._safe_float(comp_data.get('kdj_k')):.2f}, "
+                        f"D: {self._safe_float(comp_data.get('kdj_d')):.2f}, "
+                        f"J: {kdj_j:.2f}"
+                    ),
+                })
+
+            boll_upper = self._safe_float(comp_data.get("boll_upper"))
+            if boll_upper > 0:
+                indicators.append({
+                    "name": "布林带(BOLL)",
+                    "value": self._safe_float(comp_data.get("boll_mid")),
+                    "signal": "hold",
+                    "description": (
+                        f"上轨: {boll_upper:.2f}, "
+                        f"中轨: {self._safe_float(comp_data.get('boll_mid')):.2f}, "
+                        f"下轨: {self._safe_float(comp_data.get('boll_lower')):.2f}, "
+                        f"当前位置: {comp_data.get('boll_position', '未知')}"
+                    ),
+                })
+
+            trend = comp_data.get("trend")
+            if trend:
+                trend_text = {"up": "多头排列", "down": "空头排列", "sideways": "震荡盘整"}.get(trend, trend)
+                indicators.append({
+                    "name": "均线趋势",
+                    "value": 0,
+                    "signal": "hold",
+                    "description": f"当前均线呈 {trend_text}",
+                })
+
+            return {
+                "symbol": clean_symbol,
+                "name": comp_data.get("name") or clean_symbol,
+                "current_price": current_price,
+                "change_percent": self._safe_float(comp_data.get("change_pct")),
+                "indicators": indicators,
+            }
+        except Exception as exc:
+            print(f"DataFetcher 技术分析兜底失败: {type(exc).__name__}: {exc}")
+            return None
 
     def _fetch_kline_data(self, symbol: str, days_ago: int) -> pd.DataFrame:
         """获取K线历史数据"""
@@ -905,7 +1004,7 @@ class StockAnalyzer:
                 if extra:
                     self._merge_fundamental_data(data, extra)
             except Exception as exc:
-                logging.warning("基本面兜底数据源失败: source=%s symbol=%s error=%s: %s", fetcher.__name__, clean_symbol, type(exc).__name__, exc)
+                print(f"基本面兜底数据源失败，继续降级: source={fetcher.__name__} symbol={clean_symbol} error={type(exc).__name__}: {exc}")
 
         self._rebuild_core_metrics(data)
         return data
@@ -1143,40 +1242,25 @@ class StockAnalyzer:
             df = fetcher.get_kline_data(symbol, kline_type="day", limit=120)
             if self._prediction_kline_is_usable(df, quote_price):
                 return df
-            logging.warning(
-                "TDX预测日K价格或日期口径异常: symbol=%s quote=%s latest=%s",
-                symbol,
-                quote_price,
-                self._prediction_latest_snapshot(df),
-            )
+            print(f"TDX预测日K价格或日期口径异常，继续降级: symbol={symbol} quote={quote_price} latest={self._prediction_latest_snapshot(df)}")
         except Exception as exc:
-            logging.warning("TDX预测日K获取失败: symbol=%s error=%s: %s", symbol, type(exc).__name__, exc)
+            print(f"TDX预测日K获取失败，继续降级: symbol={symbol} error={type(exc).__name__}: {exc}")
 
         try:
             df = self._fetch_kline_data_akshare(symbol, 120)
             if self._prediction_kline_is_usable(df, quote_price):
                 return df
-            logging.warning(
-                "AkShare预测日K价格或日期口径异常: symbol=%s quote=%s latest=%s",
-                symbol,
-                quote_price,
-                self._prediction_latest_snapshot(df),
-            )
+            print(f"AkShare预测日K价格或日期口径异常，继续降级: symbol={symbol} quote={quote_price} latest={self._prediction_latest_snapshot(df)}")
         except Exception as exc:
-            logging.warning("AkShare预测日K获取失败: symbol=%s error=%s: %s", symbol, type(exc).__name__, exc)
+            print(f"AkShare预测日K获取失败，继续降级: symbol={symbol} error={type(exc).__name__}: {exc}")
 
         try:
             df = self._fetch_prediction_daily_data_tushare(symbol)
             if self._prediction_kline_is_usable(df, quote_price):
                 return df
-            logging.warning(
-                "Tushare预测日K价格或日期口径异常: symbol=%s quote=%s latest=%s",
-                symbol,
-                quote_price,
-                self._prediction_latest_snapshot(df),
-            )
+            print(f"Tushare预测日K价格或日期口径异常，继续降级: symbol={symbol} quote={quote_price} latest={self._prediction_latest_snapshot(df)}")
         except Exception as exc:
-            logging.warning("Tushare预测日K获取失败: symbol=%s error=%s: %s", symbol, type(exc).__name__, exc)
+            print(f"Tushare预测日K获取失败，继续降级: symbol={symbol} error={type(exc).__name__}: {exc}")
 
         return pd.DataFrame()
 
@@ -1230,15 +1314,10 @@ class StockAnalyzer:
                     and self._prediction_price_matches(price, quote_price or self._safe_float(daily_df.iloc[-1].get("收盘")))
                 ):
                     return price
-                logging.warning(
-                    "预测5分钟K当前价口径异常: symbol=%s quote=%s latest=%s",
-                    symbol,
-                    quote_price,
-                    self._prediction_latest_snapshot(minute_df),
-                )
+                print(f"预测5分钟K当前价口径异常，使用其他价格源: symbol={symbol} quote={quote_price} latest={self._prediction_latest_snapshot(minute_df)}")
 
         except Exception as exc:
-            logging.warning("预测当前价获取失败: symbol=%s error=%s: %s", symbol, type(exc).__name__, exc)
+            print(f"预测当前价获取失败，使用日线收盘价兜底: symbol={symbol} error={type(exc).__name__}: {exc}")
 
         if quote_price > 0:
             return quote_price
@@ -1258,7 +1337,7 @@ class StockAnalyzer:
             if quote:
                 return quote
         except Exception as exc:
-            logging.warning("预测实时价获取失败: symbol=%s error=%s: %s", symbol, type(exc).__name__, exc)
+            print(f"预测实时价获取失败，继续降级: symbol={symbol} error={type(exc).__name__}: {exc}")
         return {}
 
     def _build_prediction_price_limit(self, symbol: str, daily_df: pd.DataFrame) -> Dict[str, Any]:
@@ -1342,7 +1421,7 @@ class StockAnalyzer:
                         if parsed:
                             return parsed
         except Exception as exc:
-            logging.warning("AkShare上市日期获取失败: symbol=%s error=%s: %s", clean_symbol, type(exc).__name__, exc)
+            print(f"AkShare上市日期获取失败，继续降级: symbol={clean_symbol} error={type(exc).__name__}: {exc}")
 
         try:
             import os
@@ -1359,7 +1438,7 @@ class StockAnalyzer:
                     if parsed:
                         return parsed
         except Exception as exc:
-            logging.warning("Tushare上市日期获取失败: symbol=%s error=%s: %s", clean_symbol, type(exc).__name__, exc)
+            print(f"Tushare上市日期获取失败，使用默认涨跌幅规则: symbol={clean_symbol} error={type(exc).__name__}: {exc}")
 
         return None
 

@@ -32,6 +32,26 @@ class ConfigManager:
                 "required": False,
                 "type": "text"
             },
+            "DEEPSEEK_THINKING_ENABLED": {
+                "value": "false",
+                "description": "启用DeepSeek思考模式",
+                "required": False,
+                "type": "boolean"
+            },
+            "DEEPSEEK_REASONING_EFFORT": {
+                "value": "high",
+                "description": "思考强度",
+                "required": False,
+                "type": "select",
+                "options": ["low", "medium", "high"]
+            },
+            "DEEPSEEK_THINKING_TYPE": {
+                "value": "enabled",
+                "description": "思考模式类型",
+                "required": False,
+                "type": "select",
+                "options": ["enabled", "disabled"]
+            },
             "TUSHARE_TOKEN": {
                 "value": "",
                 "description": "Tushare数据接口Token（可选）",
@@ -178,6 +198,10 @@ class ConfigManager:
             lines.append("# ========== DeepSeek API配置 ==========")
             lines.append(f'DEEPSEEK_API_KEY="{config.get("DEEPSEEK_API_KEY", "")}"')
             lines.append(f'DEEPSEEK_BASE_URL="{config.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com/v1")}"')
+            lines.append(f'DEFAULT_MODEL_NAME="{config.get("DEFAULT_MODEL_NAME", "deepseek-chat")}"')
+            lines.append(f'DEEPSEEK_THINKING_ENABLED="{config.get("DEEPSEEK_THINKING_ENABLED", "false")}"')
+            lines.append(f'DEEPSEEK_REASONING_EFFORT="{config.get("DEEPSEEK_REASONING_EFFORT", "high")}"')
+            lines.append(f'DEEPSEEK_THINKING_TYPE="{config.get("DEEPSEEK_THINKING_TYPE", "enabled")}"')
             lines.append("")
             
             # Tushare配置
@@ -260,4 +284,3 @@ class ConfigManager:
 
 # 全局配置管理器实例
 config_manager = ConfigManager()
-

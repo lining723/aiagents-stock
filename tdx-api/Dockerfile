@@ -36,10 +36,6 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 # 设置时区为上海
 ENV TZ=Asia/Shanghai
 
-# 创建非root用户
-RUN addgroup -g 1000 appuser && \
-    adduser -D -u 1000 -G appuser appuser
-
 # 设置工作目录
 WORKDIR /app
 
@@ -55,11 +51,8 @@ COPY --from=builder /app/stock-web .
 COPY --from=builder /app/web/static ./static
 # ===================================================================
 
-# 更改文件所有者
-RUN chown -R appuser:appuser /app
-
-# 切换到非root用户
-USER appuser
+# 运行时会挂载 /app/data 命名卷，保持 root 运行以确保本地 SQLite 缓存目录可写。
+RUN mkdir -p /app/data/database
 
 # 暴露端口
 EXPOSE 8080

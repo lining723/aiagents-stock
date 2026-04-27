@@ -189,6 +189,7 @@ env_value() {
 wait_for_container() {
     local container="$1"
     local max_attempts="${2:-90}"
+    local required="${3:-1}"
     local attempt=1
 
     print_info "等待 ${container} 健康..."
@@ -211,30 +212,40 @@ wait_for_container() {
         fi
 
         if [ "$status" = "exited" ] || [ "$status" = "dead" ]; then
-            print_error "${container} 状态异常: ${status}"
+            if [ "$required" = "1" ]; then
+                print_error "${container} 状态异常: ${status}"
+            else
+                print_warning "${container} 状态异常: ${status}"
+            fi
             docker logs --tail 80 "$container" || true
-            return 1
+            [ "$required" = "1" ] && return 1 || return 0
         fi
 
         sleep 2
         attempt=$((attempt + 1))
     done
 
-    print_warning "${container} 健康检查超时，请查看日志定位问题。"
-    return 1
+    if [ "$required" = "1" ]; then
+        print_warning "${container} 健康检查超时，请查看日志定位问题。"
+        return 1
+    fi
+
+    print_warning "${container} 暂未健康，继续启动主服务；行情源将由后端降级链路兜底。"
+    return 0
 }
 
 wait_for_services() {
-    local containers=(
+    local required_containers=(
         ai-agents-stock-redis
         ai-agents-stock-mongo
-        ai-agents-stock-tdx-api
         ai-agents-stock-backend
         ai-agents-stock-frontend
     )
 
-    for container in "${containers[@]}"; do
-        wait_for_container "$container"
+    wait_for_container ai-agents-stock-tdx-api 30 0
+
+    for container in "${required_containers[@]}"; do
+        wait_for_container "$container" 90 1
     done
 }
 

@@ -109,6 +109,9 @@ cp .env.example .env
 DEEPSEEK_API_KEY=你的模型 API Key
 DEEPSEEK_BASE_URL=https://api.deepseek.com/v1
 DEFAULT_MODEL_NAME=deepseek-chat
+DEEPSEEK_THINKING_ENABLED=false
+DEEPSEEK_REASONING_EFFORT=high
+DEEPSEEK_THINKING_TYPE=enabled
 MONGODB_URI=mongodb://localhost:27017/
 MONGODB_DB_NAME=aiagents_stock
 ```
@@ -198,6 +201,9 @@ redis-server
 | `DEEPSEEK_API_KEY` | 空 | AI 分析必填，DeepSeek 或兼容服务 Key |
 | `DEEPSEEK_BASE_URL` | `https://api.deepseek.com/v1` | OpenAI 兼容接口地址 |
 | `DEFAULT_MODEL_NAME` | `deepseek-chat` | 默认大模型名称 |
+| `DEEPSEEK_THINKING_ENABLED` | `false` | 是否为 DeepSeek 兼容调用开启 thinking 思考模式 |
+| `DEEPSEEK_REASONING_EFFORT` | `high` | 思考强度，支持 `low`、`medium`、`high` |
+| `DEEPSEEK_THINKING_TYPE` | `enabled` | 传给 `extra_body.thinking.type` 的值 |
 | `TUSHARE_TOKEN` | 空 | 可选，用于增强财务、上市日期等数据 |
 | `MONGODB_URI` | `mongodb://localhost:27017/` | 本地开发 MongoDB 地址 |
 | `MONGODB_DB_NAME` | `aiagents_stock` | MongoDB 数据库名 |
@@ -214,6 +220,7 @@ redis-server
 | `TDX_PORT` | `8080` | Docker tdx-api 宿主机端口 |
 | `REDIS_PORT` | `6379` | Docker Redis 宿主机端口 |
 | `MONGO_PORT` | `27017` | Docker MongoDB 宿主机端口 |
+| `PIP_INDEX_URL` | `https://pypi.tuna.tsinghua.edu.cn/simple` | Docker 构建后端镜像时使用的 Python 包镜像源 |
 | `EMAIL_ENABLED` | `false` | 是否启用邮件通知 |
 | `WEBHOOK_ENABLED` | `false` | 是否启用钉钉/飞书 Webhook |
 | `MINIQMT_ENABLED` | `false` | 是否启用 MiniQMT 交易接口 |

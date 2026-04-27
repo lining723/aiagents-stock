@@ -8,6 +8,7 @@ import config.config as config
 _preset_models = {
     "deepseek-chat": "DeepSeek Chat",
     "deepseek-reasoner": "DeepSeek Reasoner (推理增强)",
+    "deepseek-v4-pro": "DeepSeek V4 Pro",
     "qwen-plus": "qwen-plus (阿里百炼)",
     "qwen-plus-latest": "qwen-plus-latest (阿里百炼)",
     "qwen-flash": "qwen-flash (阿里百炼)",

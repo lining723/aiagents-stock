@@ -12,24 +12,37 @@ from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
+try:
+    from curl_cffi import requests as curl_cffi_requests
+except Exception:  # pragma: no cover - optional transport fallback
+    curl_cffi_requests = None
+
 
 class EastmoneyClient:
     """使用更接近浏览器的请求方式访问东方财富接口。"""
 
     DEFAULT_HEADERS = {
         "User-Agent": (
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
             "AppleWebKit/537.36 (KHTML, like Gecko) "
             "Chrome/124.0.0.0 Safari/537.36"
         ),
         "Accept": "application/json, text/plain, */*",
         "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
         "Connection": "keep-alive",
+        "Origin": "https://quote.eastmoney.com",
+        "Sec-Fetch-Site": "same-site",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Dest": "empty",
+        "sec-ch-ua": '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Windows"',
     }
 
     def __init__(self):
         self._curl_path = shutil.which("curl")
         self._proxy_base_url = os.getenv("EASTMONEY_PROXY_BASE_URL", "").rstrip("/")
+        self._impersonate = os.getenv("EASTMONEY_IMPERSONATE", "chrome124")
 
     def get_json(
         self,
@@ -50,6 +63,13 @@ class EastmoneyClient:
                         return data
                 except Exception as exc:
                     logger.warning(f"Eastmoney 宿主机代理请求失败: url={url} error={type(exc).__name__}: {exc}")
+
+            try:
+                data = self._get_json_with_curl_cffi(url, params, headers, timeout)
+                if data is not None:
+                    return data
+            except Exception as exc:
+                logger.warning(f"Eastmoney curl_cffi 请求失败: url={url} error={type(exc).__name__}: {exc}")
 
             try:
                 data = self._get_json_with_curl(url, params, headers, timeout)
@@ -127,6 +147,29 @@ class EastmoneyClient:
             raise RuntimeError(result.stderr.strip() or f"curl exit code {result.returncode}")
 
         payload = result.stdout.strip()
+        if not payload:
+            return None
+        return json.loads(payload)
+
+    def _get_json_with_curl_cffi(
+        self,
+        url: str,
+        params: Dict[str, Any],
+        headers: Dict[str, str],
+        timeout: int,
+    ) -> Optional[Dict[str, Any]]:
+        if curl_cffi_requests is None:
+            return None
+
+        response = curl_cffi_requests.get(
+            url,
+            params=params,
+            headers=headers,
+            timeout=timeout,
+            impersonate=self._impersonate,
+        )
+        response.raise_for_status()
+        payload = response.text.strip()
         if not payload:
             return None
         return json.loads(payload)

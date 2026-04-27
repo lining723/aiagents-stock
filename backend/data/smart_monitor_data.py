@@ -66,7 +66,12 @@ class SmartMonitorDataFetcher:
     
     @cached_call(
         "realtime",
-        key_builder=lambda self, stock_code, retry=1: (str(stock_code).split(".")[0],),
+        key_builder=lambda self, stock_code, retry=1: (
+            "v2",
+            str(stock_code).split(".")[0],
+            bool(self.use_tdx),
+            getattr(self.tdx_fetcher, "base_url", "") if self.tdx_fetcher else "",
+        ),
         is_valid=lambda result: bool(result),
     )
     def get_realtime_quote(self, stock_code: str, retry: int = 1) -> Optional[Dict]:
@@ -188,7 +193,13 @@ class SmartMonitorDataFetcher:
     
     @cached_call(
         "technical",
-        key_builder=lambda self, stock_code, period="daily", retry=1: ("v2", str(stock_code).split(".")[0], period),
+        key_builder=lambda self, stock_code, period="daily", retry=1: (
+            "v3",
+            str(stock_code).split(".")[0],
+            period,
+            bool(self.use_tdx),
+            getattr(self.tdx_fetcher, "base_url", "") if self.tdx_fetcher else "",
+        ),
         is_valid=lambda result: bool(result),
     )
     def get_technical_indicators(self, stock_code: str, period: str = 'daily', retry: int = 1) -> Optional[Dict]:
@@ -556,7 +567,13 @@ class SmartMonitorDataFetcher:
     
     @cached_call(
         "technical",
-        key_builder=lambda self, stock_code: ("v2", "comprehensive", str(stock_code).split(".")[0]),
+        key_builder=lambda self, stock_code: (
+            "v3",
+            "comprehensive",
+            str(stock_code).split(".")[0],
+            bool(self.use_tdx),
+            getattr(self.tdx_fetcher, "base_url", "") if self.tdx_fetcher else "",
+        ),
         is_valid=lambda result: bool(result),
     )
     def get_comprehensive_data(self, stock_code: str) -> Dict:
